@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  sveltekit-app:
+    image: node:latest
+    container_name: sveltekit-app
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    working_dir: /app
+    command: sh -c "npm install && npm run dev -- --host"
+    ports:
+      - '5173:5173'
+    networks:
+      - nimp
+
+  edgedb:
+    image: edgedb/edgedb
+    environment:
+      EDGEDB_SERVER_SECURITY: insecure_dev_mode
+    volumes:
+      - './dbschema:/dbschema'
+    ports:
+      - '5656:5656'
+    networks:
+      - nimp
+
+networks:
+  nimp:
+    driver: bridge
