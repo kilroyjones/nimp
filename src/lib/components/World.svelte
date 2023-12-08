@@ -1,44 +1,61 @@
 <script lang="ts">
-	import {
-		x,
-		y,
-		windowWidth,
-		windowHeight,
-		cellWidth,
-		cellHeight,
-		regionWidth,
-		regionHeight
-	} from '$lib/state';
 	import { onMount } from 'svelte';
+	import { x, y, windowHeight, windowWidth, regionsInView } from '$lib/world.store';
+	import { REGION_WIDTH, REGION_HEIGHT, CELL_WIDTH, CELL_HEIGHT } from '$lib/constants.store';
 
 	let previousX: number;
 	let previousY: number;
 	let dragging = false;
 	let previousDblClickX: number = 0;
 	let previousDblClickY: number = 0;
-	let isMining = false;
-	let distanceMoved = 0;
 	let region: any;
 	let posts: any = null;
 
+	async function determineRegionsInView() {
+		let xMin = Math.floor($x / REGION_WIDTH);
+		let yMin = Math.floor($y / REGION_HEIGHT);
+		let xMax = Math.floor(($x + $windowWidth) / REGION_WIDTH);
+		let yMax = Math.floor(($y + $windowHeight) / REGION_HEIGHT);
+
+		console.log(xMin, yMin, xMax, yMax);
+		let views = [];
+		for (let xCoord = xMin; xCoord <= xMax; xCoord++) {
+			for (let yCoord = yMin; yCoord <= yMax; yCoord++) {
+				// console.log('(', xCoord, ', ', yCoord, ')');
+				views.push({ x: xCoord, y: yCoord });
+			}
+		}
+		const coordinates: [number, number][] = views.map((coord: any) => [coord.x, coord.y]);
+		$regionsInView = coordinates;
+
+		const response = await fetch('/api/world/update', {
+			method: 'POST',
+			body: JSON.stringify({
+				c: views
+			}),
+			headers: {
+				'content-type': 'application/json'
+			}
+		});
+		let msg = await response.json();
+		posts = [];
+		if (!msg.err) {
+			let regions = msg.msg;
+			for (const region of regions) {
+				posts = posts.concat(region.posts);
+			}
+		}
+	}
+
 	function handleStartDrag(event: MouseEvent) {
-		/**
-		 * Detects mouse down (not click) and sets the values needed
-		 * for dragging the world.
-		 */
 		previousX = event.clientX;
 		previousY = event.clientY;
 		dragging = true;
 	}
 
-	function handleMove(event: MouseEvent) {
-		/**
-		 * Detect mouse move and updates the world coordinates (x, y).
-		 * It also uses distanceMoved to determine if there needs to be
-		 * an update in the Claims component of the Claims (images).
-		 */
-		// $update = false;
+	async function handleMove(event: MouseEvent) {
 		if (dragging) {
+			await determineRegionsInView();
 			$x = $x - event.clientX + previousX;
 			$y = $y - event.clientY + previousY;
 			previousX = event.clientX;
@@ -47,10 +64,6 @@
 	}
 
 	function handleStopDrag(event: MouseEvent) {
-		/**
-		 * Stops dragging when the mouse button is no longer pressed down
-		 * or when the mouse leaves the screen.
-		 */
 		console.log('Stop');
 		dragging = false;
 	}
@@ -58,32 +71,20 @@
 	async function handleDoubleClick(event: MouseEvent) {
 		const clickX = Math.floor(event.clientX + $x);
 		const clickY = Math.floor(event.clientY + $y);
-		const regionX = Math.floor(clickX / $regionWidth);
-		const regionY = Math.floor(clickX / $regionHeight);
-		const cellX = Math.floor(clickX / $cellWidth) % Math.floor($regionWidth / $cellWidth);
-		const cellY = Math.floor(clickY / $cellHeight) % Math.floor($regionHeight / $cellHeight);
-
-		// if (clickX == previousDblClickX && clickY == previousDblClickY) {
-		// 	isMining = true;
-		// 	console.log('Mining: ', isMining);
-		// 	console.log(region.msg.posts);
-		// 	posts = region.msg.posts;
-		// }
+		const regionX = Math.floor(clickX / REGION_WIDTH);
+		const regionY = Math.floor(clickX / REGION_HEIGHT);
+		const cellX = Math.floor(clickX / CELL_WIDTH) % Math.floor(REGION_WIDTH / CELL_WIDTH);
+		const cellY = Math.floor(clickY / CELL_HEIGHT) % Math.floor(REGION_HEIGHT / CELL_HEIGHT);
 
 		previousDblClickX = clickX;
 		previousDblClickY = clickY;
 
-		// console.log(
-		// 	`Location ${clickX}, ${clickY} gives ==> Region: ${regionX}, ${regionY} at cell ${cellX}, ${cellY}`
-		// );
-	}
-
-	onMount(async () => {
-		const response = await fetch('/api/mine', {
+		console.log('LOC:', clickX, clickY, Math.floor(clickX / REGION_WIDTH));
+		const response = await fetch('/api/world/mine', {
 			method: 'POST',
 			body: JSON.stringify({
-				rx: 0,
-				ry: 0,
+				rx: Math.floor(clickX / REGION_WIDTH),
+				ry: Math.floor(clickY / REGION_HEIGHT),
 				cx: 0,
 				cy: 0
 			}),
@@ -92,9 +93,11 @@
 			}
 		});
 		region = await response.json();
-		posts = region.msg.posts;
-		console.log(posts);
-	});
+	}
+
+	// TODO: Testing only
+	onMount(async () => {});
+
 	$: backgroundPosition = `${-$x}px ${-$y}px`;
 </script>
 
@@ -111,32 +114,30 @@
 	<div class="grid" style="background-position: {backgroundPosition};" />
 	{#if posts != null}
 		{#each posts as post}
-			<div>{post.x}, {post.y}, {post.w} {post.h}</div>
 			<div
 				style="
 					background-color: #ff00f0;
 					position: absolute;
-				    top: {post.y * 64 - $y}px;
-				    left: {post.x * 64 - $x}px;
-					border: 2px;
+				    top: {post.y - $y}px;
+				    left: {post.x - $x}px;
+					border: 1px;
 					border-radius: 4px;
 					box-shadow: inset 0 0 0 4px #ffffff; 
 					border-color: #fff;
-				    width: {post.w * 64}px;
-				    height: {post.h * 64}px;
+				    width: {post.w}px;
+				    height: {post.h}px;
 					"
 			/>
 		{/each}
 	{/if}
-	<!-- <Messages /> -->
 {/if}
 
 <style>
 	.grid {
-		width: 100vw; /* Adjust as needed */
-		height: 100vh; /* Adjust as needed */
-		background-size: 64px 64px; /* Size of your grid cells */
-		background-image: linear-gradient(to left, rgba(0, 0, 0, 0.1) 2px, transparent 2px),
-			linear-gradient(to top, rgba(0, 0, 0, 0.1) 2px, transparent 2px);
+		width: 100vw;
+		height: 100vh;
+		background-size: 64px 64px;
+		background-image: linear-gradient(to left, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+			linear-gradient(to top, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
 	}
 </style>
