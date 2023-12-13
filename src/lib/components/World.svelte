@@ -1,7 +1,7 @@
 <script lang="ts">
 	// Stores
 	import { x, y, windowHeight, windowWidth, regionsInView } from '$lib/stores/world.store';
-	import { REGION_WIDTH, REGION_HEIGHT, UPDATE_DISTANCE } from '$root/lib/stores/constants.store';
+	import { REGION_WIDTH, REGION_HEIGHT, UPDATE_DISTANCE } from '$lib/stores/constants.store';
 
 	let dragging = false;
 	let dragStartX: number;
@@ -20,10 +20,10 @@
 	 * This calculates the current regions in view.
 	 */
 	function updateRegionsInView() {
-		let xMin = Math.floor($x / REGION_WIDTH);
-		let yMin = Math.floor($y / REGION_HEIGHT);
-		let xMax = Math.floor(($x + $windowWidth) / REGION_WIDTH);
-		let yMax = Math.floor(($y + $windowHeight) / REGION_HEIGHT);
+		let xMin = Math.floor($x / $REGION_WIDTH);
+		let yMin = Math.floor($y / $REGION_HEIGHT);
+		let xMax = Math.floor(($x + $windowWidth) / $REGION_WIDTH);
+		let yMax = Math.floor(($y + $windowHeight) / $REGION_HEIGHT);
 
 		let views = [];
 		for (let xCoord = xMin; xCoord <= xMax; xCoord++) {
@@ -69,7 +69,7 @@
 			previousX = event.clientX;
 			previousY = event.clientY;
 
-			if (distance(dragStartX, dragStartY, event.clientX, event.clientY) > UPDATE_DISTANCE) {
+			if (distance(dragStartX, dragStartY, event.clientX, event.clientY) > $UPDATE_DISTANCE) {
 				dragStartX = event.clientX;
 				dragStartY = event.clientY;
 				updateRegionsInView();
