@@ -1,136 +1,95 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { x, y, windowHeight, windowWidth, regionsInView } from '$lib/world.store';
-	import { REGION_WIDTH, REGION_HEIGHT, CELL_WIDTH, CELL_HEIGHT } from '$lib/constants.store';
+	// Stores
+	import { x, y, windowHeight, windowWidth, regionsInView } from '$lib/stores/world.store';
+	import { REGION_WIDTH, REGION_HEIGHT, UPDATE_DISTANCE } from '$root/lib/stores/constants.store';
 
+	let dragging = false;
+	let dragStartX: number;
+	let dragStartY: number;
 	let previousX: number;
 	let previousY: number;
-	let dragging = false;
-	let previousDblClickX: number = 0;
-	let previousDblClickY: number = 0;
-	let region: any;
-	let posts: any = null;
 
-	async function determineRegionsInView() {
+	/**
+	 * A function to calculate the distance between two points
+	 */
+	function distance(x1: number, y1: number, x2: number, y2: number): number {
+		return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+	}
+
+	/**
+	 * This calculates the current regions in view.
+	 */
+	function updateRegionsInView() {
 		let xMin = Math.floor($x / REGION_WIDTH);
 		let yMin = Math.floor($y / REGION_HEIGHT);
 		let xMax = Math.floor(($x + $windowWidth) / REGION_WIDTH);
 		let yMax = Math.floor(($y + $windowHeight) / REGION_HEIGHT);
 
-		console.log(xMin, yMin, xMax, yMax);
 		let views = [];
 		for (let xCoord = xMin; xCoord <= xMax; xCoord++) {
 			for (let yCoord = yMin; yCoord <= yMax; yCoord++) {
-				// console.log('(', xCoord, ', ', yCoord, ')');
 				views.push({ x: xCoord, y: yCoord });
 			}
 		}
-		const coordinates: [number, number][] = views.map((coord: any) => [coord.x, coord.y]);
-		$regionsInView = coordinates;
 
-		const response = await fetch('/api/world/update', {
-			method: 'POST',
-			body: JSON.stringify({
-				c: views
-			}),
-			headers: {
-				'content-type': 'application/json'
-			}
-		});
-		let msg = await response.json();
-		posts = [];
-		if (!msg.err) {
-			let regions = msg.msg;
-			for (const region of regions) {
-				posts = posts.concat(region.posts);
-			}
-		}
+		$regionsInView = views.map((coord: any) => [coord.x, coord.y]);
 	}
 
+	/**
+	 * Initiating a drag will set all these values to be used in conjunction
+	 * with the handleMove function
+	 */
 	function handleStartDrag(event: MouseEvent) {
+		dragStartX = event.clientX;
+		dragStartY = event.clientY;
 		previousX = event.clientX;
 		previousY = event.clientY;
 		dragging = true;
 	}
 
-	async function handleMove(event: MouseEvent) {
+	/**
+	 * Called when releasing the mouse button or when leaving the screen.
+	 */
+	function handleStopDrag(event: MouseEvent) {
+		dragging = false;
+	}
+
+	/**
+	 * Only relevant if we've started dragging in the handleStartDrag function.
+	 * We first update our global values (x, y) based on how far we've moved
+	 * since the the last time the function was triggered.
+	 *
+	 * If we've moved further than UPDATE_DISTANCE we reset our dragStart values
+	 * and then get the new viewable regions
+	 */
+	function handleMove(event: MouseEvent) {
 		if (dragging) {
-			await determineRegionsInView();
 			$x = $x - event.clientX + previousX;
 			$y = $y - event.clientY + previousY;
 			previousX = event.clientX;
 			previousY = event.clientY;
+
+			if (distance(dragStartX, dragStartY, event.clientX, event.clientY) > UPDATE_DISTANCE) {
+				dragStartX = event.clientX;
+				dragStartY = event.clientY;
+				updateRegionsInView();
+			}
 		}
 	}
-
-	function handleStopDrag(event: MouseEvent) {
-		console.log('Stop');
-		dragging = false;
-	}
-
-	async function handleDoubleClick(event: MouseEvent) {
-		const clickX = Math.floor(event.clientX + $x);
-		const clickY = Math.floor(event.clientY + $y);
-		const regionX = Math.floor(clickX / REGION_WIDTH);
-		const regionY = Math.floor(clickX / REGION_HEIGHT);
-		const cellX = Math.floor(clickX / CELL_WIDTH) % Math.floor(REGION_WIDTH / CELL_WIDTH);
-		const cellY = Math.floor(clickY / CELL_HEIGHT) % Math.floor(REGION_HEIGHT / CELL_HEIGHT);
-
-		previousDblClickX = clickX;
-		previousDblClickY = clickY;
-
-		console.log('LOC:', clickX, clickY, Math.floor(clickX / REGION_WIDTH));
-		const response = await fetch('/api/world/mine', {
-			method: 'POST',
-			body: JSON.stringify({
-				rx: Math.floor(clickX / REGION_WIDTH),
-				ry: Math.floor(clickY / REGION_HEIGHT),
-				cx: 0,
-				cy: 0
-			}),
-			headers: {
-				'content-type': 'application/json'
-			}
-		});
-		region = await response.json();
-	}
-
-	// TODO: Testing only
-	onMount(async () => {});
 
 	$: backgroundPosition = `${-$x}px ${-$y}px`;
 </script>
 
 <svelte:window
 	on:mousedown={handleStartDrag}
-	on:mousemove={handleMove}
 	on:mouseup={handleStopDrag}
-	on:mouseleave={handleStopDrag}
+	on:mouseout={handleStopDrag}
+	on:mousemove={handleMove}
 	on:click|preventDefault
-	on:dblclick={handleDoubleClick}
+	on:dblclick|preventDefault
 />
 
-{#if $windowHeight}
-	<div class="grid" style="background-position: {backgroundPosition};" />
-	{#if posts != null}
-		{#each posts as post}
-			<div
-				style="
-					background-color: #ff00f0;
-					position: absolute;
-				    top: {post.y - $y}px;
-				    left: {post.x - $x}px;
-					border: 1px;
-					border-radius: 4px;
-					box-shadow: inset 0 0 0 4px #ffffff; 
-					border-color: #fff;
-				    width: {post.w}px;
-				    height: {post.h}px;
-					"
-			/>
-		{/each}
-	{/if}
-{/if}
+<div class="grid" style="background-position: {backgroundPosition};" />
 
 <style>
 	.grid {
