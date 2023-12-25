@@ -2,6 +2,7 @@
 	// Stores
 	import { x, y, windowHeight, windowWidth, regionsInView } from '$lib/stores/world.store';
 	import { REGION_WIDTH, REGION_HEIGHT, UPDATE_DISTANCE } from '$lib/stores/constants.store';
+	import { socketClient } from '$lib/socket/socket-client';
 
 	let dragging = false;
 	let dragStartX: number;
@@ -32,7 +33,8 @@
 			}
 		}
 
-		$regionsInView = views.map((coord: any) => [coord.x, coord.y]);
+		$regionsInView = views;
+		socketClient.send('ur', { data: $regionsInView });
 	}
 
 	/**
