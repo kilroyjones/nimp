@@ -2,6 +2,8 @@
 	// Stores
 	import { x, y, windowHeight, windowWidth, regionsInView } from '$lib/stores/world.store';
 	import { REGION_WIDTH, REGION_HEIGHT, UPDATE_DISTANCE } from '$lib/stores/constants.store';
+
+	// Libraries
 	import { socketClient } from '$lib/socket/socket-client';
 
 	let dragging = false;
@@ -33,8 +35,10 @@
 			}
 		}
 
+		// Update the store with the current regions in view and
+		// then send this to the server.
 		$regionsInView = views;
-		socketClient.send('ur', { data: $regionsInView });
+		socketClient.send('updateRegion', { data: $regionsInView });
 	}
 
 	/**
