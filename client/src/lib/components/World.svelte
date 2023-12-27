@@ -77,7 +77,7 @@
 		}
 	}
 
-	$: backgroundPosition = `${-$x}px ${-$y}px`;
+	$: backgroundPosition = `${-$x % REGION_WIDTH}px ${-$y % REGION_HEIGHT}px`;
 </script>
 
 <svelte:window
