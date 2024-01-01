@@ -6,10 +6,20 @@
  * At a later point we will modify the Message type to allow other information
  * types to be sent as data, but for now we'll leave this as is.
  */
+import { browser } from '$app/environment';
 import { io } from 'socket.io-client';
+import { get } from 'svelte/store';
+import { playerId } from '$lib/stores/player.store';
 
 const SERVER_URL = 'http://localhost:3000'; // Replace with your server's URL
-const socket = io(SERVER_URL);
+
+// TODO: Form a better structure in localstore for user data
+console.log('HERE: ', get(playerId));
+const socket = io(SERVER_URL, {
+	query: {
+		playerId: get(playerId) || ''
+	}
+});
 
 export type RegionLocation = {
 	x: number;
@@ -28,12 +38,19 @@ socket.on('disconnect', () => {
 	console.log('Disconnected from server');
 });
 
+socket.on('handshake', (msg) => {
+	console.log(msg);
+	if (browser) localStorage.setItem('playerId', msg.playerId);
+});
+
+socket.on('update', (msg) => {
+	console.log(msg);
+});
 /**
  * From the server side the endpoint is what determines
  * the action we'll take.
  */
 function send(endpoint: string, msg: Message) {
-	console.log(msg);
 	socket.emit(endpoint, msg);
 }
 
