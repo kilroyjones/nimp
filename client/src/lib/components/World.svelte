@@ -83,6 +83,14 @@
 		}
 	}
 
+	/**
+	 *
+	 */
+
+	function handleDblClick(event: MouseEvent) {
+		console.log('dbl click');
+	}
+
 	$: backgroundPosition = `${-$x % $REGION_WIDTH}px ${-$y % $REGION_HEIGHT}px`;
 </script>
 
@@ -92,7 +100,7 @@
 	on:mouseout={handleStopDrag}
 	on:mousemove={handleMove}
 	on:click|preventDefault
-	on:dblclick|preventDefault
+	on:dblclick|preventDefault={handleDblClick}
 />
 
 <div class="grid" style="background-position: {backgroundPosition};" />
