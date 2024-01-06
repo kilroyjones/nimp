@@ -38,7 +38,7 @@
 		// Update the store with the current regions in view and
 		// then send this to the server.
 		$regionsInView = views;
-		socketClient.send('updateRegion', { data: $regionsInView });
+		socketClient.send('update', { data: $regionsInView });
 	}
 
 	/**
@@ -89,6 +89,7 @@
 
 	function handleDblClick(event: MouseEvent) {
 		console.log('dbl click');
+		socketClient.send('explore', { data: { x: $x + event.clientX, y: $y + event.clientY } });
 	}
 
 	$: backgroundPosition = `${-$x % $REGION_WIDTH}px ${-$y % $REGION_HEIGHT}px`;
@@ -99,7 +100,6 @@
 	on:mouseup={handleStopDrag}
 	on:mouseout={handleStopDrag}
 	on:mousemove={handleMove}
-	on:click|preventDefault
 	on:dblclick|preventDefault={handleDblClick}
 />
 

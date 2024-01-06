@@ -8,10 +8,12 @@
  */
 
 import express from "express";
+
 import { createServer } from "http";
-import { Server, Socket } from "socket.io";
+import { explore } from "./messages/explore.message";
 import { PlayerService } from "./service/player.service";
-import { update } from "./messageHandlers/update";
+import { Server, Socket } from "socket.io";
+import { update } from "./messages/update.message";
 
 // Typical server setup
 const app = express();
@@ -31,6 +33,7 @@ io.on("connection", (socket: Socket) => {
   // Connect player
   const playerId = PlayerService.getPlayerId(socket);
   PlayerService.add(playerId, socket);
+
   socket.emit("handshake", {
     playerId: playerId,
   });
@@ -42,7 +45,14 @@ io.on("connection", (socket: Socket) => {
 
   // Sends region information
   socket.on("update", msg => {
+    console.log("Update", msg);
     update(socket, playerId, msg.data);
+  });
+
+  // Sends region information
+  socket.on("explore", msg => {
+    console.log("Explore", msg);
+    explore(socket, playerId, msg.data);
   });
 });
 

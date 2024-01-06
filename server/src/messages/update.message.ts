@@ -1,8 +1,8 @@
 import { PlayerService } from "../service/player.service";
-import { RegionLocation } from "../messages";
+import { Location } from "../types";
 import { Socket } from "socket.io";
 
-export const update = async (socket: Socket, playerId: string, locations: RegionLocation[]) => {
+export const update = async (socket: Socket, playerId: string, locations: Location[]) => {
   // Converts to a format which will mirror the keys of our database
   // There should be no more than 4 rooms joined at a time so we can cap it this way
   // This may lead to issues for people with super high resolution monitors, but that
@@ -10,11 +10,13 @@ export const update = async (socket: Socket, playerId: string, locations: Region
   // TODO: Validate rooms can exist!
 
   let roomsToJoin: string[] = locations
-    .map((location: RegionLocation) => `${location.x}-${location.y}`)
+    .map((location: Location) => `${location.x}${location.y}`)
     .slice(0, 4);
+  console.log(roomsToJoin);
 
   PlayerService.leaveAllRegions(playerId);
   PlayerService.joinRegions(playerId, roomsToJoin);
+  console.log("JOINED:", PlayerService.getJoinedRegions(playerId));
 
   // TODO: Add in query for actual regions data
 

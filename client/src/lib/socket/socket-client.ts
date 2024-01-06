@@ -27,7 +27,7 @@ export type RegionLocation = {
 };
 
 type Message = {
-	data: RegionLocation[];
+	data: RegionLocation[] | RegionLocation;
 };
 
 socket.on('connect', () => {
@@ -44,6 +44,7 @@ socket.on('handshake', (msg) => {
 });
 
 socket.on('update', (msg) => {
+	console.log('UPDATE');
 	console.log(msg);
 });
 /**
@@ -51,6 +52,7 @@ socket.on('update', (msg) => {
  * the action we'll take.
  */
 function send(endpoint: string, msg: Message) {
+	console.log('Msg: ', msg);
 	socket.emit(endpoint, msg);
 }
 

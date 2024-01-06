@@ -10,7 +10,7 @@ const players: Map<string, Player> = new Map();
 
 // User connection
 const add = (id: string, socket: Socket) => {
-  players.set(socket.id, { socket: socket, connections: 1 });
+  players.set(id, { socket: socket, connections: 1 });
   console.log(`User ${socket.id} connected.`);
 };
 
