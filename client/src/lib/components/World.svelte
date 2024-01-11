@@ -5,6 +5,8 @@
 
 	// Libraries
 	import { socketClient } from '$lib/socket/socket-client';
+	import { Conversion } from '$lib/helpers/conversions';
+	import { onMount } from 'svelte';
 
 	let dragging = false;
 	let dragStartX: number;
@@ -31,14 +33,15 @@
 		let views = [];
 		for (let xCoord = xMin; xCoord <= xMax; xCoord++) {
 			for (let yCoord = yMin; yCoord <= yMax; yCoord++) {
-				views.push({ x: xCoord, y: yCoord });
+				views.push({ key: xCoord.toString() + yCoord.toString(), xCoord, y: yCoord });
 			}
 		}
 
 		// Update the store with the current regions in view and
 		// then send this to the server.
 		$regionsInView = views;
-		socketClient.send('update', { data: $regionsInView });
+		console.log($regionsInView);
+		socketClient.send('explore', { data: { regions: $regionsInView } });
 	}
 
 	/**
@@ -89,8 +92,23 @@
 
 	function handleDblClick(event: MouseEvent) {
 		console.log('dbl click');
-		socketClient.send('explore', { data: { x: $x + event.clientX, y: $y + event.clientY } });
+		// Check what is being clicked:
+		// 1. [dig]
+		// 2. [start claim]
+
+		// If the cell is unclaimed and non-empty
+
+		socketClient.send('dig', {
+			data: {
+				key: Conversion.toRegionKey($x + event.clientX, $y + event.clientY),
+				loc: { x: $x + event.clientX, y: $y + event.clientY }
+			}
+		});
 	}
+
+	onMount(() => {
+		updateRegionsInView();
+	});
 
 	$: backgroundPosition = `${-$x % $REGION_WIDTH}px ${-$y % $REGION_HEIGHT}px`;
 </script>

@@ -1,8 +1,9 @@
-CREATE MIGRATION m1ozakpzyjevqyjwsvlj3jz24utiga6dpgwzt4yowcyrkgvkotwhyq
-    ONTO m1q5wvtezby3g6qzt5vrjzvzvmzwpm4544ccatb7glsfh5fccwvntq
+CREATE MIGRATION m1zehm7ljwvqttvdfx2oxnxbkapzcxs7rwxdd4bcxz6lyp62outupa
+    ONTO m13af4rlataohuu33tjk4dvk5buuqjce3nt5na7bwtl4da25isspnq
 {
   ALTER TYPE default::Region {
-      CREATE PROPERTY odds: std::int16;
-      CREATE PROPERTY open: std::bool;
+      ALTER PROPERTY prob {
+          RENAME TO odds;
+      };
   };
 };

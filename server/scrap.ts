@@ -1,8 +1,3 @@
-import { Post } from "../types";
-import { getRandomInt } from "../helpers/random.helper";
-import { CELL_HEIGHT, CELL_HEIGHT_MAX, CELL_WIDTH, CELL_WIDTH_MAX } from "../constants";
-import { Location } from "../types";
-
 /**
  *
  */
@@ -87,8 +82,4 @@ const createRegion = (location: Location): Post[] => {
     }
   }
   return posts;
-};
-
-export const ExploreActions = {
-  createRegion,
 };

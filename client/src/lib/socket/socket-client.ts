@@ -10,6 +10,8 @@ import { browser } from '$app/environment';
 import { io } from 'socket.io-client';
 import { get } from 'svelte/store';
 import { playerId } from '$lib/stores/player.store';
+import type { Action } from '@sveltejs/kit';
+import { regionsInView } from '$lib/stores/world.store';
 
 const SERVER_URL = 'http://localhost:3000'; // Replace with your server's URL
 
@@ -21,13 +23,24 @@ const socket = io(SERVER_URL, {
 	}
 });
 
-export type RegionLocation = {
+export type Location = {
 	x: number;
 	y: number;
 };
 
+export type RegionKey = string;
+
+export type DigMessage = {
+	key: RegionKey;
+	loc: Location;
+};
+
+export type ExploreMessage = {
+	regions: string[];
+};
+
 type Message = {
-	data: RegionLocation[] | RegionLocation;
+	data: DigMessage | ExploreMessage;
 };
 
 socket.on('connect', () => {
@@ -43,9 +56,13 @@ socket.on('handshake', (msg) => {
 	if (browser) localStorage.setItem('playerId', msg.playerId);
 });
 
-socket.on('update', (msg) => {
-	console.log('UPDATE');
+socket.on('explore', (msg: any) => {
 	console.log(msg);
+	console.log(msg.data);
+	if (msg.data.regions) {
+		regionsInView.set(msg.data.regions);
+		console.log('here', get(regionsInView));
+	}
 });
 /**
  * From the server side the endpoint is what determines

@@ -10,10 +10,10 @@
 import express from "express";
 
 import { createServer } from "http";
-import { explore } from "./messages/explore.message";
+import { DigHandler } from "./handlers/dig.handler";
 import { PlayerService } from "./service/player.service";
 import { Server, Socket } from "socket.io";
-import { update } from "./messages/update.message";
+import { ExploreHandler } from "./handlers/explore.handler";
 
 // Typical server setup
 const app = express();
@@ -44,15 +44,15 @@ io.on("connection", (socket: Socket) => {
   });
 
   // Sends region information
-  socket.on("update", msg => {
-    console.log("Update", msg);
-    update(socket, playerId, msg.data);
+  socket.on("explore", msg => {
+    console.log("explore", msg);
+    ExploreHandler.explore(socket, playerId, msg.data.regions);
   });
 
   // Sends region information
-  socket.on("explore", msg => {
-    console.log("Explore", msg);
-    explore(socket, playerId, msg.data);
+  socket.on("dig", msg => {
+    console.log("dig", msg);
+    DigHandler.dig(socket, playerId, msg.data);
   });
 });
 

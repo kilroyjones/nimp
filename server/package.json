@@ -5,6 +5,7 @@
   "main": "./src/server.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "update-db": "npx @edgedb/generate edgeql-js --output-dir=src/database/edgeql-js && npx @edgedb/generate interfaces --file=src/database/interfaces.d.ts",
     "dev": "nodemon"
   },
   "author": "",

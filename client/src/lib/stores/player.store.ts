@@ -9,3 +9,5 @@ export const playerId: Writable<string | undefined> = writable(
 playerId.subscribe((value) => {
 	if (browser) return (localStorage.playerId = value);
 });
+
+export const isClaiming: Writable<boolean> = writable(false);
