@@ -11,7 +11,7 @@
 	 */
 
 	// Stores
-	import { x, y } from '$lib/stores/world.store';
+	import { x, y } from '$lib/state/world.state';
 
 	// Variables passed in
 	export let worldX: number | string; // Since bound to an input field

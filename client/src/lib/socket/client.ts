@@ -6,43 +6,23 @@
  * At a later point we will modify the Message type to allow other information
  * types to be sent as data, but for now we'll leave this as is.
  */
-import { browser } from '$app/environment';
 import { io } from 'socket.io-client';
 import { get } from 'svelte/store';
-import { playerId } from '$lib/stores/player.store';
-import type { Action } from '@sveltejs/kit';
-import { regionsInView } from '$lib/stores/world.store';
+import { playerId } from '$lib/state/player.state';
+import { WorldHandler } from '$lib/handlers/world.handler';
+import type { HandshakeResponse } from '$shared/messages';
+import { PlayerHandler } from '../handlers/player.handler';
 
 const SERVER_URL = 'http://localhost:3000'; // Replace with your server's URL
 
 // TODO: Form a better structure in localstore for user data
-console.log('HERE: ', get(playerId));
 const socket = io(SERVER_URL, {
 	query: {
 		playerId: get(playerId) || ''
 	}
 });
 
-export type Location = {
-	x: number;
-	y: number;
-};
-
-export type RegionKey = string;
-
-export type DigMessage = {
-	key: RegionKey;
-	loc: Location;
-};
-
-export type ExploreMessage = {
-	regions: string[];
-};
-
-type Message = {
-	data: DigMessage | ExploreMessage;
-};
-
+// Messages
 socket.on('connect', () => {
 	console.log('Connected to the server');
 });
@@ -51,25 +31,28 @@ socket.on('disconnect', () => {
 	console.log('Disconnected from server');
 });
 
-socket.on('handshake', (msg) => {
-	console.log(msg);
-	if (browser) localStorage.setItem('playerId', msg.playerId);
-});
-
-socket.on('explore', (msg: any) => {
-	console.log(msg);
-	console.log(msg.data);
-	if (msg.data.regions) {
-		regionsInView.set(msg.data.regions);
-		console.log('here', get(regionsInView));
+socket.on('handshake', (msg: HandshakeResponse) => {
+	const data: HandshakeResponse = msg;
+	console.log(`[Handshake] - ${msg.playerId} `);
+	if (msg.playerId) {
+		PlayerHandler.receiveHandshake(msg.playerId);
 	}
 });
+
+socket.on('update-regions', (msg) => {
+	const data = JSON.parse(msg);
+	console.log(data);
+	// if (data) {
+	// WorldHandler.sendUpdateRegions(data.data.regionsJoined);
+});
+
 /**
  * From the server side the endpoint is what determines
  * the action we'll take.
+ *
  */
-function send(endpoint: string, msg: Message) {
-	console.log('Msg: ', msg);
+function send(endpoint: string, msg: any) {
+	console.log(`Out [${endpoint}]:`, msg);
 	socket.emit(endpoint, msg);
 }
 

@@ -1,6 +1,6 @@
 <script>
 	// Stores
-	import { x, y, windowWidth, windowHeight } from '$lib/stores/world.store';
+	import { x, y, windowWidth, windowHeight } from '$lib/state/world.state';
 
 	// Componenets
 	import Navbar from '$lib/components/Navbar.svelte';

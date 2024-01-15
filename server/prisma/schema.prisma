@@ -1,0 +1,24 @@
+generator kysely {
+  provider     = "prisma-kysely"
+  output       = "../src/database/types"
+  fileName     = "types.d.ts"
+  enumFileName = "enums.ts"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Regions {
+  id          Int                @id @default(autoincrement())
+  key         String             @unique
+  x           Int
+  y           Int
+  founder     String
+  odds        Int
+  // /// @kyselyType(Buffer)
+  // digs        Bytes? 
+  // /// @kyselyType(JSON)
+  // posts       Json?              
+}

@@ -1,0 +1,85 @@
+version: "3.7"
+services:
+  nimp-server:
+    container_name: "nimp-server"
+    restart: always
+    build:
+      context: ./
+      dockerfile: ./server/Dockerfile
+    volumes:
+      - ./server:/app/server
+      - ./shared:/app/shared
+    command: npm run dev
+    ports:
+      - "3000:3000"
+    networks:
+      - database
+
+  nimp-client:
+    container_name: "nimp-client"
+    build:
+      context: ./
+      dockerfile: ./client/Dockerfile
+    command: npm run dev -- --host 0.0.0.0
+    ports:
+      - 5173:5173
+    restart: always
+    volumes:
+      - /app/node_modules
+      - ./client:/app/client
+      - ./shared:/app/shared
+    stdin_open: true
+    tty: true
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    networks:
+      - database
+
+  redis:
+    image: redis:latest
+    container_name: "nimp-redis"
+    ports:
+      - "6379:6379"
+    networks:
+      - database
+    command: redis-server --notify-keyspace-events Ex
+
+  postgres:
+    container_name: "nimp-postgres"
+    image: postgres:12-alpine
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: nimp
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    networks:
+      - database
+
+  pgadmin:
+    container_name: "nimp-pgadmin"
+    image: dpage/pgadmin4:2023-01-13-1
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+      GUNICORN_ACCESS_LOGFILE: "/dev/null"
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+      - ./database/postgres/config.json:/pgadmin4/servers.json
+    ports:
+      - "5050:80"
+    restart: unless-stopped
+    networks:
+      - database
+    logging:
+      driver: none
+
+volumes:
+  db_data:
+  pgadmin:
+networks:
+  database:

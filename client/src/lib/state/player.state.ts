@@ -2,6 +2,7 @@ import { browser } from '$app/environment';
 import { writable } from 'svelte/store';
 import type { Writable } from 'svelte/store';
 
+export const isClaiming: Writable<boolean> = writable(false);
 export const playerId: Writable<string | undefined> = writable(
 	(browser && localStorage.getItem('playerId')) || ''
 );
@@ -9,5 +10,3 @@ export const playerId: Writable<string | undefined> = writable(
 playerId.subscribe((value) => {
 	if (browser) return (localStorage.playerId = value);
 });
-
-export const isClaiming: Writable<boolean> = writable(false);

@@ -9,11 +9,17 @@ type Player = {
 const players: Map<string, Player> = new Map();
 
 // User connection
+/**
+ *
+ */
 const add = (id: string, socket: Socket) => {
   players.set(id, { socket: socket, connections: 1 });
   console.log(`User ${socket.id} connected.`);
 };
 
+/**
+ *
+ */
 const remove = (id: string) => {
   players.delete(id);
   console.log(`User ${id} disconnected`);
@@ -72,6 +78,7 @@ const leaveRegion = (id: string, region: string) => {
  */
 const leaveRegions = (id: string, regions: string[]) => {
   const player = players.get(id);
+  console.log(regions, regions == undefined);
   if (player) {
     regions.forEach(region => player.socket.leave(region));
   }
@@ -87,10 +94,28 @@ const leaveAllRegions = (id: string) => {
   }
 };
 
+/**
+ *
+ */
 const getJoinedRegions = (id: string): Set<string> | undefined => {
   const player = players.get(id);
   if (player) {
     return player.socket.rooms;
+  }
+};
+
+/**
+ *
+ */
+const capJoinedRegions = (id: string, cap: number) => {
+  const player = players.get(id);
+  if (player) {
+    const roomsIter = player.socket.rooms.values();
+    while (player.socket.rooms.size > cap) {
+      const roomToLeave = roomsIter.next().value;
+      leaveRegion(id, roomToLeave);
+      // TODO: create warning message that too many rooms have been joined
+    }
   }
 };
 
@@ -100,7 +125,8 @@ export const PlayerService = {
   getPlayerId,
   remove,
 
-  // regions
+  // Regions
+  capJoinedRegions,
   joinRegion,
   joinRegions,
   leaveRegion,

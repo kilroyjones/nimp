@@ -7,13 +7,16 @@
  * Here, aside from connection and disconnect, we only impleent updateRegion.
  */
 
+import dotenv from "dotenv";
 import express from "express";
 
 import { createServer } from "http";
-import { DigHandler } from "./handlers/dig.handler";
 import { PlayerService } from "./service/player.service";
 import { Server, Socket } from "socket.io";
-import { ExploreHandler } from "./handlers/explore.handler";
+import { RegionHandler } from "./handlers/region.handler";
+import { CreateRegionRequest, UpdateRegionRequest } from "$shared/messages";
+
+dotenv.config({ path: "./.env" });
 
 // Typical server setup
 const app = express();
@@ -43,16 +46,23 @@ io.on("connection", (socket: Socket) => {
     PlayerService.remove(playerId);
   });
 
-  // Sends region information
-  socket.on("explore", msg => {
-    console.log("explore", msg);
-    ExploreHandler.explore(socket, playerId, msg.data.regions);
+  // Region
+  socket.on("update-regions", msg => {
+    const updateRegionRequest: UpdateRegionRequest = msg;
+    console.log("[update-regions]", updateRegionRequest);
+    RegionHandler.update(socket, playerId, updateRegionRequest);
   });
 
-  // Sends region information
+  socket.on("create-region", msg => {
+    const createRegionRequest: CreateRegionRequest = msg;
+    console.log("create-region", createRegionRequest);
+    RegionHandler.create(socket, playerId, createRegionRequest);
+  });
+
+  // Actions
   socket.on("dig", msg => {
     console.log("dig", msg);
-    DigHandler.dig(socket, playerId, msg.data);
+    // DigHandler.dig(socket, playerId, msg.data);
   });
 });
 

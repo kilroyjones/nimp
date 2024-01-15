@@ -1,48 +1,18 @@
 <script lang="ts">
 	// Stores
-	import { x, y, windowHeight, windowWidth, regionsInView } from '$lib/stores/world.store';
-	import { REGION_WIDTH, REGION_HEIGHT, UPDATE_DISTANCE } from '$lib/stores/constants.store';
+	import { WorldState, x, y } from '$lib/state/world.state';
+	import { REGION_WIDTH, REGION_HEIGHT, UPDATE_DISTANCE } from '$lib/constants';
 
 	// Libraries
-	import { socketClient } from '$lib/socket/socket-client';
-	import { Conversion } from '$lib/helpers/conversions';
 	import { onMount } from 'svelte';
+	import { Formulas } from '$lib/helpers/formula.helper';
+	import { WorldHandler } from '$lib/handlers/world.handler';
 
 	let dragging = false;
 	let dragStartX: number;
 	let dragStartY: number;
 	let previousX: number;
 	let previousY: number;
-
-	/**
-	 * A function to calculate the distance between two points
-	 */
-	function distance(x1: number, y1: number, x2: number, y2: number): number {
-		return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
-	}
-
-	/**
-	 * This calculates the current regions in view.
-	 */
-	function updateRegionsInView() {
-		let xMin = Math.floor($x / $REGION_WIDTH);
-		let yMin = Math.floor($y / $REGION_HEIGHT);
-		let xMax = Math.floor(($x + $windowWidth) / $REGION_WIDTH);
-		let yMax = Math.floor(($y + $windowHeight) / $REGION_HEIGHT);
-
-		let views = [];
-		for (let xCoord = xMin; xCoord <= xMax; xCoord++) {
-			for (let yCoord = yMin; yCoord <= yMax; yCoord++) {
-				views.push({ key: xCoord.toString() + yCoord.toString(), xCoord, y: yCoord });
-			}
-		}
-
-		// Update the store with the current regions in view and
-		// then send this to the server.
-		$regionsInView = views;
-		console.log($regionsInView);
-		socketClient.send('explore', { data: { regions: $regionsInView } });
-	}
 
 	/**
 	 * Initiating a drag will set all these values to be used in conjunction
@@ -78,10 +48,12 @@
 			previousX = event.clientX;
 			previousY = event.clientY;
 
-			if (distance(dragStartX, dragStartY, event.clientX, event.clientY) > $UPDATE_DISTANCE) {
+			if (
+				Formulas.distance(dragStartX, dragStartY, event.clientX, event.clientY) > UPDATE_DISTANCE
+			) {
 				dragStartX = event.clientX;
 				dragStartY = event.clientY;
-				updateRegionsInView();
+				WorldState.updateRegionSet();
 			}
 		}
 	}
@@ -92,25 +64,20 @@
 
 	function handleDblClick(event: MouseEvent) {
 		console.log('dbl click');
-		// Check what is being clicked:
-		// 1. [dig]
-		// 2. [start claim]
-
-		// If the cell is unclaimed and non-empty
-
-		socketClient.send('dig', {
-			data: {
-				key: Conversion.toRegionKey($x + event.clientX, $y + event.clientY),
-				loc: { x: $x + event.clientX, y: $y + event.clientY }
-			}
-		});
+		/**
+		 * Based on context
+		 * 1. Create Region
+		 * 2. Claim Region
+		 * 3.
+		 * */
+		WorldHandler.sendCreateRegion($x + event.clientX, $y + event.clientY);
 	}
 
 	onMount(() => {
-		updateRegionsInView();
+		WorldState.updateRegionSet();
 	});
 
-	$: backgroundPosition = `${-$x % $REGION_WIDTH}px ${-$y % $REGION_HEIGHT}px`;
+	$: backgroundPosition = `${-$x % REGION_WIDTH}px ${-$y % REGION_HEIGHT}px`;
 </script>
 
 <svelte:window
