@@ -9,7 +9,7 @@
 import { io } from 'socket.io-client';
 import { get } from 'svelte/store';
 import { playerId } from '$lib/state/player.state';
-import { WorldHandler } from '$lib/handlers/world.handler';
+import { RegionHandler } from '$lib/handlers/region.handler';
 import type { HandshakeResponse } from '$shared/messages';
 import { PlayerHandler } from '../handlers/player.handler';
 
@@ -40,10 +40,11 @@ socket.on('handshake', (msg: HandshakeResponse) => {
 });
 
 socket.on('update-regions', (msg) => {
-	const data = JSON.parse(msg);
-	console.log(data);
-	// if (data) {
-	// WorldHandler.sendUpdateRegions(data.data.regionsJoined);
+	const res = JSON.parse(msg);
+	console.log('IN - [update-regions]', res);
+	if (res.data) {
+		RegionHandler.receiveUpdateRegions(res.data);
+	}
 });
 
 /**

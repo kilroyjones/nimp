@@ -11,6 +11,7 @@ export type Regions = {
     y: number;
     founder: string;
     odds: number;
+    digs: string;
 };
 export type DB = {
     Regions: Regions;

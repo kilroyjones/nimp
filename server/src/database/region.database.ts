@@ -5,7 +5,9 @@ import { Region } from "./models/region.model";
 import { REGION_WIDTH_CELLS, REGION_HEIGHT_CELLS } from "../constants";
 
 //
-const intialDigsBuffer = Buffer.alloc(REGION_WIDTH_CELLS * REGION_HEIGHT_CELLS, 0);
+const digsAsBase64 = Buffer.from(
+  Buffer.alloc(REGION_WIDTH_CELLS * REGION_HEIGHT_CELLS, 0)
+).toString("base64");
 
 /**
  *
@@ -17,8 +19,6 @@ const create = async (
 ): Promise<Region | undefined> => {
   try {
     loc = Conversion.toRegionLocation(loc);
-    console.log("Bytes: ", intialDigsBuffer);
-    const t = db.selectFrom("Regions").selectAll();
     return await db
       .insertInto("Regions")
       .values({
@@ -27,7 +27,7 @@ const create = async (
         y: loc.y,
         founder: userId,
         odds: 10,
-        // digs: intialDigsBuffer,
+        digs: digsAsBase64,
         // posts: {},
       })
       .returningAll()

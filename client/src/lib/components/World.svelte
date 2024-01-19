@@ -1,12 +1,12 @@
 <script lang="ts">
 	// Stores
-	import { WorldState, x, y } from '$lib/state/world.state';
+	import { WorldState, regionsData, x, y, cellsToDraw } from '$lib/state/world.state';
 	import { REGION_WIDTH, REGION_HEIGHT, UPDATE_DISTANCE } from '$lib/constants';
 
 	// Libraries
 	import { onMount } from 'svelte';
 	import { Formulas } from '$lib/helpers/formula.helper';
-	import { WorldHandler } from '$lib/handlers/world.handler';
+	import { RegionHandler } from '$lib/handlers/region.handler';
 
 	let dragging = false;
 	let dragStartX: number;
@@ -53,7 +53,7 @@
 			) {
 				dragStartX = event.clientX;
 				dragStartY = event.clientY;
-				WorldState.updateRegionSet();
+				WorldState.updateRegionSet($x, $y);
 			}
 		}
 	}
@@ -70,11 +70,11 @@
 		 * 2. Claim Region
 		 * 3.
 		 * */
-		WorldHandler.sendCreateRegion($x + event.clientX, $y + event.clientY);
+		RegionHandler.sendCreateRegion($x + event.clientX, $y + event.clientY);
 	}
 
 	onMount(() => {
-		WorldState.updateRegionSet();
+		WorldState.updateRegionSet($x, $y);
 	});
 
 	$: backgroundPosition = `${-$x % REGION_WIDTH}px ${-$y % REGION_HEIGHT}px`;
@@ -88,9 +88,23 @@
 	on:dblclick|preventDefault={handleDblClick}
 />
 
-<div class="grid" style="background-position: {backgroundPosition};" />
+{#each $cellsToDraw as cell}
+	<div class="cell" style="top:{cell.y}px; left:{cell.x}px" />
+{/each}
+
+<!-- <div class="grid" style="background-position: {backgroundPosition};" /> -->
 
 <style>
+	.cell {
+		pointer-events: none;
+		position: absolute;
+		background: #00fff2;
+		width: 60px;
+		height: 60px;
+		border: 1px solid #f2f000;
+		color: #e1f1d1;
+	}
+
 	.grid {
 		width: 100vw;
 		height: 100vh;

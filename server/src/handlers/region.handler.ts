@@ -7,14 +7,14 @@ import type { CreateRegionRequest, UpdateRegionRequest } from "$shared/messages"
  *
  */
 const create = async (socket: Socket, userId: string, createRegionRequest: CreateRegionRequest) => {
-  console.log(createRegionRequest);
+  console.log(`[RegionHandler.create] - ${createRegionRequest}`);
   let region = await RegionDatabase.get(createRegionRequest.key);
   if (region) {
-    console.log("Exists: ", region);
+    console.log("Exists: ", region.key);
     return;
   }
   region = await RegionDatabase.create(userId, createRegionRequest.key, createRegionRequest.loc);
-  console.log(region);
+  console.log(region?.key);
 };
 
 /**
@@ -26,7 +26,6 @@ const update = async (
   updateRegionRequest: UpdateRegionRequest
 ) => {
   // Update rooms
-  console.log("REGION UPDATE", updateRegionRequest);
   PlayerService.leaveRegions(playerId, updateRegionRequest.regionsLeave);
   PlayerService.joinRegions(playerId, updateRegionRequest.regionsJoin);
 
@@ -42,9 +41,9 @@ const update = async (
   if (updateRegionRequest.regionsJoin.length > 0) {
     const regions = await RegionDatabase.getMany(updateRegionRequest.regionsJoin.slice(0, 4));
     if (regions) {
-      console.log("Out - [update-regions", regions);
+      console.log("Out - [update-regions]", regions.length);
       // TODO: Using bytea (byte array) can't be sent as object?
-      socket.emit("update-regions", JSON.stringify({ data: { regions: regionsJoined } }));
+      socket.emit("update-regions", JSON.stringify({ data: { regions: regions } }));
     }
   }
 };

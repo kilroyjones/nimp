@@ -1,3 +1,4 @@
+import type { Regions } from "../server/src/database/types/types";
 import { Location } from "./models";
 
 export type CreateRegionRequest = {
@@ -8,6 +9,10 @@ export type CreateRegionRequest = {
 export type UpdateRegionRequest = {
   regionsJoin: string[];
   regionsLeave: string[];
+};
+
+export type UpdateRegionResponse = {
+  regions: Regions[];
 };
 
 export type HandshakeResponse = {
