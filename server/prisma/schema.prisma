@@ -18,8 +18,6 @@ model Regions {
   founder     String
   odds        Int
   digs        String
-  // /// @kyselyType(Buffer)
-  // digs        Bytes? 
-  // /// @kyselyType(JSON)
+  /// @kyselyType(JSON)
   // posts       Json?              
 }

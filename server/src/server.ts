@@ -41,25 +41,34 @@ io.on("connection", (socket: Socket) => {
     playerId: playerId,
   });
 
-  // Remove user from hashmap
+  /**
+   *
+   */
   socket.on("disconnect", () => {
     PlayerService.remove(playerId);
   });
 
-  // Region
+  /**
+   *
+   */
   socket.on("update-regions", msg => {
     const updateRegionRequest: UpdateRegionRequest = msg;
-    console.log("[update-regions]", updateRegionRequest);
+    console.log("IN - [update-regions]", updateRegionRequest);
     RegionHandler.update(socket, playerId, updateRegionRequest);
   });
 
+  /**
+   *
+   */
   socket.on("create-region", msg => {
     const createRegionRequest: CreateRegionRequest = msg;
-    console.log("create-region", createRegionRequest);
+    console.log("IN - [create-region]", createRegionRequest);
     RegionHandler.create(socket, playerId, createRegionRequest);
   });
 
-  // Actions
+  /**
+   *
+   */
   socket.on("dig", msg => {
     console.log("dig", msg);
     // DigHandler.dig(socket, playerId, msg.data);

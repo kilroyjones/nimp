@@ -1,8 +1,8 @@
+import type { CreateRegionRequest, UpdateRegionRequest } from "$shared/messages";
 import { PlayerService } from "../service/player.service";
 import { RegionDatabase } from "../database/region.database";
 import { Socket } from "socket.io";
 
-import type { CreateRegionRequest, UpdateRegionRequest } from "$shared/messages";
 /**
  *
  */
@@ -14,7 +14,6 @@ const create = async (socket: Socket, userId: string, createRegionRequest: Creat
     return;
   }
   region = await RegionDatabase.create(userId, createRegionRequest.key, createRegionRequest.loc);
-  console.log(region?.key);
 };
 
 /**

@@ -5,4 +5,11 @@ export type Location = {
   y: number;
 };
 
+export type Bounds = {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+};
+
 export type RegionClient = Omit<Regions, "id" | "founder" | "odds">;

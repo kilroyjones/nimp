@@ -9,7 +9,7 @@ import type { UpdateRegionResponse } from '$shared/messages';
 const receiveUpdateRegions = (updateRegionResponse: UpdateRegionResponse) => {
 	// console.log('In - [Update regions] -', updateRegionResponse.regions.length);
 	WorldState.addRegions(updateRegionResponse.regions);
-	WorldState.updateDrawnCells();
+	WorldState.updateDraw();
 };
 
 /**

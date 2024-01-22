@@ -1,6 +1,6 @@
 <script lang="ts">
 	// Stores
-	import { WorldState, regionsData, x, y, cellsToDraw } from '$lib/state/world.state';
+	import { WorldState, x, y, cellsToDraw } from '$lib/state/world.state';
 	import { REGION_WIDTH, REGION_HEIGHT, UPDATE_DISTANCE } from '$lib/constants';
 
 	// Libraries
@@ -54,6 +54,7 @@
 				dragStartX = event.clientX;
 				dragStartY = event.clientY;
 				WorldState.updateRegionSet($x, $y);
+				WorldState.updateDraw();
 			}
 		}
 	}
@@ -66,17 +67,23 @@
 		console.log('dbl click');
 		/**
 		 * Based on context
-		 * 1. Create Region
-		 * 2. Claim Region
-		 * 3.
+		 * if region !exists
+		 * 	 create-region
+		 * else
+		 *    if cell
 		 * */
+
 		RegionHandler.sendCreateRegion($x + event.clientX, $y + event.clientY);
 	}
 
 	onMount(() => {
 		WorldState.updateRegionSet($x, $y);
+		WorldState.updateDraw();
 	});
 
+	function test() {
+		console.log('asdfas');
+	}
 	$: backgroundPosition = `${-$x % REGION_WIDTH}px ${-$y % REGION_HEIGHT}px`;
 </script>
 
@@ -85,18 +92,21 @@
 	on:mouseup={handleStopDrag}
 	on:mouseout={handleStopDrag}
 	on:mousemove={handleMove}
-	on:dblclick|preventDefault={handleDblClick}
 />
 
+<button on:click={test}>Test</button>
 {#each $cellsToDraw as cell}
-	<div class="cell" style="top:{cell.y}px; left:{cell.x}px" />
+	<button class="cell" style="top:{-$y + cell.y}px; left:{-$x + cell.x}px" on:click={() => test()}
+		>Test</button
+	>
 {/each}
-
-<!-- <div class="grid" style="background-position: {backgroundPosition};" /> -->
+{#if $cellsToDraw.length > 0}
+	{$cellsToDraw.length} / {$cellsToDraw[0].y} / {-$y}
+{/if}
 
 <style>
 	.cell {
-		pointer-events: none;
+		/* pointer-events: none; */
 		position: absolute;
 		background: #00fff2;
 		width: 60px;
@@ -109,7 +119,7 @@
 		width: 100vw;
 		height: 100vh;
 		background-size: 64px 64px;
-		background-image: linear-gradient(to left, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
-			linear-gradient(to top, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+		background-image: linear-gradient(to left, rgba(0, 0, 0, 0.5) 1px, transparent 1px),
+			linear-gradient(to top, rgba(0, 0, 0, 0.5) 1px, transparent 1px);
 	}
 </style>

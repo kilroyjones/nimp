@@ -12,7 +12,7 @@
 
 	// Stores
 	import { x, y, windowWidth, windowHeight } from '$lib/state/world.state';
-	import { regionsJoined, regionsData } from '$lib/state/world.state';
+	import { regionKeysJoined, regions } from '$lib/state/world.state';
 	import { isDebugMode } from '$lib/state/settings.state';
 
 	// Variables passed in
@@ -81,13 +81,13 @@
 		<div><strong>Dim: </strong> ({$windowWidth}, {$windowHeight})</div>
 
 		<div><strong>Regions</strong></div>
-		{#each Array.from($regionsJoined) as region}
+		<!-- {#each $as region}
 			<div>
-				Loc: {region} / Size: {#if $regionsData.has(region)}
-					{$regionsData.get(region)?.digs.length}
+				Loc: {region} / Size: {#if $regions.(region)}
+					{$regions.get(region)?.digs.length}
 				{/if}
 			</div>
-		{/each}
+		{/each} -->
 	</div>
 {/if}
 
