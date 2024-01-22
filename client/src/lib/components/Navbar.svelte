@@ -172,6 +172,6 @@
 		height: 120px;
 		background-color: rgba(255, 255, 255, 0.5); /* Semi-transparent white, adjust color as needed */
 		pointer-events: none; /* Makes the div unclickable */
-		z-index: 0; /* Ensures it doesn't overlap elements that should be clickable */
+		z-index: 999; /* Ensures it doesn't overlap elements that should be clickable */
 	}
 </style>

@@ -19,6 +19,7 @@
 	 * with the handleMove function
 	 */
 	function handleStartDrag(event: MouseEvent) {
+		console.log('start drag');
 		dragStartX = event.clientX;
 		dragStartY = event.clientY;
 		previousX = event.clientX;
@@ -30,6 +31,7 @@
 	 * Called when releasing the mouse button or when leaving the screen.
 	 */
 	function handleStopDrag(event: MouseEvent) {
+		console.log('stop drag');
 		dragging = false;
 	}
 
@@ -42,6 +44,7 @@
 	 * and then get the new viewable regions
 	 */
 	function handleMove(event: MouseEvent) {
+		console.log('move', dragging);
 		if (dragging) {
 			$x = $x - event.clientX + previousX;
 			$y = $y - event.clientY + previousY;
@@ -81,28 +84,36 @@
 		WorldState.updateDraw();
 	});
 
-	function test() {
-		console.log('asdfas');
+	function handleClick(x: number, y: number) {
+		console.log('Cell:', x, y);
+		WorldState.updateDigSite(x, y);
 	}
-	$: backgroundPosition = `${-$x % REGION_WIDTH}px ${-$y % REGION_HEIGHT}px`;
+
+	// $: backgroundPosition = `${-$x % REGION_WIDTH}px ${-$y % REGION_HEIGHT}px`;
 </script>
 
 <svelte:window
 	on:mousedown={handleStartDrag}
 	on:mouseup={handleStopDrag}
-	on:mouseout={handleStopDrag}
+	on:mouseleave={handleStopDrag}
 	on:mousemove={handleMove}
+	on:dblclick|preventDefault={handleDblClick}
 />
 
-<button on:click={test}>Test</button>
 {#each $cellsToDraw as cell}
-	<button class="cell" style="top:{-$y + cell.y}px; left:{-$x + cell.x}px" on:click={() => test()}
-		>Test</button
+	{#if cell.value == '0'}
+		<button
+			class="cell"
+			style="top:{-$y + cell.y}px; left:{-$x + cell.x}px; background-color: rgba(0, 0, 0, 0);"
+			on:click={() => handleClick(cell.x, cell.y)}>{cell.value}</button
+		>
+	{/if}
+	<button
+		class="cell"
+		style="top:{-$y + cell.y}px; left:{-$x + cell.x}px; background-color: rgba(255, 0, 0, 0);"
+		on:click={() => handleClick(cell.x, cell.y)}>{cell.value}</button
 	>
 {/each}
-{#if $cellsToDraw.length > 0}
-	{$cellsToDraw.length} / {$cellsToDraw[0].y} / {-$y}
-{/if}
 
 <style>
 	.cell {
@@ -111,15 +122,16 @@
 		background: #00fff2;
 		width: 60px;
 		height: 60px;
-		border: 1px solid #f2f000;
-		color: #e1f1d1;
+		border-color: #00000000;
+		border-radius: 4px;
+		color: #316300;
 	}
 
-	.grid {
+	/* .grid {
 		width: 100vw;
 		height: 100vh;
 		background-size: 64px 64px;
 		background-image: linear-gradient(to left, rgba(0, 0, 0, 0.5) 1px, transparent 1px),
 			linear-gradient(to top, rgba(0, 0, 0, 0.5) 1px, transparent 1px);
-	}
+	} */
 </style>

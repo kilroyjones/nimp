@@ -15,6 +15,8 @@ import { RegionHandler } from '$lib/handlers/region.handler';
 // Types
 import type { Bounds, RegionClient } from '$shared/models';
 import type { Regions } from '../../../../server/src/database/types/types';
+import { Conversion } from '$lib/helpers/conversions';
+import { setCharAt } from '$lib/helpers/string.helper';
 
 // Stores
 export const windowWidth = writable(0);
@@ -35,7 +37,7 @@ type BoundsWithKey = {
 
 // Variables
 export const regionKeysJoined: Writable<Array<string>> = writable(new Array());
-export const regions: Writable<Map<string, Regions>> = writable(new Map());
+export let regions: Writable<Map<string, Regions>> = writable(new Map());
 export let cellsToDraw: Writable<Array<Cell>> = writable(new Array());
 
 /**
@@ -137,12 +139,32 @@ export const updateRegionSet = (x: number, y: number) => {
 /**
  *
  */
+export const updateDigSite = (x: number, y: number) => {
+	const key = Conversion.toRegionKey(x, y);
+	const region = get(regions).get(key);
+	if (region) {
+		console.log(key, region.key);
+		const index = Conversion.toCellIndex(x, y);
+		console.log('index', index);
+		if (region.digs[index] == '0') {
+			console.log('Update');
+			region.digs = setCharAt(region.digs, index, '1');
+			console.log(region.digs);
+			regions = regions;
+			updateDraw();
+		}
+	}
+};
+/**
+ *
+ */
 export const WorldState = {
 	// Variables
 
 	// Functions
 	addRegions,
 	removeRegions,
+	updateDigSite,
 	updateRegionSet,
 	updateDraw
 };
