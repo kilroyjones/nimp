@@ -14,7 +14,8 @@ import { createServer } from "http";
 import { PlayerService } from "./service/player.service";
 import { Server, Socket } from "socket.io";
 import { RegionHandler } from "./handlers/region.handler";
-import { CreateRegionRequest, UpdateRegionRequest } from "$shared/messages";
+import { CreateRegionRequest, DigRequest, UpdateRegionRequest } from "$shared/messages";
+import { DigHandler } from "./handlers/dig.handler";
 
 dotenv.config({ path: "./.env" });
 
@@ -51,30 +52,29 @@ io.on("connection", (socket: Socket) => {
   /**
    *
    */
-  socket.on("update-regions", msg => {
-    const updateRegionRequest: UpdateRegionRequest = msg;
-    console.log("IN - [update-regions]", updateRegionRequest);
-    RegionHandler.update(socket, playerId, updateRegionRequest);
-  });
-
-  /**
-   *
-   */
   socket.on("create-region", msg => {
     const createRegionRequest: CreateRegionRequest = msg;
     console.log("IN - [create-region]", createRegionRequest);
-    RegionHandler.create(socket, playerId, createRegionRequest);
+    RegionHandler.create(io, playerId, createRegionRequest);
   });
 
   /**
    *
    */
   socket.on("dig", msg => {
-    // const digRequest: digRequest = msg;
+    const digRequest: DigRequest = msg;
     console.log("IN - [dig]", msg);
-    console.log("ROOMS", socket.rooms);
-    RegionHandler.dig(io, playerId, { x: msg.x, y: msg.y });
+    DigHandler.dig(io, digRequest);
     // DigHandler.dig(socket, playerId, msg.data);
+  });
+
+  /**
+   *
+   */
+  socket.on("update-regions", msg => {
+    const updateRegionRequest: UpdateRegionRequest = msg;
+    console.log("IN - [update-regions]", updateRegionRequest);
+    RegionHandler.update(socket, playerId, updateRegionRequest);
   });
 });
 

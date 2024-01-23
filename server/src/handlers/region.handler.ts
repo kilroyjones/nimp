@@ -1,47 +1,47 @@
-import type { CreateRegionRequest, UpdateRegionRequest } from "$shared/messages";
-import { PlayerService } from "../service/player.service";
+// Modules
+import logger from "../service/server/logging.service";
+
+import { Conversion } from "../helpers/conversion.helper";
+import { Data } from "src/helpers/data.helper";
+import { PlayerService } from "../service/game/player.service";
 import { RegionDatabase } from "../database/region.database";
-import { Server, Socket } from "socket.io";
-import { Conversion } from "src/helpers/conversion.helper";
+
+// Types
+import type { CreateRegionRequest, UpdateRegionRequest } from "$shared/messages";
+import type { Server, Socket } from "socket.io";
 
 /**
+ * Creates a region if that region doesn't already exist
  *
+ * @param io The socket.io base object,
+ * @param userId The id created up socket being established
+ * @param createRegionRequest Request object containing key and location of region
  */
-const create = async (socket: Socket, userId: string, createRegionRequest: CreateRegionRequest) => {
-  console.log(`[RegionHandler.create] - ${createRegionRequest}`);
+const create = async (io: Server, playerId: string, createRegionRequest: CreateRegionRequest) => {
+  logger.info(`[RegionHandler.create] - ${createRegionRequest}`);
+
   let region = await RegionDatabase.get(createRegionRequest.key);
-  if (region) {
-    console.log("Exists: ", region.key);
-    return;
-  }
-  region = await RegionDatabase.create(userId, createRegionRequest.key, createRegionRequest.loc);
-};
 
-/**
- *
- */
-const dig = async (io: Server, playerId: string, digRequest: any) => {
-  console.log(`[RegionHandler.dig] - ${digRequest}`);
-  const regionKey = Conversion.toRegionKey(digRequest);
-  let digs = await RegionDatabase.getDigs(regionKey);
-  if (digs) {
-    console.log("digs", digs);
-    const digIndex = Conversion.toCellIndex(digRequest.x, digRequest.y);
-    console.log("index", digIndex);
-    if (digs[digIndex] == "0") {
-      digs = Conversion.setCharAt(digs, digIndex, "1");
-      digs = await RegionDatabase.updateDigs(regionKey, digs);
-      console.log("update", digs);
-      if (digs) {
-        console.log(regionKey);
-        io.to(regionKey).emit("update-digs", { regionKey: regionKey, digs: digs });
-      }
+  // Only create if no region already exists
+  if (!region) {
+    region = await RegionDatabase.create(
+      playerId,
+      createRegionRequest.key,
+      createRegionRequest.loc
+    );
+
+    if (region) {
+      io.to(region.key).emit("update-regions", region);
     }
   }
 };
 
 /**
+ * Update a region if that region exists
  *
+ * @param io The socket.io base object,
+ * @param userId The id created up socket being established
+ * @param createRegionRequest Request object containing key and location of region
  */
 const update = async (
   socket: Socket,
@@ -73,6 +73,5 @@ const update = async (
 
 export const RegionHandler = {
   create,
-  dig,
   update,
 };

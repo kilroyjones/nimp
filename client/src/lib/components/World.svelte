@@ -79,14 +79,18 @@
 		RegionHandler.sendCreateRegion($x + event.clientX, $y + event.clientY);
 	}
 
+	function handleClickCell() {
+		console.log('dblclick cell');
+	}
+
 	onMount(() => {
 		WorldState.updateRegionSet($x, $y);
 		WorldState.updateDraw();
 	});
 
-	function handleClick(x: number, y: number) {
-		console.log('Cell:', x, y);
-		WorldState.updateDigSite(x, y);
+	// https://stackoverflow.com/questions/61461518/javascript-how-prevent-dblclick-double-click-to-also-fire-a-single-click-even
+	function handleClick(event: MouseEvent) {
+		WorldState.updateDigSite(event.x + $x, event.y + $y);
 	}
 
 	// $: backgroundPosition = `${-$x % REGION_WIDTH}px ${-$y % REGION_HEIGHT}px`;
@@ -98,21 +102,17 @@
 	on:mouseleave={handleStopDrag}
 	on:mousemove={handleMove}
 	on:dblclick|preventDefault={handleDblClick}
+	on:click={handleClick}
 />
 
 {#each $cellsToDraw as cell}
-	{#if cell.value == '0'}
+	{#if cell.value == '1'}
 		<button
 			class="cell"
-			style="top:{-$y + cell.y}px; left:{-$x + cell.x}px; background-color: rgba(0, 0, 0, 0);"
-			on:click={() => handleClick(cell.x, cell.y)}>{cell.value}</button
-		>
+			style="top:{-$y + cell.y}px; left:{-$x + cell.x}px; background-color: rgba(255, 0, 0, 0.2);"
+			on:dblclick|preventDefault|stopPropagation={handleClickCell}
+		/>
 	{/if}
-	<button
-		class="cell"
-		style="top:{-$y + cell.y}px; left:{-$x + cell.x}px; background-color: rgba(255, 0, 0, 0);"
-		on:click={() => handleClick(cell.x, cell.y)}>{cell.value}</button
-	>
 {/each}
 
 <style>

@@ -7,7 +7,6 @@ import { Kysely, PostgresDialect } from "kysely";
 dotenv.config({ path: "./.env" });
 console.log(process.env.DATABASE_URL_INTERNAL);
 
-// TODO: Adjust number in pool
 const dialect = new PostgresDialect({
   pool: new Pool({
     connectionString: process.env.DATABASE_URL_INTERNAL,

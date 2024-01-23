@@ -1,6 +1,19 @@
+/**
+ *
+ * PlayerService Module
+ *
+ * This module provides functionalities for managing player
+ * connections and their interactions with different regions within a networked
+ * environment.  It includes functions for adding/removing players, managing
+ * player IDs, and handling player's presence in various regions.
+ *
+ */
+
 import { Socket } from "socket.io";
 import { createHash, randomBytes } from "crypto";
+import logger from "../server/logging.service";
 
+// Types
 type Player = {
   socket: Socket;
   connections: number;
@@ -8,31 +21,46 @@ type Player = {
 
 const players: Map<string, Player> = new Map();
 
-// User connection
 /**
+ * PLAYER MANAGEMENT
+ */
+
+/**
+ * Adds a new player to the game server.
  *
+ * @param id The unique identifier of the player.
+ * @param socket The socket connection of the player.
  */
 const add = (id: string, socket: Socket) => {
   players.set(id, { socket: socket, connections: 1 });
-  console.log(`User ${socket.id} connected.`);
+  logger.info(`Player ${id} connected`);
 };
 
 /**
+ * Removes a player from the game server.
  *
+ * @param id The unique identifier of the player to be removed.
  */
+
 const remove = (id: string) => {
   players.delete(id);
-  console.log(`User ${id} disconnected`);
+  logger.info(`Player ${id} disocnnected`);
 };
 
 /**
- * TODO: We will find an alternative to this at some point
+ * Retrieves or generates a unique ID for a player.
+ *
+ * @param socket The socket connection of the player.
+ *
+ * TODO: Implement user already existing handling logic.
  */
 const getPlayerId = (socket: Socket): string => {
   const id = socket.handshake.query.playerId as string;
 
   if (id !== "") {
-    if (players.get(id)) console.log("Already connected");
+    if (players.get(id)) {
+      logger.info(`Player ${id} already connected`);
+    }
     // TODO: Add code here that handles user already existing
     return id;
   }
@@ -42,9 +70,15 @@ const getPlayerId = (socket: Socket): string => {
   return createHash("sha256").update(salt).digest("hex");
 };
 
-// Region management
 /**
+ * REGION MANAGEMENT
+ */
+
+/**
+ * Adds a player to a specific region.
  *
+ * @param id The unique identifier of the player.
+ * @param region The region to join.
  */
 const joinRegion = (id: string, region: string) => {
   const player = players.get(id);
@@ -54,7 +88,10 @@ const joinRegion = (id: string, region: string) => {
 };
 
 /**
+ * Adds a player to multiple regions
  *
+ * @param id The unique identifier of the player.
+ * @param regions The regions to join.
  */
 const joinRegions = (id: string, regions: string[]) => {
   const player = players.get(id);

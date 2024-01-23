@@ -108,6 +108,19 @@
 		transform: translateY(1px);
 	}
 
+	.debug {
+		font-size: 13px;
+		padding: 8px;
+		position: fixed;
+		top: 48px;
+		left: 0;
+		width: 120px;
+		height: 120px;
+		background-color: rgba(255, 255, 255, 0.5);
+		pointer-events: none;
+		z-index: 999;
+	}
+
 	input {
 		font-family: 'Roboto Mono', monospace;
 		font-size: 15px;
@@ -160,18 +173,5 @@
 		user-drag: none;
 		-ms-user-drag: none;
 		user-drag: none;
-	}
-
-	.debug {
-		font-size: 13px;
-		padding: 8px;
-		position: fixed; /* Makes the div stay in place even on scroll */
-		top: 48px; /* Height of the navbar, adjust if navbar height changes */
-		left: 0;
-		width: 120px;
-		height: 120px;
-		background-color: rgba(255, 255, 255, 0.5); /* Semi-transparent white, adjust color as needed */
-		pointer-events: none; /* Makes the div unclickable */
-		z-index: 999; /* Ensures it doesn't overlap elements that should be clickable */
 	}
 </style>

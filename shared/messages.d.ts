@@ -11,6 +11,11 @@ export type UpdateRegionRequest = {
   regionsLeave: string[];
 };
 
+export type DigRequest = {
+  key: string;
+  loc: Location;
+};
+
 export type UpdateRegionResponse = {
   regions: Regions[];
 };
