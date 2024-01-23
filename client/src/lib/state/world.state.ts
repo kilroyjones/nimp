@@ -17,6 +17,8 @@ import type { Bounds, RegionClient } from '$shared/models';
 import type { Regions } from '../../../../server/src/database/types/types';
 import { Conversion } from '$lib/helpers/conversions';
 import { setCharAt } from '$lib/helpers/string.helper';
+import { socketClient } from '$lib/socket/client';
+import { PlayerHandler } from '$lib/handlers/player.handler';
 
 // Stores
 export const windowWidth = writable(0);
@@ -151,10 +153,24 @@ export const updateDigSite = (x: number, y: number) => {
 			region.digs = setCharAt(region.digs, index, '1');
 			console.log(region.digs);
 			regions = regions;
-			updateDraw();
+			socketClient.send('dig', { x: x, y: y });
+			// console.log(socketClient.)
 		}
 	}
 };
+
+/**
+ *
+ */
+export const temp = (regionKey: string, digs: string) => {
+	const region = get(regions).get(regionKey);
+	if (region) {
+		console.log('updatings');
+		region.digs = digs;
+		updateDraw();
+	}
+};
+
 /**
  *
  */
@@ -166,5 +182,6 @@ export const WorldState = {
 	removeRegions,
 	updateDigSite,
 	updateRegionSet,
-	updateDraw
+	updateDraw,
+	temp
 };

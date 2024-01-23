@@ -1,7 +1,8 @@
 import type { CreateRegionRequest, UpdateRegionRequest } from "$shared/messages";
 import { PlayerService } from "../service/player.service";
 import { RegionDatabase } from "../database/region.database";
-import { Socket } from "socket.io";
+import { Server, Socket } from "socket.io";
+import { Conversion } from "src/helpers/conversion.helper";
 
 /**
  *
@@ -14,6 +15,29 @@ const create = async (socket: Socket, userId: string, createRegionRequest: Creat
     return;
   }
   region = await RegionDatabase.create(userId, createRegionRequest.key, createRegionRequest.loc);
+};
+
+/**
+ *
+ */
+const dig = async (io: Server, playerId: string, digRequest: any) => {
+  console.log(`[RegionHandler.dig] - ${digRequest}`);
+  const regionKey = Conversion.toRegionKey(digRequest);
+  let digs = await RegionDatabase.getDigs(regionKey);
+  if (digs) {
+    console.log("digs", digs);
+    const digIndex = Conversion.toCellIndex(digRequest.x, digRequest.y);
+    console.log("index", digIndex);
+    if (digs[digIndex] == "0") {
+      digs = Conversion.setCharAt(digs, digIndex, "1");
+      digs = await RegionDatabase.updateDigs(regionKey, digs);
+      console.log("update", digs);
+      if (digs) {
+        console.log(regionKey);
+        io.to(regionKey).emit("update-digs", { regionKey: regionKey, digs: digs });
+      }
+    }
+  }
 };
 
 /**
@@ -49,5 +73,6 @@ const update = async (
 
 export const RegionHandler = {
   create,
+  dig,
   update,
 };

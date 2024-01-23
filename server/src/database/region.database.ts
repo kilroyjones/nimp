@@ -37,19 +37,56 @@ const create = async (
  */
 const get = async (regionKey: string): Promise<Region | undefined> => {
   try {
-    return db.selectFrom("Regions").selectAll().where("key", "=", regionKey).executeTakeFirst();
+    return await db
+      .selectFrom("Regions")
+      .selectAll()
+      .where("key", "=", regionKey)
+      .executeTakeFirstOrThrow();
   } catch (error: any) {
     console.log(`[RegionActions.get] - ${error}`);
   }
 };
 
-// /**
-//  *
-//  */
+/**
+ *
+ */
+const getDigs = async (regionKey: string): Promise<string | undefined> => {
+  try {
+    const result = await db
+      .selectFrom("Regions")
+      .select("digs")
+      .where("key", "=", regionKey)
+      .executeTakeFirstOrThrow();
+    return result.digs;
+  } catch (error: any) {
+    console.log(`[RegionActions.get] - ${error}`);
+  }
+};
 
+/**
+ *
+ */
 const getMany = async (regionKeys: string[]): Promise<Region[] | undefined> => {
   try {
-    return db.selectFrom("Regions").selectAll().where("Regions.key", "in", regionKeys).execute();
+    return await db
+      .selectFrom("Regions")
+      .selectAll()
+      .where("Regions.key", "in", regionKeys)
+      .execute();
+  } catch (error: any) {
+    console.log(`[RegionActions.getMany] - ${error}`);
+  }
+};
+
+const updateDigs = async (regionKey: string, digs: string): Promise<string | undefined> => {
+  try {
+    const result = await db
+      .updateTable("Regions")
+      .where("key", "=", regionKey)
+      .set({ digs: digs })
+      .returning("digs")
+      .executeTakeFirstOrThrow();
+    return result.digs;
   } catch (error: any) {
     console.log(`[RegionActions.getMany] - ${error}`);
   }
@@ -58,5 +95,7 @@ const getMany = async (regionKeys: string[]): Promise<Region[] | undefined> => {
 export const RegionDatabase = {
   create,
   get,
+  getDigs,
   getMany,
+  updateDigs,
 };

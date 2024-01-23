@@ -31,6 +31,9 @@ socket.on('disconnect', () => {
 	console.log('Disconnected from server');
 });
 
+/**
+ *
+ */
 socket.on('handshake', (msg: HandshakeResponse) => {
 	const data: HandshakeResponse = msg;
 	console.log(`[Handshake] - ${msg.playerId} `);
@@ -39,11 +42,25 @@ socket.on('handshake', (msg: HandshakeResponse) => {
 	}
 });
 
+/**
+ *
+ */
 socket.on('update-regions', (msg) => {
 	const res = JSON.parse(msg);
 	console.log('IN - [update-regions]', res);
 	if (res.data) {
 		RegionHandler.receiveUpdateRegions(res.data);
+	}
+});
+
+/**
+ *
+ */
+socket.on('update-digs', (msg) => {
+	// const res = JSON.parse(msg);
+	console.log('IN - [update-digs]', msg);
+	if (msg) {
+		RegionHandler.receiveUpdateDigs(msg);
 	}
 });
 

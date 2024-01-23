@@ -6,6 +6,10 @@ import type { UpdateRegionResponse } from '$shared/messages';
 /**
  * Receive messages
  */
+const receiveUpdateDigs = (updateDigs: { regionKey: string; digs: string }) => {
+	WorldState.temp(updateDigs.regionKey, updateDigs.digs);
+};
+
 const receiveUpdateRegions = (updateRegionResponse: UpdateRegionResponse) => {
 	// console.log('In - [Update regions] -', updateRegionResponse.regions.length);
 	WorldState.addRegions(updateRegionResponse.regions);
@@ -31,6 +35,7 @@ const sendCreateRegion = (x: number, y: number) => {
 };
 
 export const RegionHandler = {
+	receiveUpdateDigs,
 	receiveUpdateRegions,
 
 	sendCreateRegion,

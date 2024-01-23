@@ -70,7 +70,10 @@ io.on("connection", (socket: Socket) => {
    *
    */
   socket.on("dig", msg => {
-    console.log("dig", msg);
+    // const digRequest: digRequest = msg;
+    console.log("IN - [dig]", msg);
+    console.log("ROOMS", socket.rooms);
+    RegionHandler.dig(io, playerId, { x: msg.x, y: msg.y });
     // DigHandler.dig(socket, playerId, msg.data);
   });
 });
