@@ -7,6 +7,7 @@
 	import { onMount } from 'svelte';
 	import { Formulas } from '$lib/helpers/formula.helper';
 	import { RegionHandler } from '$lib/handlers/region.handler';
+	import type { Location } from '$shared/models';
 
 	let dragging = false;
 	let dragStartX: number;
@@ -62,25 +63,20 @@
 		}
 	}
 
-	/**
-	 *
-	 */
-
-	function handleDblClick(event: MouseEvent) {
-		console.log('dbl click');
-		/**
-		 * Based on context
-		 * if region !exists
-		 * 	 create-region
-		 * else
-		 *    if cell
-		 * */
-
-		RegionHandler.sendCreateRegion($x + event.clientX, $y + event.clientY);
+	function handleClick(event: MouseEvent) {
+		console.log('Click');
 	}
 
-	function handleClickCell() {
-		console.log('dblclick cell');
+	function handleDoubleClick(event: MouseEvent) {
+		console.log('Double click');
+		let loc: Location = { x: event.x + $x, y: event.y + $y };
+		if (WorldState.hasRegion(loc)) {
+			if (WorldState.isDiggable(loc)) {
+				WorldState.updateDigSite(loc.x, loc.y);
+			}
+		} else {
+			RegionHandler.sendCreateRegion($x + event.clientX, $y + event.clientY);
+		}
 	}
 
 	onMount(() => {
@@ -89,9 +85,6 @@
 	});
 
 	// https://stackoverflow.com/questions/61461518/javascript-how-prevent-dblclick-double-click-to-also-fire-a-single-click-even
-	function handleClick(event: MouseEvent) {
-		WorldState.updateDigSite(event.x + $x, event.y + $y);
-	}
 
 	// $: backgroundPosition = `${-$x % REGION_WIDTH}px ${-$y % REGION_HEIGHT}px`;
 </script>
@@ -101,8 +94,8 @@
 	on:mouseup={handleStopDrag}
 	on:mouseleave={handleStopDrag}
 	on:mousemove={handleMove}
-	on:dblclick|preventDefault={handleDblClick}
 	on:click={handleClick}
+	on:dblclick={handleDoubleClick}
 />
 
 {#each $cellsToDraw as cell}
@@ -110,7 +103,6 @@
 		<button
 			class="cell"
 			style="top:{-$y + cell.y}px; left:{-$x + cell.x}px; background-color: rgba(255, 0, 0, 0.2);"
-			on:dblclick|preventDefault|stopPropagation={handleClickCell}
 		/>
 	{/if}
 {/each}

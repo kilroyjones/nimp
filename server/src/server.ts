@@ -11,7 +11,7 @@ import dotenv from "dotenv";
 import express from "express";
 
 import { createServer } from "http";
-import { PlayerService } from "./service/player.service";
+import { PlayerService } from "./service/game/player.service";
 import { Server, Socket } from "socket.io";
 import { RegionHandler } from "./handlers/region.handler";
 import { CreateRegionRequest, DigRequest, UpdateRegionRequest } from "$shared/messages";

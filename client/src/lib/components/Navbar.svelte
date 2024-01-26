@@ -81,13 +81,19 @@
 		<div><strong>Dim: </strong> ({$windowWidth}, {$windowHeight})</div>
 
 		<div><strong>Regions</strong></div>
-		<!-- {#each $as region}
-			<div>
-				Loc: {region} / Size: {#if $regions.(region)}
-					{$regions.get(region)?.digs.length}
-				{/if}
-			</div>
-		{/each} -->
+		<table>
+			{#each $regions as [key, region]}
+				<tr>
+					<td>
+						{key}
+					</td>
+					<td>
+						({region.x}, {region.y})
+					</td>
+				</tr>
+			{/each}
+		</table>
+		<div />
 	</div>
 {/if}
 

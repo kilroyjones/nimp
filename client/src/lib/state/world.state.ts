@@ -13,12 +13,14 @@ import {
 import { RegionHandler } from '$lib/handlers/region.handler';
 
 // Types
-import type { Bounds, RegionClient } from '$shared/models';
+import type { Bounds, Location, RegionClient } from '$shared/models';
 import type { Regions } from '../../../../server/src/database/types/types';
 import { Conversion } from '$lib/helpers/conversions';
 import { setCharAt } from '$lib/helpers/string.helper';
 import { socketClient } from '$lib/socket/client';
 import { PlayerHandler } from '$lib/handlers/player.handler';
+import { playerId } from './player.state';
+import { DigHandler } from '$lib/handlers/dig.handler';
 
 // Stores
 export const windowWidth = writable(0);
@@ -47,6 +49,32 @@ export let cellsToDraw: Writable<Array<Cell>> = writable(new Array());
  */
 const addRegions = function (regionsToAdd: Regions[]) {
 	regionsToAdd.forEach((region) => get(regions).set(region.key, region));
+	regions.set(get(regions));
+};
+
+/**
+ *
+ */
+const hasRegion = function (loc: Location): boolean {
+	if (get(regions).has(Conversion.toRegionKey(loc.x, loc.y))) {
+		return true;
+	}
+	return false;
+};
+
+/**
+ *
+ */
+
+const isDiggable = function (loc: Location): boolean {
+	const region = get(regions).get(Conversion.toRegionKey(loc.x, loc.y));
+	if (region) {
+		const value = Conversion.getCharAt(region.digs, Conversion.toCellIndex(loc.x, loc.y));
+		if (value == '0') {
+			return true;
+		}
+	}
+	return false;
 };
 
 /**
@@ -153,7 +181,9 @@ export const updateDigSite = (x: number, y: number) => {
 			region.digs = setCharAt(region.digs, index, '1');
 			console.log(region.digs);
 			regions = regions;
-			socketClient.send('dig', { x: x, y: y });
+			console.log({ x: x, y: y });
+			DigHandler.sendDig(region.key, x, y);
+			// socketClient.send('dig', { x: x, y: y });
 			// console.log(socketClient.)
 		}
 	}
@@ -179,6 +209,8 @@ export const WorldState = {
 
 	// Functions
 	addRegions,
+	hasRegion,
+	isDiggable,
 	removeRegions,
 	updateDigSite,
 	updateRegionSet,

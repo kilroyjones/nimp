@@ -1,8 +1,6 @@
 // Modules
 import logger from "../service/server/logging.service";
 
-import { Conversion } from "../helpers/conversion.helper";
-import { Data } from "src/helpers/data.helper";
 import { PlayerService } from "../service/game/player.service";
 import { RegionDatabase } from "../database/region.database";
 
@@ -64,7 +62,7 @@ const update = async (
   if (updateRegionRequest.regionsJoin.length > 0) {
     const regions = await RegionDatabase.getMany(updateRegionRequest.regionsJoin.slice(0, 4));
     if (regions) {
-      console.log("Out - [update-regions]", regions.length);
+      logger.info("RegionHandler.update", regions.length);
       // TODO: Using bytea (byte array) can't be sent as object?
       socket.emit("update-regions", JSON.stringify({ data: { regions: regions } }));
     }
