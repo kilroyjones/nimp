@@ -1,13 +1,17 @@
 <script lang="ts">
 	// Stores
-	import { WorldState, x, y, cellsToDraw } from '$lib/state/world.state';
-	import { REGION_WIDTH, REGION_HEIGHT, UPDATE_DISTANCE } from '$lib/constants';
+	import { WorldState, x, y, digsToDraw } from '$lib/state/world.state';
+	// import { Location } from '$shared/models';
+	import { UPDATE_DISTANCE } from '$shared/constants';
+	import { REGION_HEIGHT, REGION_WIDTH } from '$shared/constants';
 
 	// Libraries
 	import { onMount } from 'svelte';
-	import { Formulas } from '$lib/helpers/formula.helper';
-	import { RegionHandler } from '$lib/handlers/region.handler';
+	import { Formula } from '$lib/helpers/formula.helper';
 	import type { Location } from '$shared/models';
+	import { WorldAction } from '$lib/action/world.action';
+	import { ActionHandler } from '$lib/handlers/action.handler';
+	import { Conversion } from '$shared/conversion';
 
 	let dragging = false;
 	let dragStartX: number;
@@ -20,7 +24,7 @@
 	 * with the handleMove function
 	 */
 	function handleStartDrag(event: MouseEvent) {
-		console.log('start drag');
+		// console.log('start drag');
 		dragStartX = event.clientX;
 		dragStartY = event.clientY;
 		previousX = event.clientX;
@@ -32,7 +36,6 @@
 	 * Called when releasing the mouse button or when leaving the screen.
 	 */
 	function handleStopDrag(event: MouseEvent) {
-		console.log('stop drag');
 		dragging = false;
 	}
 
@@ -45,7 +48,6 @@
 	 * and then get the new viewable regions
 	 */
 	function handleMove(event: MouseEvent) {
-		console.log('move', dragging);
 		if (dragging) {
 			$x = $x - event.clientX + previousX;
 			$y = $y - event.clientY + previousY;
@@ -53,40 +55,40 @@
 			previousY = event.clientY;
 
 			if (
-				Formulas.distance(dragStartX, dragStartY, event.clientX, event.clientY) > UPDATE_DISTANCE
+				Formula.distance(dragStartX, dragStartY, event.clientX, event.clientY) > UPDATE_DISTANCE
 			) {
 				dragStartX = event.clientX;
 				dragStartY = event.clientY;
-				WorldState.updateRegionSet($x, $y);
-				WorldState.updateDraw();
+				WorldState.update();
 			}
 		}
 	}
 
 	function handleClick(event: MouseEvent) {
-		console.log('Click');
+		// console.log('Click');
 	}
 
 	function handleDoubleClick(event: MouseEvent) {
-		console.log('Double click');
 		let loc: Location = { x: event.x + $x, y: event.y + $y };
-		if (WorldState.hasRegion(loc)) {
-			if (WorldState.isDiggable(loc)) {
-				WorldState.updateDigSite(loc.x, loc.y);
+		const key = Conversion.toRegionKey(loc);
+		const region = WorldState.getRegion(key);
+		if (region) {
+			if (WorldState.canDig(loc, region)) {
+				const idx = Conversion.toDigIndex(loc, region);
+				ActionHandler.sendDig(key, idx);
 			}
 		} else {
-			RegionHandler.sendCreateRegion($x + event.clientX, $y + event.clientY);
+			WorldAction.createRegion(loc);
 		}
 	}
 
-	onMount(() => {
-		WorldState.updateRegionSet($x, $y);
-		WorldState.updateDraw();
+	onMount(async () => {
+		WorldState.update();
 	});
 
 	// https://stackoverflow.com/questions/61461518/javascript-how-prevent-dblclick-double-click-to-also-fire-a-single-click-even
 
-	// $: backgroundPosition = `${-$x % REGION_WIDTH}px ${-$y % REGION_HEIGHT}px`;
+	$: backgroundPosition = `${-$x % REGION_WIDTH}px ${-$y % REGION_HEIGHT}px`;
 </script>
 
 <svelte:window
@@ -95,10 +97,11 @@
 	on:mouseleave={handleStopDrag}
 	on:mousemove={handleMove}
 	on:click={handleClick}
-	on:dblclick={handleDoubleClick}
+	on:dblclick|preventDefault={handleDoubleClick}
 />
 
-{#each $cellsToDraw as cell}
+<div class="grid" style="background-position: ${backgroundPosition}" />
+{#each $digsToDraw as cell}
 	{#if cell.value == '1'}
 		<button
 			class="cell"

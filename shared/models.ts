@@ -1,8 +1,14 @@
+import type { DigStatus } from "./constants";
 import type { Regions } from "../server/src/database/types/types";
 
 export type Location = {
   x: number;
   y: number;
+};
+
+export type DigSite = {
+  idx: number;
+  status: DigStatus;
 };
 
 export type Bounds = {
@@ -12,4 +18,4 @@ export type Bounds = {
   y2: number;
 };
 
-export type RegionClient = Omit<Regions, "id" | "founder" | "odds">;
+export type Region = Omit<Regions, "id" | "founder" | "odds">;

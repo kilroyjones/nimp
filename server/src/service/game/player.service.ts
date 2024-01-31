@@ -21,9 +21,9 @@ type Player = {
 
 const players: Map<string, Player> = new Map();
 
-/**
- * PLAYER MANAGEMENT
- */
+///////////////////////////////////////////////////////////
+// PLAYER MANAGEMENT
+///////////////////////////////////////////////////////////
 
 /**
  * Adds a new player to the game server.
@@ -70,78 +70,20 @@ const getPlayerId = (socket: Socket): string => {
   return createHash("sha256").update(salt).digest("hex");
 };
 
-/**
- * REGION MANAGEMENT
- */
+///////////////////////////////////////////////////////////
+// REGION MANAGEMENT
+///////////////////////////////////////////////////////////
 
 /**
- * Adds a player to a specific region.
+ * Caps the number of regions a player join
  *
- * @param id The unique identifier of the player.
- * @param region The region to join.
- */
-const joinRegion = (id: string, region: string) => {
-  const player = players.get(id);
-  if (player) {
-    player.socket.join(region);
-  }
-};
-
-/**
- * Adds a player to multiple regions
+ * @param {string} id - The unique identifier of the player.
+ * @param {number} cap - The number of rooms joined.
  *
- * @param id The unique identifier of the player.
- * @param regions The regions to join.
- */
-const joinRegions = (id: string, regions: string[]) => {
-  const player = players.get(id);
-  if (player) {
-    regions.forEach(region => player.socket.join(region));
-  }
-};
-
-/**
- *
- */
-const leaveRegion = (id: string, region: string) => {
-  const player = players.get(id);
-  if (player) {
-    player.socket.leave(region);
-  }
-};
-
-/**
- *
- */
-const leaveRegions = (id: string, regions: string[]) => {
-  const player = players.get(id);
-  console.log(regions, regions == undefined);
-  if (player) {
-    regions.forEach(region => player.socket.leave(region));
-  }
-};
-
-/**
- *
- */
-const leaveAllRegions = (id: string) => {
-  const player = players.get(id);
-  if (player) {
-    player.socket.rooms.forEach(region => player.socket.leave(region));
-  }
-};
-
-/**
- *
- */
-const getJoinedRegions = (id: string): Set<string> | undefined => {
-  const player = players.get(id);
-  if (player) {
-    return player.socket.rooms;
-  }
-};
-
-/**
+ * This is rough at the moment as it just slices off the end of the joined
+ * regions.  The reason this may be necessary is to prevent users from joining
+ * more rooms than their screen can accommodate for means of data harvesting or
+ * possibly cheating.
  *
  */
 const capJoinedRegions = (id: string, cap: number) => {
@@ -156,18 +98,94 @@ const capJoinedRegions = (id: string, cap: number) => {
   }
 };
 
+/**
+ * Retrieves a set of all regions that a player has joined.
+ *
+ * @param {string} id - The unique identifier of the player.
+ * @returns {Set<string> | undefined} A set of region names the player has joined, or undefined if the player is not found.
+ */
+const getJoinedRegions = (id: string): Set<string> | undefined => {
+  const player = players.get(id);
+  if (player) {
+    return player.socket.rooms;
+  }
+};
+/**
+ * Adds a player to a specific region.
+ *
+ * @param id The unique identifier of the player.
+ * @param region The region to join.
+ */
+const joinRegion = (id: string, region: string) => {
+  const player = players.get(id);
+  if (player) {
+    player.socket.join(region);
+  }
+};
+
+/**
+ * Adds a player to multiple regions based on id.
+ *
+ * @param id The unique identifier of the player.
+ * @param regions The regions to join.
+ */
+const joinRegions = (id: string, regions: string[]) => {
+  const player = players.get(id);
+  if (player) {
+    regions.forEach(region => player.socket.join(region));
+  }
+};
+
+/**
+ * Removes a player from all connected regions.
+ *
+ * @param {string} id - The unique identifier of the player.
+ */
+const leaveAllRegions = (id: string) => {
+  const player = players.get(id);
+  if (player) {
+    player.socket.rooms.forEach(region => player.socket.leave(region));
+  }
+};
+
+/**
+ * Removes a player from a specified region based on id.
+ *
+ * @param {string} id - The unique identifier of the player.
+ * @param {string} region - The name of the region to leave.
+ */
+const leaveRegion = (id: string, region: string) => {
+  const player = players.get(id);
+  if (player) {
+    player.socket.leave(region);
+  }
+};
+
+/**
+ * Removes a player from multiple regions.
+ *
+ * @param {string} id - The unique identifier of the player.
+ * @param {string[]} regions - An array of region names to leave.
+ */
+const leaveRegions = (id: string, regions: string[]) => {
+  const player = players.get(id);
+  if (player) {
+    regions.forEach(region => player.socket.leave(region));
+  }
+};
+
 export const PlayerService = {
-  // Server
+  // Player
   add,
   getPlayerId,
   remove,
 
   // Regions
   capJoinedRegions,
+  getJoinedRegions,
   joinRegion,
   joinRegions,
+  leaveAllRegions,
   leaveRegion,
   leaveRegions,
-  leaveAllRegions,
-  getJoinedRegions,
 };

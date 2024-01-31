@@ -7,17 +7,15 @@
  * Here, aside from connection and disconnect, we only impleent updateRegion.
  */
 
-import dotenv from "dotenv";
 import express from "express";
 
+import { CreateRegionRequest, DigRequest, UpdateRegionRequest } from "$shared/messages";
 import { createServer } from "http";
+import { ActionHandler } from "./handlers/action.handler";
 import { PlayerService } from "./service/game/player.service";
 import { Server, Socket } from "socket.io";
 import { RegionHandler } from "./handlers/region.handler";
-import { CreateRegionRequest, DigRequest, UpdateRegionRequest } from "$shared/messages";
-import { DigHandler } from "./handlers/dig.handler";
-
-dotenv.config({ path: "./.env" });
+import logger from "./service/server/logging.service";
 
 // Typical server setup
 const app = express();
@@ -34,7 +32,6 @@ const io = new Server(httpServer, {
  * disconnects and updates the region the user has connected to.
  */
 io.on("connection", (socket: Socket) => {
-  // Connect player
   const playerId = PlayerService.getPlayerId(socket);
   PlayerService.add(playerId, socket);
 
@@ -42,38 +39,34 @@ io.on("connection", (socket: Socket) => {
     playerId: playerId,
   });
 
-  /**
-   *
-   */
+  ///////////////////////////////////////////////////////////
+  // SERVER
+  ///////////////////////////////////////////////////////////
   socket.on("disconnect", () => {
     PlayerService.remove(playerId);
   });
 
-  /**
-   *
-   */
+  ///////////////////////////////////////////////////////////
+  // ACTIONS
+  ///////////////////////////////////////////////////////////
+  socket.on("dig", msg => {
+    const digRequest: DigRequest = msg;
+    logger.info("IN - [dig]", msg);
+    ActionHandler.dig(io, digRequest);
+  });
+
+  ///////////////////////////////////////////////////////////
+  // PLAYER MANAGEMENT
+  ///////////////////////////////////////////////////////////
   socket.on("create-region", msg => {
     const createRegionRequest: CreateRegionRequest = msg;
-    console.log("IN - [create-region]", createRegionRequest);
+    logger.info("IN - [create-region]", createRegionRequest);
     RegionHandler.create(io, playerId, createRegionRequest);
   });
 
-  /**
-   *
-   */
-  socket.on("dig", msg => {
-    const digRequest: DigRequest = msg;
-    console.log("IN - [dig]", msg);
-    DigHandler.dig(io, digRequest);
-    // DigHandler.dig(socket, playerId, msg.data);
-  });
-
-  /**
-   *
-   */
   socket.on("update-regions", msg => {
     const updateRegionRequest: UpdateRegionRequest = msg;
-    console.log("IN - [update-regions]", updateRegionRequest);
+    logger.info("IN - [update-regions]", updateRegionRequest);
     RegionHandler.update(socket, playerId, updateRegionRequest);
   });
 });

@@ -6,6 +6,8 @@ services:
     build:
       context: ./
       dockerfile: ./server/Dockerfile
+    env_file:
+      - ./server/.env
     volumes:
       - ./server:/app/server
       - ./shared:/app/shared

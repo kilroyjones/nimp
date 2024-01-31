@@ -1,6 +1,12 @@
 {
 	"compilerOptions": {
 		"paths": {
+			"$shared": [
+				"../../shared"
+			],
+			"$shared/*": [
+				"../../shared/*"
+			],
 			"$lib": [
 				"../src/lib"
 			],

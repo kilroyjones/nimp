@@ -10,10 +10,12 @@
 	 *
 	 */
 
+	// Components
+	import Debug from './Debug.svelte';
+
 	// Stores
-	import { x, y, windowWidth, windowHeight } from '$lib/state/world.state';
-	import { regionKeysJoined, regions } from '$lib/state/world.state';
 	import { isDebugMode } from '$lib/state/settings.state';
+	import { x, y } from '$lib/state/world.state';
 
 	// Variables passed in
 	export let worldX: number | string; // Since bound to an input field
@@ -75,27 +77,7 @@
 	</div>
 </div>
 
-{#if { $isDebugMode }}
-	<div class="debug">
-		<div><strong>Loc: </strong> ({$x}, {$y})</div>
-		<div><strong>Dim: </strong> ({$windowWidth}, {$windowHeight})</div>
-
-		<div><strong>Regions</strong></div>
-		<table>
-			{#each $regions as [key, region]}
-				<tr>
-					<td>
-						{key}
-					</td>
-					<td>
-						({region.x}, {region.y})
-					</td>
-				</tr>
-			{/each}
-		</table>
-		<div />
-	</div>
-{/if}
+{#if { $isDebugMode }}<Debug />{/if}
 
 <style>
 	button {
@@ -112,19 +94,6 @@
 		background-color: darkgray;
 		box-shadow: 0 1px #666;
 		transform: translateY(1px);
-	}
-
-	.debug {
-		font-size: 13px;
-		padding: 8px;
-		position: fixed;
-		top: 48px;
-		left: 0;
-		width: 120px;
-		height: 120px;
-		background-color: rgba(255, 255, 255, 0.5);
-		pointer-events: none;
-		z-index: 999;
 	}
 
 	input {

@@ -29,7 +29,8 @@ const create = async (io: Server, playerId: string, createRegionRequest: CreateR
     );
 
     if (region) {
-      io.to(region.key).emit("update-regions", region);
+      // Since update regions expects a list we need to wrap it as an array
+      io.to(region.key).emit("update-regions", { regions: [region] });
     }
   }
 };
@@ -37,7 +38,7 @@ const create = async (io: Server, playerId: string, createRegionRequest: CreateR
 /**
  * Update a region if that region exists
  *
- * @param io The socket.io base object,
+ * @param io The socket.io base object
  * @param userId The id created up socket being established
  * @param createRegionRequest Request object containing key and location of region
  */
@@ -54,6 +55,7 @@ const update = async (
   const regionsJoined = PlayerService.getJoinedRegions(playerId);
 
   // If more then four we cap it at four
+  logger.info("Regions in: ", regionsJoined);
   if (regionsJoined && regionsJoined.size > 4) {
     PlayerService.capJoinedRegions(playerId, 4);
   }
@@ -63,8 +65,7 @@ const update = async (
     const regions = await RegionDatabase.getMany(updateRegionRequest.regionsJoin.slice(0, 4));
     if (regions) {
       logger.info("RegionHandler.update", regions.length);
-      // TODO: Using bytea (byte array) can't be sent as object?
-      socket.emit("update-regions", JSON.stringify({ data: { regions: regions } }));
+      socket.emit("update-regions", { regions: regions });
     }
   }
 };

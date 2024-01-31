@@ -35,6 +35,10 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"module-alias": "^2.2.3",
 		"socket.io-client": "^4.7.2"
+	},
+	"_moduleAliases": {
+		"$shared": "app/shared"
 	}
 }

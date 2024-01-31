@@ -10,7 +10,11 @@ import { io } from 'socket.io-client';
 import { get } from 'svelte/store';
 import { playerId } from '$lib/state/player.state';
 import { RegionHandler } from '$lib/handlers/region.handler';
-import type { HandshakeResponse } from '$shared/messages';
+import type {
+	HandshakeResponse,
+	UpdateDigResponse,
+	UpdateRegionResponse
+} from '../../../../shared/messages';
 import { PlayerHandler } from '../handlers/player.handler';
 
 const SERVER_URL = 'http://localhost:3000'; // Replace with your server's URL
@@ -22,7 +26,9 @@ const socket = io(SERVER_URL, {
 	}
 });
 
-// Messages
+/**
+ * CONNECTION
+ */
 socket.on('connect', () => {
 	console.log('Connected to the server');
 });
@@ -31,9 +37,6 @@ socket.on('disconnect', () => {
 	console.log('Disconnected from server');
 });
 
-/**
- *
- */
 socket.on('handshake', (msg: HandshakeResponse) => {
 	const data: HandshakeResponse = msg;
 	console.log(`[Handshake] - ${msg.playerId} `);
@@ -43,24 +46,24 @@ socket.on('handshake', (msg: HandshakeResponse) => {
 });
 
 /**
- *
+ * ACTIONS
  */
-socket.on('update-regions', (msg) => {
-	const res = JSON.parse(msg);
-	console.log('IN - [update-regions]', res);
-	if (res.data) {
-		RegionHandler.receiveUpdateRegions(res.data);
+socket.on('update-digs', (msg) => {
+	const data: UpdateDigResponse = msg;
+	console.log('IN - [update-digs]', msg);
+	if (msg) {
+		RegionHandler.receiveUpdateDigs(msg);
 	}
 });
 
 /**
- *
+ * REGIONS
  */
-socket.on('update-digs', (msg) => {
-	// const res = JSON.parse(msg);
-	console.log('IN - [update-digs]', msg);
-	if (msg) {
-		RegionHandler.receiveUpdateDigs(msg);
+socket.on('update-regions', (msg) => {
+	const data: UpdateRegionResponse = msg;
+	console.log('IN - [update-regions]', data);
+	if (data) {
+		RegionHandler.receiveUpdateRegions(data);
 	}
 });
 

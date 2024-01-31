@@ -5,3 +5,12 @@ export const REGION_HEIGHT: number = 2048;
 export const REGION_WIDTH_CELLS: number = Math.floor(REGION_WIDTH / CELL_WIDTH);
 export const REGION_HEIGHT_CELLS: number = Math.floor(REGION_HEIGHT / CELL_HEIGHT);
 export const UPDATE_DISTANCE: number = 200;
+
+export enum DigStatus {
+  UNCLAIMED = "0",
+  UNKNOWN = "U",
+}
+
+export const DigStatusMap: Record<string, DigStatus> = {
+  [DigStatus.UNCLAIMED]: DigStatus.UNCLAIMED,
+};
