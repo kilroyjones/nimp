@@ -51,7 +51,7 @@ io.on("connection", (socket: Socket) => {
   ///////////////////////////////////////////////////////////
   socket.on("dig", msg => {
     const digRequest: DigRequest = msg;
-    logger.info("IN - [dig]", msg);
+    logger.info("IN - [dig]", digRequest);
     ActionHandler.dig(io, digRequest);
   });
 

@@ -2,9 +2,9 @@ import logger from "src/service/server/logging.service";
 
 import { Conversion } from "$shared/conversion";
 import { db } from "./client/db";
-import { Location } from "$shared/models";
+import { Location } from "$shared/types";
 import { Region } from "./models/region.model";
-import { REGION_WIDTH_CELLS, REGION_HEIGHT_CELLS } from "$shared/constants";
+import { REGION_WIDTH_DIGS, REGION_HEIGHT_DIGS } from "$shared/constants";
 
 /**
  * Asynchronously creates a new region with specified details.
@@ -34,7 +34,7 @@ const create = async (
         y: loc.y,
         founder: userId,
         odds: 10,
-        digs: "0".repeat(REGION_WIDTH_CELLS * REGION_HEIGHT_CELLS),
+        digs: "0".repeat(REGION_WIDTH_DIGS * REGION_HEIGHT_DIGS),
       })
       .returningAll()
       .executeTakeFirstOrThrow();
