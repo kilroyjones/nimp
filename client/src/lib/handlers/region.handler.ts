@@ -19,6 +19,7 @@ import { RegionState } from '$lib/state/region.state';
  */
 const receiveUpdateDigs = (updateDigs: { regionKey: string; digs: string }) => {
 	RegionState.updateDigs(updateDigs.regionKey, updateDigs.digs);
+	WorldState.update();
 };
 
 /**

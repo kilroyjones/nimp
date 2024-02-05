@@ -1,10 +1,16 @@
 <script>
 	// Stores
-	import { x, y, windowWidth, windowHeight } from '$lib/state/world.state';
+	import { x, y, windowWidth, windowHeight, WorldState } from '$lib/state/world.state';
 
 	// Componenets
 	import Navbar from '$lib/components/Navbar.svelte';
 	import World from '$lib/components/World.svelte';
+
+	$: {
+		if ($windowWidth && $windowHeight) {
+			WorldState.update();
+		}
+	}
 </script>
 
 <svelte:window bind:innerWidth={$windowWidth} bind:innerHeight={$windowHeight} />

@@ -4,18 +4,13 @@ import { windowWidth, windowHeight } from './world.state';
 
 // Types and constants
 import type { Dig } from '$lib/types';
-import type { Location, Region } from '$shared/models';
+import type { DigSite, Location } from '$shared/types';
+import type { Region } from '$shared/models';
 
-import {
-	REGION_WIDTH,
-	REGION_HEIGHT,
-	REGION_WIDTH_CELLS,
-	CELL_HEIGHT,
-	CELL_WIDTH,
-	UPDATE_DISTANCE
-} from '$shared/constants';
+import { REGION_WIDTH, REGION_HEIGHT } from '$shared/constants';
 import { Data } from '$shared/data';
 import { RegionHandler } from '$lib/handlers/region.handler';
+import { Conversion } from '$shared/conversion';
 
 // Stores
 export const x = writable(0);
@@ -39,9 +34,24 @@ const add = function (regionsToAdd: Region[]) {
 };
 
 /**
+ * Determines if a specific location within a region is claimable.
+ *
+ * @param {Location} loc - The location object representing the specific point in the region.
+ * @param {Region} region - The region object where the location is being checked.
+ * @returns {boolean} True if the location is diggable, false otherwise.
+ */
+const isClaimable = function (loc: Location, region: Region): boolean {
+	if (Data.getCharAt(region.digs, Conversion.toDigIndex(loc, region)) == '1') {
+		return true;
+	}
+	return false;
+};
+
+/**
  * Determines if a specific region exists based on its key
  *
  * @param {string} key - A region key
+ * @returns { boolean } - Boolean value denoting if the key exists or not
  */
 const exists = function (key: string): boolean {
 	if (getStore(regions).has(key)) {
@@ -54,6 +64,7 @@ const exists = function (key: string): boolean {
  * Gets a region based on the region key.
  *
  * @param {string} key - A region key
+ * @returns { Region | undefined } - Gets the region object based on the key
  */
 const get = function (key: string): Region | undefined {
 	return getStore(regions).get(key);
@@ -62,10 +73,29 @@ const get = function (key: string): Region | undefined {
 /**
  * Gets all regions.
  *
- * @param {string} key - A region key
+ * @returns { Map<string, Region> | undefined } - Returns the map of all regions or nothing if it's not defined 
  */
 const getAll = function (): Map<string, Region> | undefined {
 	return getStore(regions);
+};
+
+
+/**
+ * Retrieves the dig site information at a specific location within a region.
+ *
+ * @param {string} key - The key identifier of the region.
+ * @param {Location} loc - The location object representing the specific point in the region.
+ * @returns {DigSite | undefined} An object representing the dig site at the specified location, or undefined if the region is not found or the index is out of range.
+ *
+ */
+const getDigSite = function (key: string, loc: Location): DigSite | undefined {
+	const region = RegionState.get(key);
+	if (region) {
+		const idx = Conversion.toDigIndex(loc, region);
+		if (idx >= 0 && idx <= region.digs.length) {
+			return { idx: idx, status: Conversion.toDigStatus(region.digs[idx]) };
+		}
+	}
 };
 
 /**
@@ -83,13 +113,27 @@ const getViewable = (loc: Location): Array<string> => {
 
 	let viewable: Array<string> = Array<string>();
 
-	for (let xCoord = xMin; xCoord <= xMax; xCoord++) {
-		for (let yCoord = yMin; yCoord <= yMax; yCoord++) {
-			viewable.push(xCoord.toString() + yCoord.toString());
+	for (let x = xMin; x <= xMax; x++) {
+		for (let y = yMin; y <= yMax; y++) {
+			viewable.push(x.toString() + y.toString());
 		}
 	}
 
 	return viewable;
+};
+
+/**
+ * Determines if a specific location within a region is diggable.
+ *
+ * @param {Location} loc - The location object representing the specific point in the region.
+ * @param {Region} region - The region object where the location is being checked.
+ * @returns {boolean} True if the location is diggable, false otherwise.
+ */
+const isDiggable = function (loc: Location, region: Region): boolean {
+	if (Data.getCharAt(region.digs, Conversion.toDigIndex(loc, region)) == '0') {
+		return true;
+	}
+	return false;
 };
 
 /**
@@ -139,10 +183,13 @@ const updateDigs = (regionKey: string, digs: string) => {
 
 export const RegionState = {
 	add,
+	isClaimable,
 	exists,
 	get,
 	getAll,
+	getDigSite,
 	getViewable,
+	isDiggable,
 	remove,
 	update,
 	updateDigs

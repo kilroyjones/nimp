@@ -1,3 +1,5 @@
+import { Location } from "./types";
+
 /**
  * Calculates the difference between two arrays.
  * It returns a new array containing elements from the first array that are not present in the second array.
@@ -23,6 +25,21 @@ const arrayIntersection = function (a: Array<any>, b: Array<any>): Array<any> {
 };
 
 /**
+ * Retrieves a character from a string at a specified index.
+ * If the index is out of bounds, an empty string is returned.
+ *
+ * @param {string} str - The string from which to retrieve the character.
+ * @param {number} index - The index of the character to retrieve.
+ * @returns {string} The character at the specified index, or an empty string if the index is out of bounds.
+ */
+const getCharAt = (str: string, index: number) => {
+  if (index < str.length) {
+    return str[index];
+  }
+  return "";
+};
+
+/**
  * Replaces a character at a specific index in a string with a new character.
  * If the index is out of bounds of the string, the original string is returned.
  *
@@ -32,30 +49,30 @@ const arrayIntersection = function (a: Array<any>, b: Array<any>): Array<any> {
  * @returns {string} A new string with the character at the specified index replaced.
  */
 const setCharAt = (str: string, index: number, chr: string) => {
-  if (index > str.length - 1) {
+  if (index > str.length) {
     return str;
   }
   return str.substring(0, index) + chr + str.substring(index + 1);
 };
 
 /**
- * Retrieves a character from a string at a specified index.
- * If the index is out of bounds, an empty string is returned.
+ * Compares two Location objects for equality
  *
- * @param {string} str - The string from which to retrieve the character.
- * @param {number} index - The index of the character to retrieve.
- * @returns {string} The character at the specified index, or an empty string if the index is out of bounds.
+ * @param {Location} loc1 - Location 1
+ * @param {Location} loc2 - Location 2
+ * @returns {boolean} true or false if the locations are equal
  */
-const getCharAt = (str: string, index: number) => {
-  if (index < str.length - 1) {
-    return str[index];
+const locationsEqual = (loc1: Location, loc2: Location) => {
+  if (loc1.x == loc2.x && loc1.y == loc2.y) {
+    return true;
   }
-  return "";
+  return false;
 };
 
 export const Data = {
   arrayDifference,
   arrayIntersection,
-  setCharAt,
   getCharAt,
+  setCharAt,
+  locationsEqual,
 };

@@ -9,9 +9,14 @@
 
 import express from "express";
 
-import { CreateRegionRequest, DigRequest, UpdateRegionRequest } from "$shared/messages";
+import {
+  ClaimRequest,
+  CreateRegionRequest,
+  DigRequest,
+  UpdateRegionRequest,
+} from "$shared/messages";
 import { createServer } from "http";
-import { ActionHandler } from "./handlers/action.handler";
+import { DigHandler } from "./handlers/dig.handler";
 import { PlayerService } from "./service/game/player.service";
 import { Server, Socket } from "socket.io";
 import { RegionHandler } from "./handlers/region.handler";
@@ -52,7 +57,13 @@ io.on("connection", (socket: Socket) => {
   socket.on("dig", msg => {
     const digRequest: DigRequest = msg;
     logger.info("IN - [dig]", digRequest);
-    ActionHandler.dig(io, digRequest);
+    DigHandler.dig(io, digRequest);
+  });
+
+  socket.on("claim", msg => {
+    const claimRequest: ClaimRequest = msg;
+    logger.info("IN - [claim]", claimRequest);
+    DigHandler.dig(io, claimRequest);
   });
 
   ///////////////////////////////////////////////////////////

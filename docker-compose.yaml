@@ -1,41 +1,41 @@
 version: "3.7"
 services:
-  nimp-server:
-    container_name: "nimp-server"
-    restart: always
-    build:
-      context: ./
-      dockerfile: ./server/Dockerfile
-    env_file:
-      - ./server/.env
-    volumes:
-      - ./server:/app/server
-      - ./shared:/app/shared
-    command: npm run dev
-    ports:
-      - "3000:3000"
-    networks:
-      - database
+  # nimp-server:
+  #   container_name: "nimp-server"
+  #   restart: always
+  #   build:
+  #     context: ./
+  #     dockerfile: ./server/Dockerfile
+  #   env_file:
+  #     - ./server/.env
+  #   volumes:
+  #     - ./server:/app/server
+  #     - ./shared:/app/shared
+  #   command: npm run dev
+  #   ports:
+  #     - "3000:3000"
+  #   networks:
+  #     - database
 
-  nimp-client:
-    container_name: "nimp-client"
-    build:
-      context: ./
-      dockerfile: ./client/Dockerfile
-    command: npm run dev -- --host 0.0.0.0
-    ports:
-      - 5173:5173
-    restart: always
-    volumes:
-      - /app/node_modules
-      - ./client:/app/client
-      - ./shared:/app/shared
-    stdin_open: true
-    tty: true
-    environment:
-      - CHOKIDAR_USEPOLLING=true
-    networks:
-      - database
+  # nimp-client:
+  #   container_name: "nimp-client"
+  #   build:
+  #     context: ./
+  #     dockerfile: ./client/Dockerfile
+  #   command: npm run dev -- --host 0.0.0.0
+  #   ports:
+  #     - 5173:5173
+  #   restart: always
+  #   volumes:
+  #     - /app/node_modules
+  #     - ./client:/app/client
+  #     - ./shared:/app/shared
+  #   stdin_open: true
+  #   tty: true
+  #   environment:
+  #     - CHOKIDAR_USEPOLLING=true
+  #   networks:
+  #     - database
 
   redis:
     image: redis:latest

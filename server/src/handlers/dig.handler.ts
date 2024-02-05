@@ -35,6 +35,6 @@ const dig = async (io: Server, digRequest: DigRequest) => {
   }
 };
 
-export const ActionHandler = {
+export const DigHandler = {
   dig,
 };

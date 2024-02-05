@@ -2,11 +2,11 @@
 import { Conversion } from '$shared/conversion';
 import { ActionHandler } from '$lib/handlers/action.handler';
 import { RegionHandler } from '$lib/handlers/region.handler';
-import { WorldState } from '$lib/state/world.state';
 
 // Types and constants
 import { DigStatus } from '$shared/constants';
 import type { Location } from '$shared/models';
+import { RegionState } from '$lib/state/region.state';
 
 /**
  * Creates a new region based on the provided location if it doesn't already exist.
@@ -14,7 +14,7 @@ import type { Location } from '$shared/models';
  * @param {Location} loc - The location object used to determine the region to create.
  */
 const createRegion = function (loc: Location) {
-	if (WorldState.hasRegion(Conversion.toRegionKey(loc)) == false) {
+	if (RegionState.exists(Conversion.toRegionKey(loc)) == false) {
 		RegionHandler.sendCreateRegion(loc);
 	}
 };
@@ -26,7 +26,7 @@ const createRegion = function (loc: Location) {
  */
 const digSite = function (loc: Location) {
 	const key = Conversion.toRegionKey(loc);
-	const site = WorldState.getDigSite(key, loc);
+	const site = RegionState.getDigSite(key, loc);
 	if (site && site.status == DigStatus.UNCLAIMED) {
 		ActionHandler.sendDig(key, site.idx);
 	}

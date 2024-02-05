@@ -19,5 +19,5 @@ model Regions {
   odds        Int
   digs        String
   /// @kyselyType(JSON)
-  // posts       Json?              
+  posts       Json?              
 }

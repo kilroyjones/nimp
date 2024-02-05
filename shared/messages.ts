@@ -1,9 +1,14 @@
 import type { Regions } from "../server/src/database/types/types";
-import { Location } from "./models";
+import { Location } from "./types";
 
 /**
  * REQUESTS
  */
+export type ClaimRequest = {
+  key: string;
+  idx: number;
+};
+
 export type DigRequest = {
   key: string;
   idx: number;

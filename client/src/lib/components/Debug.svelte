@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { x, y, windowWidth, windowHeight } from '$lib/state/world.state';
-	import { regions } from '$lib/state/world.state';
+	import { regions } from '$lib/state/region.state';
 </script>
 
 <div class="debug">

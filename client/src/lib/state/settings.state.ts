@@ -1,3 +1,4 @@
 import { writable } from 'svelte/store';
 
 export const isDebugMode = writable(true);
+export const isClaimMode = writable(true);

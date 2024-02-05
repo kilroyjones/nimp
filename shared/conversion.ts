@@ -1,15 +1,9 @@
 // Constants
 import { DigStatus, DigStatusMap } from "./constants";
-import {
-  REGION_WIDTH,
-  REGION_HEIGHT,
-  CELL_WIDTH,
-  CELL_HEIGHT,
-  REGION_WIDTH_CELLS,
-} from "./constants";
+import { REGION_WIDTH, REGION_HEIGHT, DIG_WIDTH, DIG_HEIGHT, REGION_WIDTH_DIGS } from "./constants";
 
 // Types
-import type { Location } from "./models";
+import type { Location } from "./types";
 import type { Region } from "./models";
 
 /**
@@ -20,13 +14,46 @@ import type { Region } from "./models";
  * @returns {number} The index of the cell within the region that corresponds to the location.
  *
  * Since digs in a string it converts a given (x, y) location to the correcct
- * index based on the region information and the CELL_WIDTH and CELL HEIGHT.
+ * index based on the region information and the DIG_WIDTH and CELL HEIGHT.
  */
 const toDigIndex = (loc: Location, region: Region): number => {
   return (
-    Math.floor((loc.x - region.x) / CELL_WIDTH) +
-    Math.floor((loc.y - region.y) / CELL_HEIGHT) * REGION_WIDTH_CELLS
+    Math.floor((loc.x - region.x) / DIG_WIDTH) +
+    Math.floor((loc.y - region.y) / DIG_HEIGHT) * REGION_WIDTH_DIGS
   );
+};
+
+/**
+ * Calculates the dig location as per the world.
+ *
+ * @param {Location} loc - The location of the click within the region.
+ * @returns {Location} The location of the cell within
+ *
+ * Since digs in a string it converts a given (x, y) location to the correcct
+ * index based on the region information and the DIG_WIDTH and CELL HEIGHT.
+ */
+const toDigLocationGlobal = (loc: Location): Location => {
+  return {
+    x: Math.floor(loc.x / DIG_WIDTH),
+    y: Math.floor(loc.y / DIG_HEIGHT),
+  };
+};
+
+/**
+ * Calculates the dig location (x, y) relative to the region
+ *
+ * @param {Location} loc - The location of the click within the region.
+ * @param {Region} region - The region in which the digs resides.
+ * @returns {Location} The location of the cell within
+ *
+ * Since digs in a string it converts a given (x, y) location to the correcct
+ * index based on the region information and the DIG_WIDTH and CELL HEIGHT.
+ */
+const toDigLocationLocal = (loc: Location, region: Region): Location => {
+  return {
+    x: Math.floor((loc.x - region.x) / DIG_WIDTH),
+    y: Math.floor((loc.y - region.y) / DIG_HEIGHT),
+  };
 };
 
 /**
@@ -38,6 +65,23 @@ const toDigIndex = (loc: Location, region: Region): number => {
  */
 const toDigStatus = (value: string): DigStatus => {
   return DigStatusMap[value] || DigStatus.UNKNOWN;
+};
+
+/**
+ * Calculates the location of the top right Dig location on the grid
+ * in real world coordinates.
+ *
+ * @param {Location} loc - The location of the click within the region.
+ * @returns {Location} The location of the cell within
+ *
+ * Since digs in a string it converts a given (x, y) location to the correcct
+ * index based on the region information and the DIG_WIDTH and CELL HEIGHT.
+ */
+const toGridLocation = (loc: Location): Location => {
+  return {
+    x: Math.floor(loc.x / DIG_WIDTH) * DIG_WIDTH,
+    y: Math.floor(loc.y / DIG_HEIGHT) * DIG_HEIGHT,
+  };
 };
 
 /**
@@ -80,7 +124,10 @@ const toRegionLocation = (loc: Location): Location => {
 
 export const Conversion = {
   toDigIndex,
+  toDigLocationGlobal,
+  toDigLocationLocal,
   toDigStatus,
+  toGridLocation,
   toLocation,
   toRegionKey,
   toRegionLocation,

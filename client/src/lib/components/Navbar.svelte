@@ -14,8 +14,9 @@
 	import Debug from './Debug.svelte';
 
 	// Stores
-	import { isDebugMode } from '$lib/state/settings.state';
+	import { isDebugMode, isClaimMode } from '$lib/state/settings.state';
 	import { x, y } from '$lib/state/world.state';
+	import Toggle from './Toggle.svelte';
 
 	// Variables passed in
 	export let worldX: number | string; // Since bound to an input field
@@ -69,12 +70,22 @@
 	}
 </script>
 
-<div class="navbar">
+<div
+	class="navbar"
+	on:mousedown|stopPropagation={() => {}}
+	on:click|stopPropagation={() => {}}
+	on:dblclick|stopPropagation={() => {}}
+	on:keypress={() => {}}
+	tabindex="0"
+	role="button"
+	aria-label="Describe action here"
+>
 	<div class="location no-drag">
 		<input class={xIsInt ? '' : 'has-error'} bind:value={worldX} on:keyup={handleKeyup} />
 		<input class={yIsInt ? '' : 'has-error'} bind:value={worldY} on:keyup={handleKeyup} />
 		<button type="submit" on:click={teleport}>Teleport</button>
 	</div>
+	<Toggle isChecked={$isClaimMode} />
 </div>
 
 {#if { $isDebugMode }}<Debug />{/if}

@@ -1,18 +1,22 @@
 <script lang="ts">
-	// Stores
-	import { WorldState, x, y, digsToDraw } from '$lib/state/world.state';
-	// import { Location } from '$shared/models';
-	import { UPDATE_DISTANCE } from '$shared/constants';
-	import { REGION_HEIGHT, REGION_WIDTH } from '$shared/constants';
-
-	// Libraries
+	// Modules
 	import { onMount } from 'svelte';
 	import { Formula } from '$lib/helpers/formula.helper';
-	import type { Location } from '$shared/models';
 	import { WorldAction } from '$lib/action/world.action';
 	import { ActionHandler } from '$lib/handlers/action.handler';
 	import { Conversion } from '$shared/conversion';
+	import { WorldState, x, y } from '$lib/state/world.state';
+	import { claimToDraw, digsToDraw } from '$lib/state/draw.state';
 
+	// Types and constants
+	import { UPDATE_DISTANCE } from '$shared/constants';
+
+	import type { Location } from '$shared/types';
+	import { RegionState } from '$lib/state/region.state';
+	import { isClaimMode } from '$lib/state/settings.state';
+	import { ClaimState } from '$lib/state/claim.state';
+
+	// Variables
 	let dragging = false;
 	let dragStartX: number;
 	let dragStartY: number;
@@ -42,7 +46,6 @@
 	/**
 	 * Only relevant if we've started dragging in the handleStartDrag function.
 	 * We first update our global values (x, y) based on how far we've moved
-	 * since the the last time the function was triggered.
 	 *
 	 * If we've moved further than UPDATE_DISTANCE we reset our dragStart values
 	 * and then get the new viewable regions
@@ -65,15 +68,20 @@
 	}
 
 	function handleClick(event: MouseEvent) {
+		if ($isClaimMode) {
+			const loc = { x: event.x + $x, y: event.y + $y };
+			ClaimState.claim(loc);
+		}
+		// Conversion.toDigIndex({ x: event.x, y: event.y });
 		// console.log('Click');
 	}
 
 	function handleDoubleClick(event: MouseEvent) {
 		let loc: Location = { x: event.x + $x, y: event.y + $y };
 		const key = Conversion.toRegionKey(loc);
-		const region = WorldState.getRegion(key);
+		const region = RegionState.get(key);
 		if (region) {
-			if (WorldState.canDig(loc, region)) {
+			if (RegionState.isDiggable(loc, region)) {
 				const idx = Conversion.toDigIndex(loc, region);
 				ActionHandler.sendDig(key, idx);
 			}
@@ -85,10 +93,6 @@
 	onMount(async () => {
 		WorldState.update();
 	});
-
-	// https://stackoverflow.com/questions/61461518/javascript-how-prevent-dblclick-double-click-to-also-fire-a-single-click-even
-
-	$: backgroundPosition = `${-$x % REGION_WIDTH}px ${-$y % REGION_HEIGHT}px`;
 </script>
 
 <svelte:window
@@ -100,19 +104,42 @@
 	on:dblclick|preventDefault={handleDoubleClick}
 />
 
-<div class="grid" style="background-position: ${backgroundPosition}" />
-{#each $digsToDraw as cell}
-	{#if cell.value == '1'}
-		<button
-			class="cell"
-			style="top:{-$y + cell.y}px; left:{-$x + cell.x}px; background-color: rgba(255, 0, 0, 0.2);"
-		/>
+<div>
+	{#each $digsToDraw as dig}
+		{#if dig.value == '1'}
+			<button
+				class="dig"
+				style="top:{-$y + dig.y}px; left:{-$x + dig.x}px; background-color: rgba(255, 0, 0, 0.2);"
+			/>
+		{/if}
+	{/each}
+	{#if $claimToDraw}
+		{#if $claimToDraw.valid}
+			<div
+				class="claim"
+				style="
+			top:{-$y + $claimToDraw.y - 2}px; 
+			left:{-$x + $claimToDraw.x - 2}px;
+			width: {$claimToDraw.w}px;
+			height: {$claimToDraw.h}px;
+			background-color: rgba(0, 150, 255, 0.2);"
+			/>
+		{:else}
+			<div
+				class="claim"
+				style="
+			top:{-$y + $claimToDraw.y - 2}px; 
+			left:{-$x + $claimToDraw.x - 2}px;
+			width: {$claimToDraw.w}px;
+			height: {$claimToDraw.h}px;
+			background-color: rgba(255, 150, 0, 0.2);"
+			/>
+		{/if}
 	{/if}
-{/each}
+</div>
 
 <style>
-	.cell {
-		/* pointer-events: none; */
+	.dig {
 		position: absolute;
 		background: #00fff2;
 		width: 60px;
@@ -122,11 +149,10 @@
 		color: #316300;
 	}
 
-	/* .grid {
-		width: 100vw;
-		height: 100vh;
-		background-size: 64px 64px;
-		background-image: linear-gradient(to left, rgba(0, 0, 0, 0.5) 1px, transparent 1px),
-			linear-gradient(to top, rgba(0, 0, 0, 0.5) 1px, transparent 1px);
-	} */
+	.claim {
+		position: absolute;
+		background: #44008888;
+		border-color: #00000000;
+		border-radius: 8px;
+	}
 </style>
