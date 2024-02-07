@@ -1,3 +1,5 @@
+import { DigStatus } from "./constants";
+import { Region } from "./models";
 import { Location } from "./types";
 
 /**
@@ -69,10 +71,25 @@ const locationsEqual = (loc1: Location, loc2: Location) => {
   return false;
 };
 
+/**
+ * Determines if dig is unclaimed (1, which is dug, but not claimed)
+ *
+ * @param {Location} loc1 - Location 1
+ * @param {Location} loc2 - Location 2
+ * @returns {boolean} true or false if the locations are equal
+ */
+const isUnclaimed = (idx: number, region: Region): boolean => {
+  if (getCharAt(region.digs, idx) == DigStatus.UNCLAIMED) {
+    return true;
+  }
+  return false;
+};
+
 export const Data = {
   arrayDifference,
   arrayIntersection,
   getCharAt,
   setCharAt,
   locationsEqual,
+  isUnclaimed,
 };

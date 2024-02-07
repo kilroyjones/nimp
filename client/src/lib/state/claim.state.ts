@@ -4,11 +4,14 @@ import { Conversion } from '$shared/conversion';
 import { Data } from '$shared/data';
 import { DrawState } from './draw.state';
 import { RegionState } from './region.state';
+import { showActions } from './settings.state';
 
 // Types and constants
 import type { Location } from '$shared/types';
 import type { Region } from '$shared/models';
+import { ActionHandler } from '$lib/handlers/action.handler';
 import { DIG_HEIGHT, DIG_WIDTH } from '$shared/constants';
+import type { ClaimRequest } from '$shared/messages';
 
 type Selection = {
 	loc: Location;
@@ -20,16 +23,6 @@ type SelectionLocations = {
 	bottomRight: Location;
 };
 
-type SelectedDig = {
-	idx: number;
-	key: string;
-};
-
-type SelectedDigs = {
-	digs: SelectedDig[];
-	isClaimable: boolean;
-};
-
 enum Selecting {
 	NONE,
 	SINGLE,
@@ -39,6 +32,7 @@ enum Selecting {
 let selecting: Selecting = Selecting.NONE;
 
 const selections: Writable<Array<Selection>> = writable(new Array());
+export const currentClaimRequest: Writable<ClaimRequest> = writable();
 
 /**
  * Calculates selected digs based on selection locations.
@@ -46,9 +40,11 @@ const selections: Writable<Array<Selection>> = writable(new Array());
  * @param {SelectionLocations} selectionLocs - The selection locations to evaluate.
  * @returns {SelectedDigs} The selected digs and their claimability.
  */
-const getSelectionDigs = (selectionLocs: SelectionLocations) => {
-	let selectedDigs: SelectedDigs = { digs: [], isClaimable: true };
-	let isClaimable = true;
+const getClaimRequest = (selectionLocs: SelectionLocations) => {
+	const width = selectionLocs.bottomRight.x - selectionLocs.topLeft.x + DIG_WIDTH;
+	const height = selectionLocs.bottomRight.y - selectionLocs.topLeft.y + DIG_HEIGHT;
+	console.log(width, height, selectionLocs);
+	let claimRequest: ClaimRequest = { digs: [], width: width, height: height, isClaimable: true };
 
 	for (let x = selectionLocs.topLeft.x; x <= selectionLocs.bottomRight.x; x += DIG_WIDTH) {
 		for (let y = selectionLocs.topLeft.y; y <= selectionLocs.bottomRight.y; y += DIG_HEIGHT) {
@@ -56,15 +52,17 @@ const getSelectionDigs = (selectionLocs: SelectionLocations) => {
 			const regionLocation = Conversion.toRegionLocation(loc);
 			const region = RegionState.get(Conversion.toRegionKey(regionLocation));
 			if (region) {
-				selectedDigs.digs.push({ idx: Conversion.toDigIndex(loc, region), key: region.key });
-				if (isClaimable == true && RegionState.isClaimable(loc, region) == false) {
-					isClaimable = false;
-					selectedDigs.isClaimable = false;
+				claimRequest.digs.push({
+					loc: loc,
+					key: region.key
+				});
+				if (claimRequest.isClaimable && RegionState.isClaimable(loc, region) == false) {
+					claimRequest.isClaimable = false;
 				}
 			}
 		}
 	}
-	return selectedDigs;
+	return claimRequest;
 };
 
 /**
@@ -102,6 +100,7 @@ const getSelectionLocations = (selects: Selection[]): SelectionLocations => {
 const handleSelectStatus = (loc: Location, region: Region) => {
 	if (!RegionState.isClaimable(loc, region)) {
 		selecting = Selecting.NONE;
+		showActions.update(() => false);
 	} else {
 		// Pulled this out to keep the code slightly more readable
 		const currentSelection = [
@@ -127,6 +126,7 @@ const handleSelectStatus = (loc: Location, region: Region) => {
 				 */
 				if (Data.locationsEqual(get(selections)[0].loc, get(selections)[1].loc)) {
 					selecting = Selecting.NONE;
+					showActions.update(() => false);
 				} else if (Data.locationsEqual(singleSelection.topLeft, singleSelection.bottomRight)) {
 					selecting = Selecting.SINGLE;
 					selections.update(() => currentSelection);
@@ -149,15 +149,20 @@ const handleSelectStatus = (loc: Location, region: Region) => {
 const handleDrawUpdate = () => {
 	if (selecting !== Selecting.NONE) {
 		const selectionLocs = getSelectionLocations(get(selections));
-		const selectedDigs = getSelectionDigs(selectionLocs);
+		const claimRequest = getClaimRequest(selectionLocs);
+		currentClaimRequest.update(() => claimRequest);
 
 		DrawState.setSelection(
 			selectionLocs.topLeft,
 			selectionLocs.bottomRight,
-			selectedDigs.isClaimable
+			claimRequest.isClaimable
 		);
 
-		// TODO: Do something with these digs if they are valid
+		if (claimRequest.isClaimable) {
+			showActions.update(() => true);
+		} else {
+			showActions.update(() => false);
+		}
 	} else {
 		DrawState.resetSelection();
 	}

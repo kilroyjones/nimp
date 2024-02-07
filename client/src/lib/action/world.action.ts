@@ -5,7 +5,7 @@ import { RegionHandler } from '$lib/handlers/region.handler';
 
 // Types and constants
 import { DigStatus } from '$shared/constants';
-import type { Location } from '$shared/models';
+import type { Location } from '$shared/types';
 import { RegionState } from '$lib/state/region.state';
 
 /**
@@ -27,7 +27,7 @@ const createRegion = function (loc: Location) {
 const digSite = function (loc: Location) {
 	const key = Conversion.toRegionKey(loc);
 	const site = RegionState.getDigSite(key, loc);
-	if (site && site.status == DigStatus.UNCLAIMED) {
+	if (site && site.status == DigStatus.UNDUG) {
 		ActionHandler.sendDig(key, site.idx);
 	}
 };

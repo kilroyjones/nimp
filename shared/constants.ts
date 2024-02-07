@@ -7,7 +7,9 @@ export const REGION_HEIGHT_DIGS: number = Math.floor(REGION_HEIGHT / DIG_HEIGHT)
 export const UPDATE_DISTANCE: number = 200;
 
 export enum DigStatus {
-  UNCLAIMED = "0",
+  UNDUG = "0",
+  UNCLAIMED = "1",
+  CLAIMED = "2",
   UNKNOWN = "U",
 }
 

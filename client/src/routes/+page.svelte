@@ -5,6 +5,7 @@
 	// Componenets
 	import Navbar from '$lib/components/Navbar.svelte';
 	import World from '$lib/components/World.svelte';
+	import Actions from '$lib/components/Actions.svelte';
 
 	$: {
 		if ($windowWidth && $windowHeight) {
@@ -17,3 +18,4 @@
 
 <Navbar worldX={$x} worldY={$y} />
 <World />
+<Actions />

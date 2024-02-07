@@ -16,3 +16,8 @@ export type Bounds = {
   x2: number;
   y2: number;
 };
+
+export type SelectedDig = {
+  loc: Location;
+  key: string;
+};

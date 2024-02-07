@@ -72,7 +72,7 @@
 			const loc = { x: event.x + $x, y: event.y + $y };
 			ClaimState.claim(loc);
 		}
-		// Conversion.toDigIndex({ x: event.x, y: event.y });
+		// Conversion.locationToDigIndex({ x: event.x, y: event.y });
 		// console.log('Click');
 	}
 
@@ -82,7 +82,7 @@
 		const region = RegionState.get(key);
 		if (region) {
 			if (RegionState.isDiggable(loc, region)) {
-				const idx = Conversion.toDigIndex(loc, region);
+				const idx = Conversion.locationToDigIndex(loc, region);
 				ActionHandler.sendDig(key, idx);
 			}
 		} else {
@@ -110,6 +110,12 @@
 			<button
 				class="dig"
 				style="top:{-$y + dig.y}px; left:{-$x + dig.x}px; background-color: rgba(255, 0, 0, 0.2);"
+			/>
+		{/if}
+		{#if dig.value == '2'}
+			<button
+				class="dig"
+				style="top:{-$y + dig.y}px; left:{-$x + dig.x}px; background-color: rgba(0, 100, 190, 0.2);"
 			/>
 		{/if}
 	{/each}

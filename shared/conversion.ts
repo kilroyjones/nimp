@@ -7,6 +7,20 @@ import type { Location } from "./types";
 import type { Region } from "./models";
 
 /**
+ * Given an index of a dig site, it'll change it to a Location
+ *
+ * @param {number} idx - The index of a dig site
+ * @returns {Location} -
+ *
+ */
+const digIndexToLocation = (idx: number, region: Region): Location => {
+  return {
+    x: (idx % DIG_WIDTH) * DIG_WIDTH + region.x,
+    y: Math.floor(idx / DIG_HEIGHT) * DIG_HEIGHT + region.y,
+  };
+};
+
+/**
  * Calculates the dig index in a region for a given location.
  *
  * @param {Location} loc - The location within the region.
@@ -16,7 +30,7 @@ import type { Region } from "./models";
  * Since digs in a string it converts a given (x, y) location to the correcct
  * index based on the region information and the DIG_WIDTH and CELL HEIGHT.
  */
-const toDigIndex = (loc: Location, region: Region): number => {
+const locationToDigIndex = (loc: Location, region: Region): number => {
   return (
     Math.floor((loc.x - region.x) / DIG_WIDTH) +
     Math.floor((loc.y - region.y) / DIG_HEIGHT) * REGION_WIDTH_DIGS
@@ -123,7 +137,8 @@ const toRegionLocation = (loc: Location): Location => {
 };
 
 export const Conversion = {
-  toDigIndex,
+  digIndexToLocation,
+  locationToDigIndex,
   toDigLocationGlobal,
   toDigLocationLocal,
   toDigStatus,

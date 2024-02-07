@@ -8,6 +8,7 @@
  */
 
 import express from "express";
+import logger from "./service/server/logging.service";
 
 import {
   ClaimRequest,
@@ -20,7 +21,7 @@ import { DigHandler } from "./handlers/dig.handler";
 import { PlayerService } from "./service/game/player.service";
 import { Server, Socket } from "socket.io";
 import { RegionHandler } from "./handlers/region.handler";
-import logger from "./service/server/logging.service";
+import { ClaimHandler } from "./handlers/claim.handler";
 
 // Typical server setup
 const app = express();
@@ -55,30 +56,36 @@ io.on("connection", (socket: Socket) => {
   // ACTIONS
   ///////////////////////////////////////////////////////////
   socket.on("dig", msg => {
-    const digRequest: DigRequest = msg;
-    logger.info("IN - [dig]", digRequest);
-    DigHandler.dig(io, digRequest);
+    const request: DigRequest = msg;
+    logger.info("IN - [dig]", request);
+    DigHandler.dig(io, request);
   });
 
   socket.on("claim", msg => {
-    const claimRequest: ClaimRequest = msg;
-    logger.info("IN - [claim]", claimRequest);
-    DigHandler.dig(io, claimRequest);
+    console.log(msg);
+    // console.log(JSON.stringify(msg));
+    // console.log(JSON.parse(JSON.stringify(msg)));
+    console.log("HERE", JSON.parse(msg));
+    const request: ClaimRequest = JSON.parse(msg);
+
+    if (request) {
+      ClaimHandler.claim(io, request);
+    }
   });
 
   ///////////////////////////////////////////////////////////
   // PLAYER MANAGEMENT
   ///////////////////////////////////////////////////////////
   socket.on("create-region", msg => {
-    const createRegionRequest: CreateRegionRequest = msg;
-    logger.info("IN - [create-region]", createRegionRequest);
-    RegionHandler.create(io, playerId, createRegionRequest);
+    const request: CreateRegionRequest = msg;
+    logger.info("IN - [create-region]", request);
+    RegionHandler.create(io, playerId, request);
   });
 
   socket.on("update-regions", msg => {
-    const updateRegionRequest: UpdateRegionRequest = msg;
-    logger.info("IN - [update-regions]", updateRegionRequest);
-    RegionHandler.update(socket, playerId, updateRegionRequest);
+    const request: UpdateRegionRequest = msg;
+    logger.info("IN - [update-regions]", request);
+    RegionHandler.update(socket, playerId, request);
   });
 });
 

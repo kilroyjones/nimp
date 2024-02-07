@@ -1,12 +1,16 @@
+// import type { isClaimMode } from "$lib/state/settings.state";
+import type { Location } from "./types";
 import type { Regions } from "../server/src/database/types/types";
-import { Location } from "./types";
+import type { SelectedDig } from "./types";
 
 /**
  * REQUESTS
  */
 export type ClaimRequest = {
-  key: string;
-  idx: number;
+  digs: SelectedDig[];
+  width: number;
+  height: number;
+  isClaimable: boolean;
 };
 
 export type DigRequest = {

@@ -41,7 +41,7 @@ const add = function (regionsToAdd: Region[]) {
  * @returns {boolean} True if the location is diggable, false otherwise.
  */
 const isClaimable = function (loc: Location, region: Region): boolean {
-	if (Data.getCharAt(region.digs, Conversion.toDigIndex(loc, region)) == '1') {
+	if (Data.getCharAt(region.digs, Conversion.locationToDigIndex(loc, region)) == '1') {
 		return true;
 	}
 	return false;
@@ -73,12 +73,11 @@ const get = function (key: string): Region | undefined {
 /**
  * Gets all regions.
  *
- * @returns { Map<string, Region> | undefined } - Returns the map of all regions or nothing if it's not defined 
+ * @returns { Map<string, Region> | undefined } - Returns the map of all regions or nothing if it's not defined
  */
 const getAll = function (): Map<string, Region> | undefined {
 	return getStore(regions);
 };
-
 
 /**
  * Retrieves the dig site information at a specific location within a region.
@@ -91,7 +90,7 @@ const getAll = function (): Map<string, Region> | undefined {
 const getDigSite = function (key: string, loc: Location): DigSite | undefined {
 	const region = RegionState.get(key);
 	if (region) {
-		const idx = Conversion.toDigIndex(loc, region);
+		const idx = Conversion.locationToDigIndex(loc, region);
 		if (idx >= 0 && idx <= region.digs.length) {
 			return { idx: idx, status: Conversion.toDigStatus(region.digs[idx]) };
 		}
@@ -130,7 +129,7 @@ const getViewable = (loc: Location): Array<string> => {
  * @returns {boolean} True if the location is diggable, false otherwise.
  */
 const isDiggable = function (loc: Location, region: Region): boolean {
-	if (Data.getCharAt(region.digs, Conversion.toDigIndex(loc, region)) == '0') {
+	if (Data.getCharAt(region.digs, Conversion.locationToDigIndex(loc, region)) == '0') {
 		return true;
 	}
 	return false;
