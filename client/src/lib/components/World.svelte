@@ -112,13 +112,8 @@
 				style="top:{-$y + dig.y}px; left:{-$x + dig.x}px; background-color: rgba(255, 0, 0, 0.2);"
 			/>
 		{/if}
-		{#if dig.value == '2'}
-			<button
-				class="dig"
-				style="top:{-$y + dig.y}px; left:{-$x + dig.x}px; background-color: rgba(0, 100, 190, 0.2);"
-			/>
-		{/if}
 	{/each}
+
 	{#if $claimToDraw}
 		{#if $claimToDraw.valid}
 			<div

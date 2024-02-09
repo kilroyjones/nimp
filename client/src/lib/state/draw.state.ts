@@ -23,6 +23,7 @@ type Claim = {
 	valid: boolean;
 };
 export const digsToDraw: Writable<Array<Dig>> = writable(new Array());
+export const postsToDraw: Writable<Array<Post>> = writable(new Array());
 // export const claimToDraw: Writable<Array<Dig>> = writable(new Array());
 export const claimToDraw: Writable<Claim | undefined> = writable(undefined);
 

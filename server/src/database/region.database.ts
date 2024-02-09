@@ -35,6 +35,7 @@ const create = async (
         founder: userId,
         odds: 10,
         digs: "0".repeat(REGION_WIDTH_DIGS * REGION_HEIGHT_DIGS),
+        posts: {} as JSON,
       })
       .returningAll()
       .executeTakeFirstOrThrow();

@@ -12,6 +12,10 @@ export type Regions = {
     founder: string;
     odds: number;
     digs: string;
+    /**
+     * @kyselyType(JSON)
+     */
+    posts: JSON;
 };
 export type DB = {
     Regions: Regions;

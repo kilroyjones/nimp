@@ -1,3 +1,13 @@
+/**
+ *
+ * TODO:
+ *  - Transfer the parsing of Digs to the key->locs list to the front side to
+ *  trim down computations on this side.
+ *
+ * - Combine the getTopLeftLocation with createDimensionMap if this stays after
+ * the above bullet it handles.
+ *
+ */
 // Modules
 import logger from "../service/server/logging.service";
 
@@ -7,12 +17,14 @@ import type { Server } from "socket.io";
 import { DIG_HEIGHT, DIG_WIDTH } from "$shared/constants";
 import { Location, SelectedDig } from "$shared/types";
 import { ClaimDatabase } from "src/database/claim.database";
+import { Conversion } from "$shared/conversion";
 
 /**
  *
  */
 const createDimensionMap = (digs: SelectedDig[]): Map<number, number> => {
   let dimMap: Map<number, number> = new Map();
+
   digs.forEach(dig => {
     const height = dimMap.get(dig.loc.x);
     if (height) {
@@ -22,6 +34,29 @@ const createDimensionMap = (digs: SelectedDig[]): Map<number, number> => {
     }
   });
   return dimMap;
+};
+
+/**
+ *
+ */
+const getTopLeftLocation = (digs: SelectedDig[]): Location | undefined => {
+  let minX: number | undefined;
+  let minY: number | undefined;
+
+  console.log(digs);
+  digs.forEach(dig => {
+    if (minX == undefined || dig.loc.x < minX) {
+      minX = dig.loc.x;
+    }
+    if (minY == undefined || dig.loc.y < minY) {
+      minY = dig.loc.y;
+    }
+  });
+
+  console.log(minX, minY);
+  if (minX != undefined && minY != undefined) {
+    return Conversion.toLocation(minX, minY);
+  }
 };
 
 /**
@@ -70,11 +105,12 @@ const createKeyLocMap = (request: ClaimRequest): Map<string, Location[]> => {
 
 const validate = async (request: ClaimRequest) => {
   const dimMap = createDimensionMap(request.digs);
+  const topLeftLoc = getTopLeftLocation(request.digs);
   const result = areDimensionsValid(dimMap, request.width, request.height);
-  if (result) {
+  console.log(result, topLeftLoc, dimMap);
+  if (result && topLeftLoc) {
     const keyLocMap = createKeyLocMap(request);
-    await ClaimDatabase.create(keyLocMap);
-    console.log(keyLocMap);
+    await ClaimDatabase.create(keyLocMap, topLeftLoc, request.width, request.height);
   }
 
   // const locs = new Array(request.digs.map(dig => dig.loc));
