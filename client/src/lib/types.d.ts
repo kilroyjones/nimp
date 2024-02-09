@@ -5,8 +5,7 @@ export type Dig = {
 };
 
 export type Post = {
-	x;
-	number;
+	x: number;
 	y: number;
 	width: number;
 	height: number;

@@ -6,7 +6,7 @@
 	import { ActionHandler } from '$lib/handlers/action.handler';
 	import { Conversion } from '$shared/conversion';
 	import { WorldState, x, y } from '$lib/state/world.state';
-	import { claimToDraw, digsToDraw } from '$lib/state/draw.state';
+	import { claimToDraw, digsToDraw, postsToDraw } from '$lib/state/draw.state';
 
 	// Types and constants
 	import { UPDATE_DISTANCE } from '$shared/constants';
@@ -114,6 +114,18 @@
 		{/if}
 	{/each}
 
+	{#each $postsToDraw as post}
+		<div
+			class="post"
+			style="
+		top:{-$y + post.y - 2}px; 
+		left:{-$x + post.x - 2}px;
+		width: {post.width}px;
+		height: {post.height}px;
+		background-color: rgba(100, 100, 255, 0.3);"
+		/>
+	{/each}
+
 	{#if $claimToDraw}
 		{#if $claimToDraw.valid}
 			<div
@@ -133,7 +145,8 @@
 			left:{-$x + $claimToDraw.x - 2}px;
 			width: {$claimToDraw.w}px;
 			height: {$claimToDraw.h}px;
-			background-color: rgba(255, 150, 0, 0.2);"
+			background-color: rgba(255, 150, 0, 0.2);
+			"
 			/>
 		{/if}
 	{/if}
@@ -155,5 +168,12 @@
 		background: #44008888;
 		border-color: #00000000;
 		border-radius: 8px;
+	}
+
+	.post {
+		position: absolute;
+		border-radius: 4px;
+		box-shadow: inset 0px 0px 0px 2px rgba(255, 255, 255, 1);
+		box-sizing: border-box;
 	}
 </style>

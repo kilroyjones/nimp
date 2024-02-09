@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { x, y, windowWidth, windowHeight } from '$lib/state/world.state';
 	import { regions } from '$lib/state/region.state';
+	import { postsToDraw } from '$lib/state/draw.state';
 </script>
 
 <div class="debug">
@@ -20,7 +21,7 @@
 			</tr>
 		{/each}
 	</table>
-	<div />
+	<div>{$postsToDraw.length}</div>
 </div>
 
 <style>

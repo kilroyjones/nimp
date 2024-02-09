@@ -1,10 +1,10 @@
 // Modules
 import { get, writable, type Writable } from 'svelte/store';
-import { RegionState } from './region.state';
+import { RegionState, x, y } from './region.state';
 
 // Types and constants
 import type { Bounds, Location } from '$shared/types';
-import type { Dig } from '$lib/types';
+import type { Dig, Post } from '$lib/types';
 import type { Region } from '$shared/models';
 import {
 	REGION_WIDTH,
@@ -67,39 +67,7 @@ const getDigsToDraw = (region: Region, viewFrame: Bounds): Array<Dig> => {
 	return result;
 };
 
-/**
- * Updates the digs to be drawn based on the current location and window dimensions.
- *
- * @param {Location} loc - The current location from which to calculate the view bounds.
- * @param {number} windowWidth - The width of the viewing window.
- * @param {number} windowHeight - The height of the viewing window.
- *
- * This function update the currently drawn field base on the current window size
- * and location. It calculates the bounds and creates an array of Dig objects.
- */
-const update = function (loc: Location, windowWidth: number, windowHeight: number) {
-	// Define view frame and areas (regions covered)
-	const viewBounds: Bounds = {
-		x1: loc.x - UPDATE_DISTANCE,
-		y1: loc.y - UPDATE_DISTANCE,
-		x2: loc.x + windowWidth + UPDATE_DISTANCE,
-		y2: loc.y + windowHeight + UPDATE_DISTANCE
-	};
-
-	let digs: Array<Dig> = [];
-	const regions = RegionState.getAll();
-	if (regions) {
-		regions.forEach((region) => {
-			digs = digs.concat(getDigsToDraw(region, viewBounds));
-		});
-
-		digsToDraw.update((_) => {
-			return digs;
-		});
-	}
-};
-
-const setSelection = function (topLeft: Location, bottomRight: Location, valid: boolean) {
+const setSelection = (topLeft: Location, bottomRight: Location, valid: boolean) => {
 	const temp = {
 		x: topLeft.x,
 		y: topLeft.y,
@@ -120,10 +88,63 @@ const setSelection = function (topLeft: Location, bottomRight: Location, valid: 
 	});
 };
 
-const resetSelection = function () {
+const getPostsToDraw = (posts: any): Array<Post> => {
+	let postsArray: Post[] = [];
+	Object.values(posts).forEach((post: any) => {
+		postsArray.push({
+			x: post.loc.x,
+			y: post.loc.y,
+			width: post.width,
+			height: post.height
+		});
+	});
+	return postsArray;
+};
+
+const resetSelection = () => {
 	claimToDraw.update((_) => {
 		return undefined;
 	});
+};
+
+/**
+ * Updates the digs to be drawn based on the current location and window dimensions.
+ *
+ * @param {Location} loc - The current location from which to calculate the view bounds.
+ * @param {number} windowWidth - The width of the viewing window.
+ * @param {number} windowHeight - The height of the viewing window.
+ *
+ * This function update the currently drawn field base on the current window size
+ * and location. It calculates the bounds and creates an array of Dig objects.
+ */
+const update = (loc: Location, windowWidth: number, windowHeight: number) => {
+	// Define view frame and areas (regions covered)
+	const viewBounds: Bounds = {
+		x1: loc.x - UPDATE_DISTANCE,
+		y1: loc.y - UPDATE_DISTANCE,
+		x2: loc.x + windowWidth + UPDATE_DISTANCE,
+		y2: loc.y + windowHeight + UPDATE_DISTANCE
+	};
+
+	let digs: Array<Dig> = [];
+	let posts: Array<Post> = [];
+
+	const regions = RegionState.getAll();
+	if (regions) {
+		regions.forEach((region) => {
+			digs = digs.concat(getDigsToDraw(region, viewBounds));
+			posts = posts.concat(getPostsToDraw(region.posts));
+		});
+
+		digsToDraw.update((_) => {
+			return digs;
+		});
+
+		console.log(posts);
+		postsToDraw.update((_) => {
+			return posts;
+		});
+	}
 };
 
 export const DrawState = {
