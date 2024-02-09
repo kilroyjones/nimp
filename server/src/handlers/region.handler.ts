@@ -31,7 +31,7 @@ const create = async (io: Server, playerId: string, createRegionRequest: CreateR
 
     if (region) {
       // Since update regions expects a list we need to wrap it as an array
-      // io.to(region.key).emit("update-regions", { regions: [region] });
+      io.to(region.key).emit("update-regions", { regions: [region] });
     }
   }
 };

@@ -18,6 +18,7 @@ import { DIG_HEIGHT, DIG_WIDTH } from "$shared/constants";
 import { Location, SelectedDig } from "$shared/types";
 import { ClaimDatabase } from "src/database/claim.database";
 import { Conversion } from "$shared/conversion";
+import { Region } from "$shared/models";
 
 /**
  *
@@ -43,7 +44,6 @@ const getTopLeftLocation = (digs: SelectedDig[]): Location | undefined => {
   let minX: number | undefined;
   let minY: number | undefined;
 
-  console.log(digs);
   digs.forEach(dig => {
     if (minX == undefined || dig.loc.x < minX) {
       minX = dig.loc.x;
@@ -53,7 +53,6 @@ const getTopLeftLocation = (digs: SelectedDig[]): Location | undefined => {
     }
   });
 
-  console.log(minX, minY);
   if (minX != undefined && minY != undefined) {
     return Conversion.toLocation(minX, minY);
   }
@@ -90,6 +89,9 @@ const areDimensionsValid = (
   return true;
 };
 
+/**
+ *
+ */
 const createKeyLocMap = (request: ClaimRequest): Map<string, Location[]> => {
   let keyIndexMap: Map<string, Array<Location>> = new Map();
   request.digs.forEach(dig => {
@@ -103,21 +105,33 @@ const createKeyLocMap = (request: ClaimRequest): Map<string, Location[]> => {
   return keyIndexMap;
 };
 
-const validate = async (request: ClaimRequest) => {
+/**
+ *
+ */
+const create = async (request: ClaimRequest): Promise<Region[] | undefined> => {
   const dimMap = createDimensionMap(request.digs);
   const topLeftLoc = getTopLeftLocation(request.digs);
   const result = areDimensionsValid(dimMap, request.width, request.height);
-  console.log(result, topLeftLoc, dimMap);
+
   if (result && topLeftLoc) {
     const keyLocMap = createKeyLocMap(request);
-    await ClaimDatabase.create(keyLocMap, topLeftLoc, request.width, request.height);
+    return await ClaimDatabase.create(keyLocMap, topLeftLoc, request.width, request.height);
   }
-
-  // const locs = new Array(request.digs.map(dig => dig.loc));
 };
 
+/**
+ *
+ */
 const claim = async (io: Server, request: ClaimRequest) => {
-  validate(request);
+  const regions = await create(request);
+  if (regions) {
+    for (const region of regions) {
+      io.to(region.key).emit("update-regions", { regions: [region] });
+    }
+  } else {
+    // TODO: Handle error
+  }
+
   logger.info(`[Action.dig] - ${request}`);
 };
 
