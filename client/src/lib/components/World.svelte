@@ -13,8 +13,10 @@
 
 	import type { Location } from '$shared/types';
 	import { RegionState } from '$lib/state/region.state';
-	import { isClaimMode } from '$lib/state/settings.state';
+	import { isClaimMode, showTextEditor } from '$lib/state/settings.state';
 	import { ClaimState } from '$lib/state/claim.state';
+	import TextEditor from './TextEditor.svelte';
+	import type { Post } from '$lib/types';
 
 	// Variables
 	let dragging = false;
@@ -22,6 +24,7 @@
 	let dragStartY: number;
 	let previousX: number;
 	let previousY: number;
+	let selectedPost: Post;
 
 	/**
 	 * Initiating a drag will set all these values to be used in conjunction
@@ -67,15 +70,19 @@
 		}
 	}
 
+	/**
+	 *
+	 */
 	function handleClick(event: MouseEvent) {
 		if ($isClaimMode) {
 			const loc = { x: event.x + $x, y: event.y + $y };
 			ClaimState.claim(loc);
 		}
-		// Conversion.locationToDigIndex({ x: event.x, y: event.y });
-		// console.log('Click');
 	}
 
+	/**
+	 *
+	 */
 	function handleDoubleClick(event: MouseEvent) {
 		let loc: Location = { x: event.x + $x, y: event.y + $y };
 		const key = Conversion.toRegionKey(loc);
@@ -88,6 +95,14 @@
 		} else {
 			WorldAction.createRegion(loc);
 		}
+	}
+
+	/**
+	 *
+	 */
+	function clickOnPost(post: Post) {
+		selectedPost = post;
+		$showTextEditor = true;
 	}
 
 	onMount(async () => {
@@ -103,6 +118,9 @@
 	on:click={handleClick}
 	on:dblclick|preventDefault={handleDoubleClick}
 />
+{#if $showTextEditor}
+	<TextEditor post={selectedPost} />
+{/if}
 
 <div>
 	{#each $digsToDraw as dig}
@@ -116,39 +134,29 @@
 
 	{#each $postsToDraw as post}
 		<div
+			role="button"
+			tabindex="0"
 			class="post"
 			style="
-		top:{-$y + post.y - 2}px; 
-		left:{-$x + post.x - 2}px;
-		width: {post.width}px;
-		height: {post.height}px;
-		background-color: rgba(100, 100, 255, 0.3);"
+			 	top:{-$y + post.y - 2}px; 
+				left:{-$x + post.x - 2}px;
+				width: {post.width}px;
+				height: {post.height}px;
+				background-color: rgba(100, 100, 255, 0.3);"
+			on:dblclick={() => clickOnPost(post)}
+			on:mouseover={() => console.log(post.x)}
 		/>
 	{/each}
 
 	{#if $claimToDraw}
-		{#if $claimToDraw.valid}
-			<div
-				class="claim"
-				style="
+		<div
+			class="claim {$claimToDraw.valid ? 'claim-valid' : 'claim-invalid'}"
+			style="
 			top:{-$y + $claimToDraw.y - 2}px; 
 			left:{-$x + $claimToDraw.x - 2}px;
 			width: {$claimToDraw.w}px;
-			height: {$claimToDraw.h}px;
-			background-color: rgba(0, 150, 255, 0.2);"
-			/>
-		{:else}
-			<div
-				class="claim"
-				style="
-			top:{-$y + $claimToDraw.y - 2}px; 
-			left:{-$x + $claimToDraw.x - 2}px;
-			width: {$claimToDraw.w}px;
-			height: {$claimToDraw.h}px;
-			background-color: rgba(255, 150, 0, 0.2);
-			"
-			/>
-		{/if}
+			height: {$claimToDraw.h}px;"
+		/>
 	{/if}
 </div>
 
@@ -168,6 +176,14 @@
 		background: #44008888;
 		border-color: #00000000;
 		border-radius: 8px;
+	}
+
+	.claim-valid {
+		background-color: rgba(0, 150, 255, 0.2);
+	}
+
+	.claim-invalid {
+		background-color: rgba(255, 150, 0, 0.2);
 	}
 
 	.post {
