@@ -62,12 +62,7 @@ io.on("connection", (socket: Socket) => {
   });
 
   socket.on("claim", msg => {
-    console.log(msg);
-    // console.log(JSON.stringify(msg));
-    // console.log(JSON.parse(JSON.stringify(msg)));
-    console.log("HERE", JSON.parse(msg));
     const request: ClaimRequest = JSON.parse(msg);
-
     if (request) {
       ClaimHandler.claim(io, request);
     }

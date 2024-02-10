@@ -38,18 +38,12 @@ export const claimToDraw: Writable<Claim | undefined> = writable(undefined);
  * the digs that lie within that space.
  *
  */
-const getDigsToDraw = (region: Region, viewFrame: Bounds): Array<Dig> => {
-	// Calculate the overlapping bounds
-	const x1 = Math.max(region.x, viewFrame.x1);
-	const y1 = Math.max(region.y, viewFrame.y1);
-	const x2 = Math.min(region.x + REGION_WIDTH, viewFrame.x2);
-	const y2 = Math.min(region.y + REGION_HEIGHT, viewFrame.y2);
-
+const getDigsToDraw = (region: Region, bounds: Bounds): Array<Dig> => {
 	// Compute dig locations to draw
-	const startCol = Math.floor((x1 - region.x) / DIG_WIDTH);
-	const startRow = Math.floor((y1 - region.y) / DIG_HEIGHT);
-	const endCol = Math.floor((x2 - region.x) / DIG_WIDTH);
-	const endRow = Math.floor((y2 - region.y) / DIG_HEIGHT);
+	const startCol = Math.floor((bounds.x1 - region.x) / DIG_WIDTH);
+	const startRow = Math.floor((bounds.y1 - region.y) / DIG_HEIGHT);
+	const endCol = Math.floor((bounds.x2 - region.x) / DIG_WIDTH);
+	const endRow = Math.floor((bounds.y2 - region.y) / DIG_HEIGHT);
 
 	const result = new Array((endRow - startRow) * (endCol - startCol));
 	let idx = 0;
@@ -67,16 +61,28 @@ const getDigsToDraw = (region: Region, viewFrame: Bounds): Array<Dig> => {
 	return result;
 };
 
-const setSelection = (topLeft: Location, bottomRight: Location, valid: boolean) => {
-	const temp = {
-		x: topLeft.x,
-		y: topLeft.y,
-		w: bottomRight.x - topLeft.x,
-		h: bottomRight.y - topLeft.y,
-		valid: valid
-	};
+const getPostsToDraw = (posts: Post[], bounds: Bounds): Array<Post> => {
+	let postsArray: Post[] = [];
+	Object.values(posts).forEach((post: any) => {
+		console.log(post.loc, bounds);
+		if (
+			post.loc.x >= bounds.x1 &&
+			post.loc.x <= bounds.x2 &&
+			post.loc.y >= bounds.y1 &&
+			post.loc.y <= bounds.y2
+		) {
+			postsArray.push({
+				x: post.loc.x,
+				y: post.loc.y,
+				width: post.width,
+				height: post.height
+			});
+		}
+	});
+	return postsArray;
+};
 
-	// console.log(temp);
+const setSelection = (topLeft: Location, bottomRight: Location, valid: boolean) => {
 	claimToDraw.update((_) => {
 		return {
 			x: topLeft.x,
@@ -88,25 +94,20 @@ const setSelection = (topLeft: Location, bottomRight: Location, valid: boolean) 
 	});
 };
 
-const getPostsToDraw = (posts: any): Array<Post> => {
-	let postsArray: Post[] = [];
-	Object.values(posts).forEach((post: any) => {
-		postsArray.push({
-			x: post.loc.x,
-			y: post.loc.y,
-			width: post.width,
-			height: post.height
-		});
-	});
-	return postsArray;
-};
-
 const resetSelection = () => {
 	claimToDraw.update((_) => {
 		return undefined;
 	});
 };
 
+// const getOverlappingBounds = (region: Region, viewFrame: Bounds): Bounds => {
+// 	return {
+// 		x1: Math.max(region.x, viewFrame.x1),
+// 		y1: Math.max(region.y, viewFrame.y1),
+// 		x2: Math.min(region.x + REGION_WIDTH, viewFrame.x2),
+// 		y2: Math.min(region.y + REGION_HEIGHT, viewFrame.y2)
+// 	};
+// };
 /**
  * Updates the digs to be drawn based on the current location and window dimensions.
  *
@@ -125,6 +126,7 @@ const update = (loc: Location, windowWidth: number, windowHeight: number) => {
 		x2: loc.x + windowWidth + UPDATE_DISTANCE,
 		y2: loc.y + windowHeight + UPDATE_DISTANCE
 	};
+	// console.log('VIEW', viewBounds);
 
 	let digs: Array<Dig> = [];
 	let posts: Array<Post> = [];
@@ -132,15 +134,15 @@ const update = (loc: Location, windowWidth: number, windowHeight: number) => {
 	const regions = RegionState.getAll();
 	if (regions) {
 		regions.forEach((region) => {
+			// console.log('CALC:', viewBounds);
 			digs = digs.concat(getDigsToDraw(region, viewBounds));
-			posts = posts.concat(getPostsToDraw(region.posts));
+			posts = posts.concat(getPostsToDraw(region.posts as unknown as Post[], viewBounds));
 		});
 
 		digsToDraw.update((_) => {
 			return digs;
 		});
 
-		console.log(posts);
 		postsToDraw.update((_) => {
 			return posts;
 		});

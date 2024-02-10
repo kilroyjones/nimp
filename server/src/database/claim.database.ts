@@ -57,42 +57,38 @@ const create = async (
   height: number
 ): Promise<Region[] | undefined> => {
   try {
-    return db.transaction().execute(async trx => {
-      const regionKeySaved = Conversion.toRegionKey(topLeftLoc);
-      let regions: Region[] = [];
+    const regionKeys = Array.from(keyLocMap.keys());
+    const regionsToUpdate = await db.transaction().execute(async trx => {
+      const regions = await trx
+        .selectFrom("Regions")
+        .selectAll()
+        .where("key", "in", regionKeys)
+        .execute();
 
-      for (const [key, locations] of keyLocMap.entries()) {
-        let region = await trx
-          .selectFrom("Regions")
-          .selectAll()
-          .where("key", "=", key)
-          .executeTakeFirst();
-        if (!region) {
-          return undefined;
-        }
+      let updatedRegions: Region[] = [];
+
+      for (const region of regions) {
+        const locations = keyLocMap.get(region.key);
+        if (!locations) continue;
 
         const updatedRegion = claimDigs(locations, region);
         if (!updatedRegion) {
           return undefined;
         }
 
-        const updates: Partial<Region> = { digs: updatedRegion.digs };
-        if (key === regionKeySaved) {
-          updates.posts = addPost(updatedRegion, topLeftLoc, width, height);
+        if (region.key === Conversion.toRegionKey(topLeftLoc)) {
+          updatedRegion.posts = addPost(updatedRegion, topLeftLoc, width, height);
         }
 
-        const result = await trx
-          .updateTable("Regions")
-          .where("key", "=", key)
-          .set(updates)
-          .returningAll()
-          .execute();
-        regions = regions.concat(result);
+        updatedRegions.push(updatedRegion);
       }
 
-      return regions;
+      return updatedRegions;
     });
+
+    return regionsToUpdate;
   } catch (error) {
+    console.error("Error", error);
     return undefined;
   }
 };

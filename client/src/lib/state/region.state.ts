@@ -7,7 +7,7 @@ import type { Dig } from '$lib/types';
 import type { DigSite, Location } from '$shared/types';
 import type { Region } from '$shared/models';
 
-import { REGION_WIDTH, REGION_HEIGHT } from '$shared/constants';
+import { REGION_WIDTH, REGION_HEIGHT, UPDATE_DISTANCE } from '$shared/constants';
 import { Data } from '$shared/data';
 import { RegionHandler } from '$lib/handlers/region.handler';
 import { Conversion } from '$shared/conversion';
@@ -105,10 +105,10 @@ const getDigSite = function (key: string, loc: Location): DigSite | undefined {
  * This is based on the current location in the world.
  */
 const getViewable = (loc: Location): Array<string> => {
-	let xMin = Math.floor(loc.x / REGION_WIDTH);
-	let yMin = Math.floor(loc.y / REGION_HEIGHT);
-	let xMax = Math.floor((loc.x + getStore(windowWidth)) / REGION_WIDTH);
-	let yMax = Math.floor((loc.y + getStore(windowHeight)) / REGION_HEIGHT);
+	let xMin = Math.floor((loc.x - UPDATE_DISTANCE) / REGION_WIDTH);
+	let yMin = Math.floor((loc.y - UPDATE_DISTANCE) / REGION_HEIGHT);
+	let xMax = Math.floor((loc.x + getStore(windowWidth) + UPDATE_DISTANCE) / REGION_WIDTH);
+	let yMax = Math.floor((loc.y + getStore(windowHeight) + UPDATE_DISTANCE) / REGION_HEIGHT);
 
 	let viewable: Array<string> = Array<string>();
 
