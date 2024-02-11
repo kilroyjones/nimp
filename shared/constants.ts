@@ -14,5 +14,7 @@ export enum DigStatus {
 }
 
 export const DigStatusMap: Record<string, DigStatus> = {
+  [DigStatus.UNDUG]: DigStatus.UNDUG,
   [DigStatus.UNCLAIMED]: DigStatus.UNCLAIMED,
+  [DigStatus.CLAIMED]: DigStatus.CLAIMED,
 };

@@ -91,7 +91,9 @@ const getDigSite = function (key: string, loc: Location): DigSite | undefined {
 	const region = RegionState.get(key);
 	if (region) {
 		const idx = Conversion.locationToDigIndex(loc, region);
+		console.log(idx);
 		if (idx >= 0 && idx <= region.digs.length) {
+			console.log('s', region.digs[idx]);
 			return { idx: idx, status: Conversion.toDigStatus(region.digs[idx]) };
 		}
 	}

@@ -1,41 +1,47 @@
 <script lang="ts">
+	// Modules
+	import { ActionHandler } from '$lib/handlers/action.handler';
 	import { showTextEditor } from '$lib/state/settings.state';
+
+	// Types and constants
 	import type { Post } from '$lib/types';
 
 	export let post: Post;
-	console.log(post);
 
-	let inputValue = ''; // Binds to the text input
+	let inputValue = '';
 
 	function submit() {
-		console.log('submit');
+		ActionHandler.sendPost(post.regionKey, post.postKey, inputValue);
 	}
 
 	function close(event: MouseEvent) {
 		if (event.target === event.currentTarget) {
 			$showTextEditor = false;
-			console.log('close');
-			console.log('Closing modal');
 		}
 	}
 </script>
 
 <div role="button" tabindex="0" class="modal-overlay" on:mousedown={close} on:keypress={() => {}}>
-	<div
-		class="modal-content"
-		role="button"
-		tabindex="0"
-		on:click|stopPropagation
-		on:keydown|stopPropagation
-	>
-		<form class="modal-form" on:submit={submit}>
-			<textarea
-				style="width:{post.width}px; height: {post.height}px"
-				bind:value={inputValue}
-				placeholder="Enter text here"
-			/>
-			<button type="submit">Submit</button>
-		</form>
+	<div class="modal-wrapper">
+		<div
+			class="modal-content"
+			role="button"
+			tabindex="0"
+			on:click|stopPropagation
+			on:keydown|stopPropagation
+		>
+			<form class="modal-form" on:submit={submit}>
+				<textarea
+					style="width:{post.width - 16}px; height: {post.height - 16}px"
+					bind:value={inputValue}
+					placeholder="Enter text here"
+				/>
+				<button type="submit">Submit</button>
+			</form>
+		</div>
+		<div class="sidebar">
+			<button class="close-btn" on:click={close}>X</button>
+		</div>
 	</div>
 </div>
 
@@ -53,11 +59,15 @@
 		z-index: 10;
 	}
 
+	.modal-wrapper {
+		display: inline-flex;
+		align-items: stretch;
+	}
+
 	.modal-content {
-		padding: 20px;
+		padding: 16px 8px 16px 16px;
 		background-color: white;
-		border-radius: 5px;
-		box-shadow: 0 4px 6px rgba(0, 0, 0, 0);
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);
 	}
 
 	.modal-form {
@@ -66,19 +76,37 @@
 		gap: 10px;
 	}
 
-	textarea {
-		width: 300px; /* Adjust width as needed */
-		height: 100px; /* Adjust height as needed */
-		font-size: 16px; /* Sets the font size */
-		font-family: monospace; /* Sets the font to monospace */
-		color: #595959; /* Sets the text color to a slightly gray shade */
-		border: 1px solid #ccc; /* Initial border color */
-		transition: border 0.3s ease; /* Smooth transition for border color change */
+	.sidebar {
+		width: 40px;
+		background-color: #fff;
+		display: flex;
+		flex-direction: column;
+		padding-top: 16px;
 	}
 
-	/* Textarea styling on focus */
+	.close-btn {
+		width: 24px;
+		height: 24px;
+		margin: 0 auto;
+		cursor: pointer;
+		border: 1px solid #ccc;
+		border-radius: 12px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 16px;
+		background-color: #fff;
+	}
+
+	textarea {
+		font-size: 16px;
+		font-family: monospace;
+		color: #595959;
+		border: 1px solid #ccc;
+	}
+
 	textarea:focus {
-		outline: none; /* Removes the default focus outline */
-		border: 1px solid rgba(128, 128, 128, 0.5); /* Sets the border color to partially transparent gray */
+		outline: none;
+		border: 1px solid rgba(128, 128, 128, 0.5);
 	}
 </style>

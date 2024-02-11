@@ -14,6 +14,7 @@ import {
   ClaimRequest,
   CreateRegionRequest,
   DigRequest,
+  PostRequest,
   UpdateRegionRequest,
 } from "$shared/messages";
 import { createServer } from "http";
@@ -22,6 +23,7 @@ import { PlayerService } from "./service/game/player.service";
 import { Server, Socket } from "socket.io";
 import { RegionHandler } from "./handlers/region.handler";
 import { ClaimHandler } from "./handlers/claim.handler";
+import { PostHandler } from "./handlers/post.handler";
 
 // Typical server setup
 const app = express();
@@ -57,7 +59,7 @@ io.on("connection", (socket: Socket) => {
   ///////////////////////////////////////////////////////////
   socket.on("dig", msg => {
     const request: DigRequest = msg;
-    logger.info("IN - [dig]", request);
+    logger.info("IN - [dig]" + request);
     DigHandler.dig(io, request);
   });
 
@@ -65,6 +67,13 @@ io.on("connection", (socket: Socket) => {
     const request: ClaimRequest = JSON.parse(msg);
     if (request) {
       ClaimHandler.claim(io, request);
+    }
+  });
+
+  socket.on("post", msg => {
+    const request: PostRequest = JSON.parse(msg);
+    if (request) {
+      PostHandler.post(io, request);
     }
   });
 

@@ -7,11 +7,11 @@ import { RegionState } from './region.state';
 import { showActions } from './settings.state';
 
 // Types and constants
+import type { ClaimRequest } from '$shared/messages';
 import type { Location } from '$shared/types';
 import type { Region } from '$shared/models';
-import { ActionHandler } from '$lib/handlers/action.handler';
+
 import { DIG_HEIGHT, DIG_WIDTH } from '$shared/constants';
-import type { ClaimRequest } from '$shared/messages';
 
 type Selection = {
 	loc: Location;
@@ -72,6 +72,7 @@ const getClaimRequest = (selectionLocs: SelectionLocations) => {
  * @returns {SelectionLocations} The calculated locations.
  */
 const getSelectionLocations = (selects: Selection[]): SelectionLocations => {
+	console.log(selects);
 	let loc1 = Conversion.toGridLocation(selects[0].loc);
 	let loc2 = Conversion.toGridLocation(selects[1].loc);
 

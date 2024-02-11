@@ -4,7 +4,7 @@ import { socketClient } from '$lib/socket/client';
 import { WorldState } from '$lib/state/world.state';
 
 // TYPES AND CONSTANTS
-import type { Location } from '$shared/models';
+import type { Location } from '$shared/types';
 import type { UpdateRegionResponse } from '$shared/messages';
 import { RegionState } from '$lib/state/region.state';
 
@@ -39,10 +39,12 @@ const receiveUpdateRegions = (updateRegionResponse: UpdateRegionResponse) => {
  * @param {Location} loc - The location object representing where the new region should be created.
  */
 const sendCreateRegion = (loc: Location) => {
-	socketClient.send('create-region', {
-		key: Conversion.toRegionKey(loc),
-		loc: loc
-	});
+	if (RegionState.exists(Conversion.toRegionKey(loc)) == false) {
+		socketClient.send('create-region', {
+			key: Conversion.toRegionKey(loc),
+			loc: loc
+		});
+	}
 };
 
 /**

@@ -1,22 +1,23 @@
 <script lang="ts">
 	// Modules
-	import { onMount } from 'svelte';
-	import { Formula } from '$lib/helpers/formula.helper';
-	import { WorldAction } from '$lib/action/world.action';
 	import { ActionHandler } from '$lib/handlers/action.handler';
-	import { Conversion } from '$shared/conversion';
-	import { WorldState, x, y } from '$lib/state/world.state';
 	import { claimToDraw, digsToDraw, postsToDraw } from '$lib/state/draw.state';
+	import { ClaimState } from '$lib/state/claim.state';
+	import { Conversion } from '$shared/conversion';
+	import { Formula } from '$lib/helpers/formula.helper';
+	import { isClaimMode, showTextEditor } from '$lib/state/settings.state';
+	import { onMount } from 'svelte';
+	import { RegionHandler } from '$lib/handlers/region.handler';
+	import { RegionState } from '$lib/state/region.state';
+	import { WorldState, x, y } from '$lib/state/world.state';
+
+	// Components
+	import TextEditor from './TextEditor.svelte';
 
 	// Types and constants
-	import { UPDATE_DISTANCE } from '$shared/constants';
-
 	import type { Location } from '$shared/types';
-	import { RegionState } from '$lib/state/region.state';
-	import { isClaimMode, showTextEditor } from '$lib/state/settings.state';
-	import { ClaimState } from '$lib/state/claim.state';
-	import TextEditor from './TextEditor.svelte';
 	import type { Post } from '$lib/types';
+	import { UPDATE_DISTANCE } from '$shared/constants';
 
 	// Variables
 	let dragging = false;
@@ -89,18 +90,18 @@
 		const region = RegionState.get(key);
 		if (region) {
 			if (RegionState.isDiggable(loc, region)) {
-				const idx = Conversion.locationToDigIndex(loc, region);
-				ActionHandler.sendDig(key, idx);
+				console.log(region);
+				ActionHandler.sendDig(loc);
 			}
 		} else {
-			WorldAction.createRegion(loc);
+			RegionHandler.sendCreateRegion(loc);
 		}
 	}
 
 	/**
 	 *
 	 */
-	function clickOnPost(post: Post) {
+	function handleDoubleClickPost(post: Post) {
 		selectedPost = post;
 		$showTextEditor = true;
 	}
@@ -143,9 +144,12 @@
 				width: {post.width}px;
 				height: {post.height}px;
 				background-color: rgba(100, 100, 255, 0.3);"
-			on:dblclick={() => clickOnPost(post)}
+			on:dblclick={() => handleDoubleClickPost(post)}
+			on:focus={() => {}}
 			on:mouseover={() => console.log(post.x)}
-		/>
+		>
+			{post.content}
+		</div>
 	{/each}
 
 	{#if $claimToDraw}
@@ -188,8 +192,13 @@
 
 	.post {
 		position: absolute;
-		border-radius: 4px;
+		border-radius: 8px;
+		text-align: center;
 		box-shadow: inset 0px 0px 0px 2px rgba(255, 255, 255, 1);
 		box-sizing: border-box;
+		padding: 8px;
+		word-wrap: break-word;
+		font-size: 16px;
+		font-family: monospace;
 	}
 </style>

@@ -14,6 +14,7 @@ import {
 	DIG_WIDTH,
 	UPDATE_DISTANCE
 } from '$shared/constants';
+import { Conversion } from '$shared/conversion';
 
 type Claim = {
 	x: number;
@@ -39,7 +40,6 @@ export const claimToDraw: Writable<Claim | undefined> = writable(undefined);
  *
  */
 const getDigsToDraw = (region: Region, bounds: Bounds): Array<Dig> => {
-	// Compute dig locations to draw
 	const startCol = Math.floor((bounds.x1 - region.x) / DIG_WIDTH);
 	const startRow = Math.floor((bounds.y1 - region.y) / DIG_HEIGHT);
 	const endCol = Math.floor((bounds.x2 - region.x) / DIG_WIDTH);
@@ -61,17 +61,26 @@ const getDigsToDraw = (region: Region, bounds: Bounds): Array<Dig> => {
 	return result;
 };
 
-const getPostsToDraw = (posts: Post[], bounds: Bounds): Array<Post> => {
+/**
+ *
+ */
+const getPostsToDraw = (region: Region, bounds: Bounds): Array<Post> => {
 	let postsArray: Post[] = [];
-	Object.values(posts).forEach((post: any) => {
-		console.log(post.loc, bounds);
+	console.log(region);
+	Object.values(region.posts).forEach((post: any) => {
 		if (
 			post.loc.x >= bounds.x1 &&
 			post.loc.x <= bounds.x2 &&
 			post.loc.y >= bounds.y1 &&
 			post.loc.y <= bounds.y2
 		) {
+			console.log(post.loc);
+			const loc = Conversion.toDigLocationLocal(post.loc, region);
+			console.log('FUCk', loc, region);
 			postsArray.push({
+				regionKey: region.key,
+				postKey: `${loc.x.toString() + loc.y.toString()}`,
+				content: post.content,
 				x: post.loc.x,
 				y: post.loc.y,
 				width: post.width,
@@ -82,6 +91,9 @@ const getPostsToDraw = (posts: Post[], bounds: Bounds): Array<Post> => {
 	return postsArray;
 };
 
+/**
+ *
+ */
 const setSelection = (topLeft: Location, bottomRight: Location, valid: boolean) => {
 	claimToDraw.update((_) => {
 		return {
@@ -94,20 +106,15 @@ const setSelection = (topLeft: Location, bottomRight: Location, valid: boolean) 
 	});
 };
 
+/**
+ *
+ */
 const resetSelection = () => {
 	claimToDraw.update((_) => {
 		return undefined;
 	});
 };
 
-// const getOverlappingBounds = (region: Region, viewFrame: Bounds): Bounds => {
-// 	return {
-// 		x1: Math.max(region.x, viewFrame.x1),
-// 		y1: Math.max(region.y, viewFrame.y1),
-// 		x2: Math.min(region.x + REGION_WIDTH, viewFrame.x2),
-// 		y2: Math.min(region.y + REGION_HEIGHT, viewFrame.y2)
-// 	};
-// };
 /**
  * Updates the digs to be drawn based on the current location and window dimensions.
  *
@@ -136,7 +143,7 @@ const update = (loc: Location, windowWidth: number, windowHeight: number) => {
 		regions.forEach((region) => {
 			// console.log('CALC:', viewBounds);
 			digs = digs.concat(getDigsToDraw(region, viewBounds));
-			posts = posts.concat(getPostsToDraw(region.posts as unknown as Post[], viewBounds));
+			posts = posts.concat(getPostsToDraw(region, viewBounds));
 		});
 
 		digsToDraw.update((_) => {

@@ -6,31 +6,27 @@ import { Location } from "$shared/types";
 import { Region } from "./models/region.model";
 import { Data } from "$shared/data";
 import { DigStatus } from "$shared/constants";
+import { RegionDatabase } from "./region.database";
 
-type Post = {
+export type Post = {
+  postKey: string;
   loc: Location;
   width: number;
   height: number;
+  content: string;
 };
 
 type PostsMap = Record<string, Post>;
 
 /**
  *
+ * TODO: Convert to local coordinates to save bandwidth?
  */
-const addPost = (region: Region, topLeftLoc: Location, width: number, height: number): any => {
-  const postKey: string = `${Conversion.toDigLocationLocal(topLeftLoc, region).x}${
-    Conversion.toDigLocationLocal(topLeftLoc, region).y
+const addPost = (region: Region, topLeftLoc: Location, width: number, height: number): Post => {
+  const postKey: string = `${Conversion.toDigLocationGlobal(topLeftLoc).x}${
+    Conversion.toDigLocationGlobal(topLeftLoc).y
   }`;
-
-  const postValue: Post = { loc: topLeftLoc, width, height };
-  const posts: PostsMap = region.posts as any;
-
-  if (!posts[postKey]) {
-    posts[postKey] = postValue;
-  }
-
-  return posts;
+  return { postKey: postKey, loc: topLeftLoc, width, height, content: "" };
 };
 
 /**
@@ -42,7 +38,8 @@ const claimDigs = (locations: Location[], region: Region): Region | undefined =>
     if (!Data.isUnclaimed(idx, region)) {
       return undefined;
     }
-    region.digs = Data.setCharAt(region.digs, idx, DigStatus.CLAIMED);
+    region.digs = Data.setCharAt(region.digs, idx, "2");
+    console.log("digs:", region.digs);
   }
   return region;
 };
@@ -69,7 +66,9 @@ const create = async (
 
       for (const region of regions) {
         const locations = keyLocMap.get(region.key);
-        if (!locations) continue;
+        if (!locations) {
+          continue;
+        }
 
         const updatedRegion = claimDigs(locations, region);
         if (!updatedRegion) {
@@ -77,12 +76,22 @@ const create = async (
         }
 
         if (region.key === Conversion.toRegionKey(topLeftLoc)) {
-          updatedRegion.posts = addPost(updatedRegion, topLeftLoc, width, height);
+          const post = addPost(updatedRegion, topLeftLoc, width, height);
+          console.log("F", post);
+
+          const up = await RegionDatabase.addPost(region.key, post);
+          console.log(up);
         }
 
         updatedRegions.push(updatedRegion);
       }
 
+      for (const region of updatedRegions) {
+        RegionDatabase.updateDigs(region.key, region.digs);
+      }
+
+      // TODO: Fix this by using a single list of keys to get the update records
+      // OR by returning them on each update and compiling them. This whole shit is inefficient
       return updatedRegions;
     });
 

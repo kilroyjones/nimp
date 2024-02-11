@@ -19,6 +19,7 @@ import { Location, SelectedDig } from "$shared/types";
 import { ClaimDatabase } from "src/database/claim.database";
 import { Conversion } from "$shared/conversion";
 import { Region } from "$shared/models";
+import { RegionDatabase } from "src/database/region.database";
 
 /**
  *
@@ -126,6 +127,7 @@ const claim = async (io: Server, request: ClaimRequest) => {
   const regions = await create(request);
   if (regions) {
     for (const region of regions) {
+      RegionDatabase.updateDigs(region.key, region.digs);
       io.to(region.key).emit("update-regions", { regions: [region] });
     }
   } else {

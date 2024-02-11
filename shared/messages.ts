@@ -18,6 +18,12 @@ export type DigRequest = {
   idx: number;
 };
 
+export type PostRequest = {
+  regionKey: string;
+  postKey: string;
+  content: string;
+};
+
 export type UpdateRegionRequest = {
   regionsJoin: string[];
   regionsLeave: string[];
