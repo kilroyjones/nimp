@@ -5,29 +5,9 @@ import { db } from "./client/db";
 import { Location } from "$shared/types";
 import { Region } from "./models/region.model";
 import { Data } from "$shared/data";
-import { DigStatus } from "$shared/constants";
 import { RegionDatabase } from "./region.database";
-
-export type Post = {
-  postKey: string;
-  loc: Location;
-  width: number;
-  height: number;
-  content: string;
-};
-
-type PostsMap = Record<string, Post>;
-
-/**
- *
- * TODO: Convert to local coordinates to save bandwidth?
- */
-const addPost = (region: Region, topLeftLoc: Location, width: number, height: number): Post => {
-  const postKey: string = `${Conversion.toDigLocationGlobal(topLeftLoc).x}${
-    Conversion.toDigLocationGlobal(topLeftLoc).y
-  }`;
-  return { postKey: postKey, loc: topLeftLoc, width, height, content: "" };
-};
+import { UpdateDigResponse } from "$shared/messages";
+import { Post } from "src/types";
 
 /**
  *
@@ -39,7 +19,6 @@ const claimDigs = (locations: Location[], region: Region): Region | undefined =>
       return undefined;
     }
     region.digs = Data.setCharAt(region.digs, idx, "2");
-    console.log("digs:", region.digs);
   }
   return region;
 };
@@ -49,20 +28,19 @@ const claimDigs = (locations: Location[], region: Region): Region | undefined =>
  */
 const create = async (
   keyLocMap: Map<string, Location[]>,
-  topLeftLoc: Location,
-  width: number,
-  height: number
-): Promise<Region[] | undefined> => {
+  post: Post
+): Promise<UpdateDigResponse[] | undefined> => {
   try {
+    let updateDigResponses: UpdateDigResponse[] = [];
+
     const regionKeys = Array.from(keyLocMap.keys());
-    const regionsToUpdate = await db.transaction().execute(async trx => {
+
+    await db.transaction().execute(async trx => {
       const regions = await trx
         .selectFrom("Regions")
         .selectAll()
         .where("key", "in", regionKeys)
         .execute();
-
-      let updatedRegions: Region[] = [];
 
       for (const region of regions) {
         const locations = keyLocMap.get(region.key);
@@ -75,27 +53,21 @@ const create = async (
           return undefined;
         }
 
-        if (region.key === Conversion.toRegionKey(topLeftLoc)) {
-          const post = addPost(updatedRegion, topLeftLoc, width, height);
-          console.log("F", post);
-
-          const up = await RegionDatabase.addPost(region.key, post);
-          console.log(up);
+        if (region.key === post.regionKey) {
+          await RegionDatabase.addPost(region.key, post);
         }
 
-        updatedRegions.push(updatedRegion);
+        updateDigResponses.push({ regionKey: region.key, digs: updatedRegion.digs });
       }
 
-      for (const region of updatedRegions) {
-        RegionDatabase.updateDigs(region.key, region.digs);
+      for (const dig of updateDigResponses) {
+        RegionDatabase.updateDigs(dig.regionKey, dig.digs);
       }
 
       // TODO: Fix this by using a single list of keys to get the update records
       // OR by returning them on each update and compiling them. This whole shit is inefficient
-      return updatedRegions;
     });
-
-    return regionsToUpdate;
+    return updateDigResponses;
   } catch (error) {
     console.error("Error", error);
     return undefined;

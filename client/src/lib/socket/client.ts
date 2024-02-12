@@ -56,6 +56,14 @@ socket.on('update-digs', (msg) => {
 	}
 });
 
+socket.on('update-posts', (msg) => {
+	const data: any = msg;
+	console.log('IN - [update-posts]', msg);
+	if (msg) {
+		// RegionHandler.receiveUpdateDigs(msg);
+	}
+});
+
 /**
  * REGIONS
  */

@@ -1,19 +1,12 @@
 // Modules
-import { get, writable, type Writable } from 'svelte/store';
+import { writable, type Writable } from 'svelte/store';
 import { RegionState, x, y } from './region.state';
 
 // Types and constants
 import type { Bounds, Location } from '$shared/types';
 import type { Dig, Post } from '$lib/types';
 import type { Region } from '$shared/models';
-import {
-	REGION_WIDTH,
-	REGION_HEIGHT,
-	REGION_WIDTH_DIGS,
-	DIG_HEIGHT,
-	DIG_WIDTH,
-	UPDATE_DISTANCE
-} from '$shared/constants';
+import { REGION_WIDTH_DIGS, DIG_HEIGHT, DIG_WIDTH, UPDATE_DISTANCE } from '$shared/constants';
 import { Conversion } from '$shared/conversion';
 
 type Claim = {
@@ -23,10 +16,9 @@ type Claim = {
 	h: number;
 	valid: boolean;
 };
+export const claimToDraw: Writable<Claim | undefined> = writable(undefined);
 export const digsToDraw: Writable<Array<Dig>> = writable(new Array());
 export const postsToDraw: Writable<Array<Post>> = writable(new Array());
-// export const claimToDraw: Writable<Array<Dig>> = writable(new Array());
-export const claimToDraw: Writable<Claim | undefined> = writable(undefined);
 
 /**
  * Calculates the digs within a region that fall within a given view frame.
@@ -66,7 +58,6 @@ const getDigsToDraw = (region: Region, bounds: Bounds): Array<Dig> => {
  */
 const getPostsToDraw = (region: Region, bounds: Bounds): Array<Post> => {
 	let postsArray: Post[] = [];
-	console.log(region);
 	Object.values(region.posts).forEach((post: any) => {
 		if (
 			post.loc.x >= bounds.x1 &&
@@ -74,9 +65,7 @@ const getPostsToDraw = (region: Region, bounds: Bounds): Array<Post> => {
 			post.loc.y >= bounds.y1 &&
 			post.loc.y <= bounds.y2
 		) {
-			console.log(post.loc);
 			const loc = Conversion.toDigLocationLocal(post.loc, region);
-			console.log('FUCk', loc, region);
 			postsArray.push({
 				regionKey: region.key,
 				postKey: `${loc.x.toString() + loc.y.toString()}`,

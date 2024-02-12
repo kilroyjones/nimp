@@ -8,6 +8,14 @@
 </label>
 
 <style>
+	input:checked + .slider-round {
+		background-color: #2196f3;
+	}
+
+	input:checked + .slider-round:before {
+		transform: translateX(26px);
+	}
+
 	.slider {
 		position: relative;
 		display: inline-block;
@@ -43,13 +51,5 @@
 		background-color: white;
 		transition: 0.4s;
 		border-radius: 50%;
-	}
-
-	input:checked + .slider-round {
-		background-color: #2196f3;
-	}
-
-	input:checked + .slider-round:before {
-		transform: translateX(26px);
 	}
 </style>

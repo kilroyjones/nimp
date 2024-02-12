@@ -72,13 +72,13 @@
 
 <div
 	class="navbar"
-	on:mousedown|stopPropagation={() => {}}
-	on:click|stopPropagation={() => {}}
-	on:dblclick|stopPropagation={() => {}}
-	on:keypress={() => {}}
+	on:mousedown|stopPropagation
+	on:click|stopPropagation
+	on:dblclick|stopPropagation
+	on:keypress|stopPropagation
 	tabindex="0"
 	role="button"
-	aria-label="Describe action here"
+	aria-label=""
 >
 	<div class="location no-drag">
 		<input class={xIsInt ? '' : 'has-error'} bind:value={worldX} on:keyup={handleKeyup} />

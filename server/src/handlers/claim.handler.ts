@@ -12,7 +12,7 @@
 import logger from "../service/server/logging.service";
 
 // Types
-import type { ClaimRequest } from "$shared/messages";
+import type { ClaimRequest, UpdateDigResponse } from "$shared/messages";
 import type { Server } from "socket.io";
 import { DIG_HEIGHT, DIG_WIDTH } from "$shared/constants";
 import { Location, SelectedDig } from "$shared/types";
@@ -106,35 +106,33 @@ const createKeyLocMap = (request: ClaimRequest): Map<string, Location[]> => {
   return keyIndexMap;
 };
 
-/**
- *
- */
-const create = async (request: ClaimRequest): Promise<Region[] | undefined> => {
-  const dimMap = createDimensionMap(request.digs);
-  const topLeftLoc = getTopLeftLocation(request.digs);
-  const result = areDimensionsValid(dimMap, request.width, request.height);
-
-  if (result && topLeftLoc) {
-    const keyLocMap = createKeyLocMap(request);
-    return await ClaimDatabase.create(keyLocMap, topLeftLoc, request.width, request.height);
-  }
+const createPost = (topLeftLoc: Location, width: number, height: number) => {
+  const regionKey = Conversion.toRegionKey(topLeftLoc);
+  const postKey: string = `${Conversion.toDigLocationGlobal(topLeftLoc).x}${
+    Conversion.toDigLocationGlobal(topLeftLoc).y
+  }`;
+  return { regionKey: regionKey, postKey: postKey, loc: topLeftLoc, width, height, content: "" };
 };
 
 /**
  *
  */
 const claim = async (io: Server, request: ClaimRequest) => {
-  const regions = await create(request);
-  if (regions) {
-    for (const region of regions) {
-      RegionDatabase.updateDigs(region.key, region.digs);
-      io.to(region.key).emit("update-regions", { regions: [region] });
-    }
-  } else {
-    // TODO: Handle error
-  }
+  const dimMap = createDimensionMap(request.digs);
+  const topLeftLoc = getTopLeftLocation(request.digs);
+  const areValid = areDimensionsValid(dimMap, request.width, request.height);
 
-  logger.info(`[Action.dig] - ${request}`);
+  if (areValid && topLeftLoc) {
+    const post = createPost(topLeftLoc, request.width, request.height);
+    const keyLocMap = createKeyLocMap(request);
+    const updateDigResponses = await ClaimDatabase.create(keyLocMap, post);
+    if (updateDigResponses) {
+      io.to(post.regionKey).emit("update-posts", { post: post });
+      for (const { regionKey, digs } of updateDigResponses) {
+        io.to(regionKey).emit("update-digs", { regionKey: regionKey, digs: digs });
+      }
+    }
+  }
 };
 
 export const ClaimHandler = {

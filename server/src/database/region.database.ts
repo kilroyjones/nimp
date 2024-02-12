@@ -3,11 +3,10 @@ import logger from "src/service/server/logging.service";
 import { Conversion } from "$shared/conversion";
 import { db } from "./client/db";
 import { Location } from "$shared/types";
-import { Region, RegionUpdate } from "./models/region.model";
+import { Region } from "./models/region.model";
 import { REGION_WIDTH_DIGS, REGION_HEIGHT_DIGS } from "$shared/constants";
-import { Regions } from "./types/types";
 import { UpdateResult, sql } from "kysely";
-import { Post } from "./claim.database";
+import { Post } from "src/types";
 
 /**
  * Asynchronously creates a new region with specified details.
@@ -148,7 +147,6 @@ const updatePost = async (
   try {
     const path = `{${postKey}, "content"}`;
     const newValueJson = JSON.stringify(content);
-    console.log(path, newValueJson);
     return await db
       .updateTable("Regions")
       .set(eb => ({
@@ -158,7 +156,6 @@ const updatePost = async (
           eb.val(JSON.stringify(content)),
         ]),
       }))
-      // posts: sql`jsonb_set(posts, ${sql.lit(path)}, ${sql.lit(newValueJson)}::jsonb, false)`,
       .where("key", "=", regionKey)
       .execute();
   } catch (error: any) {
@@ -194,32 +191,3 @@ export const RegionDatabase = {
   updateDigs,
   updatePost,
 };
-
-// await db
-//   .updateTable("user")
-//   .set((eb) => ({
-//     configurations: eb.fn("json_set", [
-//       eb.ref("configurations"),
-//       sql.lit("$.lastData.bla"), // we've got a type-safe way to do json paths, needs to be exposed in the future. for now a non type-safe literal.
-//       eb.val("blabla"), // val since eb.fn expects references by default.
-//     ]),
-//   }))
-//   .set((eb) => ({
-//     configurations: eb.fn("json_set", [
-//       eb.ref("configurations"),
-//       sql.lit("$.lastData.blub"),
-//       eb.val("blublub"),
-//     ]),
-//   }))
-//   .where("id", "=", "123")
-//   .execute()
-
-// https://kyse.link/?p=s&i=7psWb88kLpWfSpvwXUyt
-
-// Lemme know if that worked for you.
-// Nibyc
-// OP
-//  — 12/02/2023 6:00 AM
-// i was able to solve it with a
-// set({
-//    configuration: sql`JSON_SET(`...

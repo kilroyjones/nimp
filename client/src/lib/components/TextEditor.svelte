@@ -10,10 +10,18 @@
 
 	let inputValue = '';
 
+	/**
+	 * Submits a post using the ActionHandler's sendPost method.
+	 */
 	function submit() {
 		ActionHandler.sendPost(post.regionKey, post.postKey, inputValue);
 	}
 
+	/**
+	 * Handles the closing of a text editor UI element when a click event occurs.
+	 *
+	 * @param {MouseEvent} event - The click event that triggered the close function.
+	 */
 	function close(event: MouseEvent) {
 		if (event.target === event.currentTarget) {
 			$showTextEditor = false;
@@ -46,6 +54,32 @@
 </div>
 
 <style>
+	.close-btn {
+		width: 24px;
+		height: 24px;
+		margin: 0 auto;
+		cursor: pointer;
+		border: 1px solid #ccc;
+		border-radius: 12px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 16px;
+		background-color: #fff;
+	}
+
+	.modal-content {
+		padding: 16px 8px 16px 16px;
+		background-color: white;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);
+	}
+
+	.modal-form {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+
 	.modal-overlay {
 		position: fixed;
 		top: 0;
@@ -64,38 +98,12 @@
 		align-items: stretch;
 	}
 
-	.modal-content {
-		padding: 16px 8px 16px 16px;
-		background-color: white;
-		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);
-	}
-
-	.modal-form {
-		display: flex;
-		flex-direction: column;
-		gap: 10px;
-	}
-
 	.sidebar {
 		width: 40px;
 		background-color: #fff;
 		display: flex;
 		flex-direction: column;
 		padding-top: 16px;
-	}
-
-	.close-btn {
-		width: 24px;
-		height: 24px;
-		margin: 0 auto;
-		cursor: pointer;
-		border: 1px solid #ccc;
-		border-radius: 12px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-size: 16px;
-		background-color: #fff;
 	}
 
 	textarea {

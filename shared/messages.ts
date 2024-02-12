@@ -47,5 +47,5 @@ export type UpdateRegionResponse = {
 
 export type UpdateDigResponse = {
   regionKey: string;
-  regions: Regions[];
+  digs: string;
 };

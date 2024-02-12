@@ -27,6 +27,7 @@ const dig = async (io: Server, digRequest: DigRequest) => {
     // Update digs and only update if that region has been successfully saved
     digs = await RegionDatabase.updateDigs(digRequest.key, digs);
     if (digs) {
+      console.log("here", digs.slice(0, 100));
       io.to(digRequest.key).emit("update-digs", { regionKey: digRequest.key, digs: digs });
     }
 

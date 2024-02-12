@@ -18,13 +18,17 @@ import { PostRequest } from "$shared/messages";
 import { RegionDatabase } from "src/database/region.database";
 
 const post = async (io: Server, postRequest: PostRequest) => {
-  console.log("Addding", postRequest.regionKey);
-  console.log("Addding", postRequest.postKey);
-  console.log("Addding", postRequest.content);
   const region = await RegionDatabase.get(postRequest.regionKey);
   if (region) {
-    RegionDatabase.updatePost(region.key, postRequest.postKey, postRequest.content);
-    io.to(region.key).emit("update-posts", { regionKey: region.key, post: postRequest });
+    const updatedRegion = await RegionDatabase.updatePost(
+      region.key,
+      postRequest.postKey,
+      postRequest.content
+    );
+
+    if (updatedRegion) {
+      // io.to(updatedRegion.key).emit("update-posts", { regionKey: region.key, post: postRequest });
+    }
   }
 };
 

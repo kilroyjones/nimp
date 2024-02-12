@@ -7,8 +7,7 @@
 <div class="debug">
 	<div><strong>Loc: </strong> ({$x}, {$y})</div>
 	<div><strong>Dim: </strong> ({$windowWidth}, {$windowHeight})</div>
-
-	<div><strong>Regions</strong></div>
+	<div><strong>Regions:</strong></div>
 	<table>
 		{#each $regions as [key, region]}
 			<tr>
@@ -21,7 +20,7 @@
 			</tr>
 		{/each}
 	</table>
-	<div>{$postsToDraw.length}</div>
+	<div>Posts: {$postsToDraw.length}</div>
 </div>
 
 <style>

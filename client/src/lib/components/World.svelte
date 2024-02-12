@@ -165,16 +165,6 @@
 </div>
 
 <style>
-	.dig {
-		position: absolute;
-		background: #00fff2;
-		width: 60px;
-		height: 60px;
-		border-color: #00000000;
-		border-radius: 4px;
-		color: #316300;
-	}
-
 	.claim {
 		position: absolute;
 		background: #44008888;
@@ -188,6 +178,16 @@
 
 	.claim-invalid {
 		background-color: rgba(255, 150, 0, 0.2);
+	}
+
+	.dig {
+		position: absolute;
+		background: #00fff2;
+		width: 60px;
+		height: 60px;
+		border-color: #00000000;
+		border-radius: 4px;
+		color: #316300;
 	}
 
 	.post {

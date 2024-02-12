@@ -64,7 +64,6 @@ const toDigLocationGlobal = (loc: Location): Location => {
  * index based on the region information and the DIG_WIDTH and CELL HEIGHT.
  */
 const toDigLocationLocal = (loc: Location, region: Region): Location => {
-  console.log("OI", loc, loc.x, loc.x - region.x);
   return {
     x: Math.floor((loc.x - region.x) / DIG_WIDTH),
     y: Math.floor((loc.y - region.y) / DIG_HEIGHT),

@@ -1,7 +1,10 @@
+// Modules
+import { Conversion } from '$shared/conversion';
+import { DigStatus } from '$shared/constants';
 import { socketClient } from '$lib/socket/client';
 import { RegionState } from '$lib/state/region.state';
-import { DigStatus } from '$shared/constants';
-import { Conversion } from '$shared/conversion';
+
+// Types and constants
 import type { ClaimRequest } from '$shared/messages';
 import type { Location } from '$shared/types';
 
@@ -26,7 +29,6 @@ const sendClaim = (claimRequest: ClaimRequest) => {
 const sendDig = (loc: Location) => {
 	const key = Conversion.toRegionKey(loc);
 	const site = RegionState.getDigSite(key, loc);
-	console.log(key, site);
 	if (site && site.status == DigStatus.UNDUG) {
 		socketClient.send('dig', { key: key, idx: site.idx });
 	}
@@ -40,8 +42,6 @@ const sendDig = (loc: Location) => {
  * @param {string} content - The content to be posted.
  */
 const sendPost = (regionKey: string, postKey: string, content: string) => {
-	console.log(regionKey, postKey, content);
-	console.log({ regionKey: regionKey, postKey: postKey, content: content });
 	socketClient.send(
 		'post',
 		JSON.stringify({ regionKey: regionKey, postKey: postKey, content: content })
