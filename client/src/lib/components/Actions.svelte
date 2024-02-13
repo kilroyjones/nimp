@@ -1,14 +1,18 @@
 <script lang="ts">
 	import { ActionHandler } from '$lib/handlers/action.handler';
 	import { showActions } from '$lib/state/settings.state';
-	import { currentClaimRequest } from '$lib/state/claim.state';
+	import { ClaimState, currentClaimRequest } from '$lib/state/claim.state';
+	import { DrawState } from '$lib/state/draw.state';
+
+	function claim() {
+		ActionHandler.sendClaim($currentClaimRequest);
+		ClaimState.resetSelection();
+	}
 </script>
 
 {#if $showActions}
 	<div class="actions">
-		<button on:click|stopPropagation={() => ActionHandler.sendClaim($currentClaimRequest)}
-			>Claim</button
-		>
+		<button on:click|stopPropagation={claim}>Claim</button>
 	</div>
 {/if}
 

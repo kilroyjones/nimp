@@ -17,9 +17,6 @@ import { Post } from "src/types";
  * @returns {Promise<Region | undefined>} A promise that resolves to the newly created Region object, or undefined if the operation fails.
  * @throws Will log an error to the logger if the database operation fails.
  *
- * The function converts the provided location to a region location, inserts a
- * new record into the 'Regions' table of the database with the provided
- * details, and returns the newly created region.
  */
 const create = async (
   userId: string,
@@ -53,8 +50,6 @@ const create = async (
  * @returns {Promise<Region | undefined>} A promise that resolves to the Region object if found, or undefined if not found or if an error occurs.
  * @throws Logs an error to the logger if the database operation fails.
  *
- * This function searches the 'Regions' table in the database for a region with
- * the specified key and returns the corresponding region object.
  */
 const get = async (regionKey: string): Promise<Region | undefined> => {
   try {
@@ -75,8 +70,6 @@ const get = async (regionKey: string): Promise<Region | undefined> => {
  * @returns {Promise<string | undefined>} A promise that resolves to the 'digs' string of the region if found, or undefined if not found or if an error occurs.
  * @throws Logs an error to the logger if the database operation fails.
  *
- * This function queries the 'Regions' table in the database for the 'digs'
- * field of a specific region identified by the given key.
  */
 const getDigs = async (regionKey: string): Promise<string | undefined> => {
   try {
@@ -86,6 +79,35 @@ const getDigs = async (regionKey: string): Promise<string | undefined> => {
       .where("key", "=", regionKey)
       .executeTakeFirstOrThrow();
     return result.digs;
+  } catch (error: any) {
+    logger.error(`[RegionActions.getDigs] - ${error}`);
+  }
+};
+
+/**
+ * Asynchronously retrieves an individual 'post' from the JSON posts field.
+ *
+ * @param {string} regionKey - The key identifier of the region.
+ * @param {string} postKey - The key identifier of the post.
+ * @returns {Promise<Post | undefined>}
+ * @throws Logs an error to the logger if the database operation fails.
+ *
+ */
+const getPost = async (
+  regionKey: string,
+  postKey: string
+): Promise<{ [x: string]: any } | undefined> => {
+  try {
+    return await db
+      .selectFrom("Regions")
+      .select(eb =>
+        eb
+          .ref("posts", "->")
+          .key(postKey as any)
+          .as(postKey)
+      )
+      .where("key", "=", regionKey)
+      .executeTakeFirstOrThrow();
   } catch (error: any) {
     logger.error(`[RegionActions.getDigs] - ${error}`);
   }
@@ -145,8 +167,6 @@ const updatePost = async (
   content: string
 ): Promise<UpdateResult[] | undefined> => {
   try {
-    const path = `{${postKey}, "content"}`;
-    const newValueJson = JSON.stringify(content);
     return await db
       .updateTable("Regions")
       .set(eb => ({
@@ -187,6 +207,7 @@ export const RegionDatabase = {
   create,
   get,
   getDigs,
+  getPost,
   getMany,
   updateDigs,
   updatePost,

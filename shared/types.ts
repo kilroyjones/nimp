@@ -21,3 +21,11 @@ export type SelectedDig = {
   loc: Location;
   key: string;
 };
+
+export type Post = {
+  postKey: string;
+  loc: Location;
+  width: number;
+  height: number;
+  content: string;
+};

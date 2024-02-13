@@ -5,7 +5,7 @@ import { WorldState } from '$lib/state/world.state';
 
 // TYPES AND CONSTANTS
 import type { Location } from '$shared/types';
-import type { UpdateRegionResponse } from '$shared/messages';
+import type { UpdateDigResponse, UpdatePostResponse, UpdateRegionResponse } from '$shared/messages';
 import { RegionState } from '$lib/state/region.state';
 
 /**
@@ -17,9 +17,23 @@ import { RegionState } from '$lib/state/region.state';
  *
  * This will replace a regions existing digs string.
  */
-const receiveUpdateDigs = (updateDigs: { regionKey: string; digs: string }) => {
+const receiveUpdateDigs = (updateDigs: UpdateDigResponse) => {
 	console.log(updateDigs.regionKey, updateDigs.digs.slice(0, 100));
 	RegionState.updateDigs(updateDigs.regionKey, updateDigs.digs);
+	WorldState.update();
+};
+
+/**
+ * Handles the post updates.
+ *
+ * @param {Object} updatePost - An object containing the region key and the updated digs string.
+ * @param {string} updateDigs.regionKey - The key of the region that has been updated.
+ * @param {string} updateDigs.digs - The new digs string for the region.
+ *
+ * This will replace a regions existing digs string.
+ */
+const receiveUpdatePosts = (updatePost: UpdatePostResponse) => {
+	RegionState.updatePosts(updatePost.regionKey, updatePost.post);
 	WorldState.update();
 };
 
@@ -63,6 +77,7 @@ const sendUpdateRegions = (regionsJoin: Array<string>, regionsLeave: Array<strin
 
 export const RegionHandler = {
 	receiveUpdateDigs,
+	receiveUpdatePosts,
 	receiveUpdateRegions,
 
 	sendCreateRegion,

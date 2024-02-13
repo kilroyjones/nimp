@@ -169,6 +169,11 @@ const handleDrawUpdate = () => {
 	}
 };
 
+const resetSelection = () => {
+	selecting = Selecting.NONE;
+	DrawState.resetSelection();
+};
+
 /**
  * Attempts to claim a region based on a given location.
  *
@@ -186,5 +191,6 @@ const claim = (loc: Location) => {
 };
 
 export const ClaimState = {
-	claim
+	claim,
+	resetSelection
 };

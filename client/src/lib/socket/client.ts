@@ -13,8 +13,9 @@ import { RegionHandler } from '$lib/handlers/region.handler';
 import type {
 	HandshakeResponse,
 	UpdateDigResponse,
+	UpdatePostResponse,
 	UpdateRegionResponse
-} from '../../../../shared/messages';
+} from '$shared/messages';
 import { PlayerHandler } from '../handlers/player.handler';
 
 const SERVER_URL = 'http://localhost:3000'; // Replace with your server's URL
@@ -48,30 +49,27 @@ socket.on('handshake', (msg: HandshakeResponse) => {
 /**
  * ACTIONS
  */
-socket.on('update-digs', (msg) => {
-	const data: UpdateDigResponse = msg;
+socket.on('update-digs', (msg: UpdateDigResponse) => {
 	console.log('IN - [update-digs]', msg);
 	if (msg) {
 		RegionHandler.receiveUpdateDigs(msg);
 	}
 });
 
-socket.on('update-posts', (msg) => {
-	const data: any = msg;
+socket.on('update-posts', (msg: UpdatePostResponse) => {
 	console.log('IN - [update-posts]', msg);
 	if (msg) {
-		// RegionHandler.receiveUpdateDigs(msg);
+		RegionHandler.receiveUpdatePosts(msg);
 	}
 });
 
 /**
  * REGIONS
  */
-socket.on('update-regions', (msg) => {
-	const data: UpdateRegionResponse = msg;
-	console.log('IN - [update-regions]', data);
-	if (data) {
-		RegionHandler.receiveUpdateRegions(data);
+socket.on('update-regions', (msg: UpdateRegionResponse) => {
+	console.log('IN - [update-regions]', msg);
+	if (msg) {
+		RegionHandler.receiveUpdateRegions(msg);
 	}
 });
 

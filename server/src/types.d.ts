@@ -3,7 +3,6 @@ import { UpdateDigResponse } from "$shared/messages";
 import { Post } from "./database/claim.database";
 
 export type Post = {
-  regionKey: string;
   postKey: string;
   loc: Location;
   width: number;

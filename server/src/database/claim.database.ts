@@ -28,7 +28,8 @@ const claimDigs = (locations: Location[], region: Region): Region | undefined =>
  */
 const create = async (
   keyLocMap: Map<string, Location[]>,
-  post: Post
+  post: Post,
+  postRegionKey: string
 ): Promise<UpdateDigResponse[] | undefined> => {
   try {
     let updateDigResponses: UpdateDigResponse[] = [];
@@ -53,7 +54,7 @@ const create = async (
           return undefined;
         }
 
-        if (region.key === post.regionKey) {
+        if (region.key === postRegionKey) {
           await RegionDatabase.addPost(region.key, post);
         }
 

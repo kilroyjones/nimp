@@ -7,7 +7,6 @@ import { RegionDatabase } from "../database/region.database";
 // Types
 import type { CreateRegionRequest, UpdateRegionRequest } from "$shared/messages";
 import type { Server, Socket } from "socket.io";
-import { Location } from "$shared/types";
 
 /**
  * Creates a region if that region doesn't already exist

@@ -15,8 +15,7 @@
 	import TextEditor from './TextEditor.svelte';
 
 	// Types and constants
-	import type { Location } from '$shared/types';
-	import type { Post } from '$lib/types';
+	import type { Location, Post } from '$shared/types';
 	import { UPDATE_DISTANCE } from '$shared/constants';
 
 	// Variables
@@ -146,7 +145,7 @@
 				background-color: rgba(100, 100, 255, 0.3);"
 			on:dblclick={() => handleDoubleClickPost(post)}
 			on:focus={() => {}}
-			on:mouseover={() => console.log(post.x)}
+			on:mouseover={() => {}}
 		>
 			{post.content}
 		</div>

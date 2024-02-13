@@ -7,6 +7,7 @@ import { RegionState } from '$lib/state/region.state';
 // Types and constants
 import type { ClaimRequest } from '$shared/messages';
 import type { Location } from '$shared/types';
+import { DrawState } from '$lib/state/draw.state';
 
 /**
  * Submits a claim request if the item is claimable.
@@ -15,8 +16,7 @@ import type { Location } from '$shared/types';
  */
 const sendClaim = (claimRequest: ClaimRequest) => {
 	if (claimRequest.isClaimable) {
-		let msg = JSON.stringify(claimRequest);
-		socketClient.send('claim', msg);
+		socketClient.send('claim', JSON.stringify(claimRequest));
 	}
 };
 

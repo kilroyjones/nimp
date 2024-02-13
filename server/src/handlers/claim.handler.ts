@@ -20,6 +20,7 @@ import { ClaimDatabase } from "src/database/claim.database";
 import { Conversion } from "$shared/conversion";
 import { Region } from "$shared/models";
 import { RegionDatabase } from "src/database/region.database";
+import { Post } from "src/types";
 
 /**
  *
@@ -106,12 +107,11 @@ const createKeyLocMap = (request: ClaimRequest): Map<string, Location[]> => {
   return keyIndexMap;
 };
 
-const createPost = (topLeftLoc: Location, width: number, height: number) => {
-  const regionKey = Conversion.toRegionKey(topLeftLoc);
+const createPost = (topLeftLoc: Location, width: number, height: number): Post => {
   const postKey: string = `${Conversion.toDigLocationGlobal(topLeftLoc).x}${
     Conversion.toDigLocationGlobal(topLeftLoc).y
   }`;
-  return { regionKey: regionKey, postKey: postKey, loc: topLeftLoc, width, height, content: "" };
+  return { postKey: postKey, loc: topLeftLoc, width, height, content: "" };
 };
 
 /**
@@ -124,10 +124,12 @@ const claim = async (io: Server, request: ClaimRequest) => {
 
   if (areValid && topLeftLoc) {
     const post = createPost(topLeftLoc, request.width, request.height);
+    const postRegionKey = Conversion.toRegionKey(topLeftLoc);
     const keyLocMap = createKeyLocMap(request);
-    const updateDigResponses = await ClaimDatabase.create(keyLocMap, post);
+    const updateDigResponses = await ClaimDatabase.create(keyLocMap, post, postRegionKey);
+
     if (updateDigResponses) {
-      io.to(post.regionKey).emit("update-posts", { post: post });
+      io.to(postRegionKey).emit("update-posts", { regionKey: postRegionKey, post: post });
       for (const { regionKey, digs } of updateDigResponses) {
         io.to(regionKey).emit("update-digs", { regionKey: regionKey, digs: digs });
       }

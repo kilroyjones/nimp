@@ -1,16 +1,16 @@
 // Modules
 import { get as getStore, writable, type Writable } from 'svelte/store';
 import { windowWidth, windowHeight } from './world.state';
+import { Data } from '$shared/data';
+import { RegionHandler } from '$lib/handlers/region.handler';
+import { Conversion } from '$shared/conversion';
 
 // Types and constants
 import type { Dig } from '$lib/types';
 import type { DigSite, Location } from '$shared/types';
+import type { Post } from '$shared/types';
 import type { Region } from '$shared/models';
-
 import { REGION_WIDTH, REGION_HEIGHT, UPDATE_DISTANCE } from '$shared/constants';
-import { Data } from '$shared/data';
-import { RegionHandler } from '$lib/handlers/region.handler';
-import { Conversion } from '$shared/conversion';
 
 // Stores
 export const x = writable(0);
@@ -182,6 +182,19 @@ const updateDigs = (regionKey: string, digs: string) => {
 	}
 };
 
+/**
+ * Updates a region with post information
+ *
+ * @param {string} key - A region key
+ * @param {string} post - The post string
+ */
+const updatePosts = (regionKey: string, post: Post) => {
+	const region = getStore(regions).get(regionKey);
+	if (region) {
+		(region.posts as any)[post.postKey] = post;
+	}
+};
+
 export const RegionState = {
 	add,
 	isClaimable,
@@ -193,5 +206,6 @@ export const RegionState = {
 	isDiggable,
 	remove,
 	update,
-	updateDigs
+	updateDigs,
+	updatePosts
 };

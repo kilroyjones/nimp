@@ -10,6 +10,17 @@
 import express from "express";
 import logger from "./service/server/logging.service";
 
+// Moddules
+import { ClaimHandler } from "./handlers/claim.handler";
+import cookieParser from "cookie-parser";
+import { createServer } from "http";
+import { DigHandler } from "./handlers/dig.handler";
+import { PlayerService } from "./service/game/player.service";
+import { PostHandler } from "./handlers/post.handler";
+import { Server, Socket } from "socket.io";
+import { RegionHandler } from "./handlers/region.handler";
+
+// Types and constants
 import {
   ClaimRequest,
   CreateRegionRequest,
@@ -17,16 +28,11 @@ import {
   PostRequest,
   UpdateRegionRequest,
 } from "$shared/messages";
-import { createServer } from "http";
-import { DigHandler } from "./handlers/dig.handler";
-import { PlayerService } from "./service/game/player.service";
-import { Server, Socket } from "socket.io";
-import { RegionHandler } from "./handlers/region.handler";
-import { ClaimHandler } from "./handlers/claim.handler";
-import { PostHandler } from "./handlers/post.handler";
 
 // Typical server setup
 const app = express();
+app.use(cookieParser());
+
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
@@ -65,6 +71,7 @@ io.on("connection", (socket: Socket) => {
 
   socket.on("claim", msg => {
     const request: ClaimRequest = JSON.parse(msg);
+    console.log("IN - [claim]", request);
     if (request) {
       ClaimHandler.claim(io, request);
     }
@@ -72,6 +79,7 @@ io.on("connection", (socket: Socket) => {
 
   socket.on("post", msg => {
     const request: PostRequest = JSON.parse(msg);
+    console.log("IN - [post]", request);
     if (request) {
       PostHandler.post(io, request);
     }

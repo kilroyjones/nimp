@@ -1,10 +1,9 @@
 // import type { isClaimMode } from "$lib/state/settings.state";
-import type { Location } from "./types";
 import type { Regions } from "../server/src/database/types/types";
-import type { SelectedDig } from "./types";
+import type { Location, Post, SelectedDig } from "./types";
 
 /**
- * REQUESTS
+ * REQUESTS (From client to server)
  */
 export type ClaimRequest = {
   digs: SelectedDig[];
@@ -30,7 +29,7 @@ export type UpdateRegionRequest = {
 };
 
 /**
- * RESPONSES
+ * RESPONSES (From server to client)
  */
 export type HandshakeResponse = {
   playerId: string;
@@ -48,4 +47,9 @@ export type UpdateRegionResponse = {
 export type UpdateDigResponse = {
   regionKey: string;
   digs: string;
+};
+
+export type UpdatePostResponse = {
+  regionKey: string;
+  post: Post;
 };
