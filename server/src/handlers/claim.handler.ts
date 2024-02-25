@@ -20,7 +20,7 @@ import { ClaimDatabase } from "src/database/claim.database";
 import { Conversion } from "$shared/conversion";
 import { Region } from "$shared/models";
 import { RegionDatabase } from "src/database/region.database";
-import { Post } from "src/types";
+import { Post } from "$shared/types";
 
 /**
  *
@@ -107,11 +107,24 @@ const createKeyLocMap = (request: ClaimRequest): Map<string, Location[]> => {
   return keyIndexMap;
 };
 
-const createPost = (topLeftLoc: Location, width: number, height: number): Post => {
+const createPost = (
+  postRegionKey: string,
+  topLeftLoc: Location,
+  width: number,
+  height: number
+): Post => {
   const postKey: string = `${Conversion.toDigLocationGlobal(topLeftLoc).x}${
     Conversion.toDigLocationGlobal(topLeftLoc).y
   }`;
-  return { postKey: postKey, loc: topLeftLoc, width, height, content: "" };
+  return {
+    key: postKey,
+    regionKey: postRegionKey,
+    x: topLeftLoc.x,
+    y: topLeftLoc.y,
+    w: width,
+    h: height,
+    content: "",
+  };
 };
 
 /**
@@ -123,8 +136,8 @@ const claim = async (io: Server, request: ClaimRequest) => {
   const areValid = areDimensionsValid(dimMap, request.width, request.height);
 
   if (areValid && topLeftLoc) {
-    const post = createPost(topLeftLoc, request.width, request.height);
     const postRegionKey = Conversion.toRegionKey(topLeftLoc);
+    const post = createPost(postRegionKey, topLeftLoc, request.width, request.height);
     const keyLocMap = createKeyLocMap(request);
     const updateDigResponses = await ClaimDatabase.create(keyLocMap, post, postRegionKey);
 

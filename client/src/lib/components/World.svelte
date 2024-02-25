@@ -15,7 +15,8 @@
 	import TextEditor from './TextEditor.svelte';
 
 	// Types and constants
-	import type { Location, Post } from '$shared/types';
+	import type { Location } from '$shared/types';
+	import type { Post } from '$shared/types';
 	import { UPDATE_DISTANCE } from '$shared/constants';
 
 	// Variables
@@ -104,10 +105,6 @@
 		selectedPost = post;
 		$showTextEditor = true;
 	}
-
-	onMount(async () => {
-		WorldState.update();
-	});
 </script>
 
 <svelte:window
@@ -140,8 +137,8 @@
 			style="
 			 	top:{-$y + post.y - 2}px; 
 				left:{-$x + post.x - 2}px;
-				width: {post.width}px;
-				height: {post.height}px;
+				width: {post.w}px;
+				height: {post.h}px;
 				background-color: rgba(100, 100, 255, 0.3);"
 			on:dblclick={() => handleDoubleClickPost(post)}
 			on:focus={() => {}}

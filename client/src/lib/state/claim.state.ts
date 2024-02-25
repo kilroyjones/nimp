@@ -43,7 +43,7 @@ export const currentClaimRequest: Writable<ClaimRequest> = writable();
 const getClaimRequest = (selectionLocs: SelectionLocations) => {
 	const width = selectionLocs.bottomRight.x - selectionLocs.topLeft.x + DIG_WIDTH;
 	const height = selectionLocs.bottomRight.y - selectionLocs.topLeft.y + DIG_HEIGHT;
-	console.log(width, height, selectionLocs);
+
 	let claimRequest: ClaimRequest = { digs: [], width: width, height: height, isClaimable: true };
 
 	for (let x = selectionLocs.topLeft.x; x <= selectionLocs.bottomRight.x; x += DIG_WIDTH) {

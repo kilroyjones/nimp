@@ -4,7 +4,8 @@ import { RegionState, x, y } from './region.state';
 
 // Types and constants
 import type { Bounds, Location } from '$shared/types';
-import type { Dig, Post } from '$lib/types';
+import type { Dig } from '$lib/types';
+import type { Post } from '$shared/types';
 import type { Region } from '$shared/models';
 import { REGION_WIDTH_DIGS, DIG_HEIGHT, DIG_WIDTH, UPDATE_DISTANCE } from '$shared/constants';
 import { Conversion } from '$shared/conversion';
@@ -40,6 +41,7 @@ const getDigsToDraw = (region: Region, bounds: Bounds): Array<Dig> => {
 	const result = new Array((endRow - startRow) * (endCol - startCol));
 	let idx = 0;
 
+	console.log(startCol, startRow, endCol, endRow);
 	for (let row = startRow; row < endRow; row++) {
 		let index = row * REGION_WIDTH_DIGS;
 		for (let col = startCol; col < endCol; col++) {
@@ -59,22 +61,9 @@ const getDigsToDraw = (region: Region, bounds: Bounds): Array<Dig> => {
 const getPostsToDraw = (region: Region, bounds: Bounds): Array<Post> => {
 	let postsArray: Post[] = [];
 	Object.values(region.posts).forEach((post: any) => {
-		if (
-			post.loc.x >= bounds.x1 &&
-			post.loc.x <= bounds.x2 &&
-			post.loc.y >= bounds.y1 &&
-			post.loc.y <= bounds.y2
-		) {
-			const loc = Conversion.toDigLocationLocal(post.loc, region);
-			postsArray.push({
-				regionKey: region.key,
-				postKey: `${loc.x.toString() + loc.y.toString()}`,
-				content: post.content,
-				x: post.loc.x,
-				y: post.loc.y,
-				width: post.width,
-				height: post.height
-			});
+		if (post.x >= bounds.x1 && post.x <= bounds.x2 && post.y >= bounds.y1 && post.y <= bounds.y2) {
+			const loc = Conversion.toDigLocationLocal(Conversion.toLocation(post.x, post.y), region);
+			postsArray.push(post);
 		}
 	});
 	return postsArray;
@@ -122,17 +111,17 @@ const update = (loc: Location, windowWidth: number, windowHeight: number) => {
 		x2: loc.x + windowWidth + UPDATE_DISTANCE,
 		y2: loc.y + windowHeight + UPDATE_DISTANCE
 	};
-	// console.log('VIEW', viewBounds);
 
+	console.log('VIEW', viewBounds);
 	let digs: Array<Dig> = [];
 	let posts: Array<Post> = [];
-
 	const regions = RegionState.getAll();
 	if (regions) {
 		regions.forEach((region) => {
 			// console.log('CALC:', viewBounds);
 			digs = digs.concat(getDigsToDraw(region, viewBounds));
 			posts = posts.concat(getPostsToDraw(region, viewBounds));
+			console.log(digs);
 		});
 
 		digsToDraw.update((_) => {

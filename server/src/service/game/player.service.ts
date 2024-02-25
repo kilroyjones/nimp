@@ -10,16 +10,17 @@
  */
 
 import { Socket } from "socket.io";
-import { createHash, randomBytes } from "crypto";
 import logger from "../server/logging.service";
+import { PlayerDatabase } from "src/database/player.database";
+import { Player } from "src/database/models/player.model";
 
 // Types
-type Player = {
+type PlayerConnection = {
   socket: Socket;
   connections: number;
 };
 
-const players: Map<string, Player> = new Map();
+const playerConns: Map<string, PlayerConnection> = new Map();
 
 ///////////////////////////////////////////////////////////
 // PLAYER MANAGEMENT
@@ -32,7 +33,7 @@ const players: Map<string, Player> = new Map();
  * @param socket The socket connection of the player.
  */
 const add = (id: string, socket: Socket) => {
-  players.set(id, { socket: socket, connections: 1 });
+  playerConns.set(id, { socket: socket, connections: 1 });
   logger.info(`Player ${id} connected`);
 };
 
@@ -43,7 +44,7 @@ const add = (id: string, socket: Socket) => {
  */
 
 const remove = (id: string) => {
-  players.delete(id);
+  playerConns.delete(id);
   logger.info(`Player ${id} disocnnected`);
 };
 
@@ -54,20 +55,18 @@ const remove = (id: string) => {
  *
  * TODO: Implement user already existing handling logic.
  */
-const getPlayerId = (socket: Socket): string => {
-  const id = socket.handshake.query.playerId as string;
+const getPlayer = async (socket: Socket): Promise<Player | undefined> => {
+  const id = socket.handshake.query.id as string;
 
   if (id !== "") {
-    if (players.get(id)) {
-      logger.info(`Player ${id} already connected`);
+    const player = await PlayerDatabase.get(id);
+    // Player exists
+    if (player) {
+      return player;
     }
-    // TODO: Add code here that handles user already existing
-    return id;
   }
 
-  // Create a new random id for the users
-  const salt = randomBytes(16).toString("hex");
-  return createHash("sha256").update(salt).digest("hex");
+  return await PlayerDatabase.create();
 };
 
 ///////////////////////////////////////////////////////////
@@ -87,7 +86,7 @@ const getPlayerId = (socket: Socket): string => {
  *
  */
 const capJoinedRegions = (id: string, cap: number) => {
-  const player = players.get(id);
+  const player = playerConns.get(id);
   if (player) {
     const roomsIter = player.socket.rooms.values();
     while (player.socket.rooms.size > cap) {
@@ -105,7 +104,7 @@ const capJoinedRegions = (id: string, cap: number) => {
  * @returns {Set<string> | undefined} A set of region names the player has joined, or undefined if the player is not found.
  */
 const getJoinedRegions = (id: string): Set<string> | undefined => {
-  const player = players.get(id);
+  const player = playerConns.get(id);
   if (player) {
     return player.socket.rooms;
   }
@@ -117,7 +116,7 @@ const getJoinedRegions = (id: string): Set<string> | undefined => {
  * @param region The region to join.
  */
 const joinRegion = (id: string, region: string) => {
-  const player = players.get(id);
+  const player = playerConns.get(id);
   if (player) {
     player.socket.join(region);
   }
@@ -130,7 +129,7 @@ const joinRegion = (id: string, region: string) => {
  * @param regions The regions to join.
  */
 const joinRegions = (id: string, regions: string[]) => {
-  const player = players.get(id);
+  const player = playerConns.get(id);
   if (player) {
     regions.forEach(region => player.socket.join(region));
   }
@@ -142,7 +141,7 @@ const joinRegions = (id: string, regions: string[]) => {
  * @param {string} id - The unique identifier of the player.
  */
 const leaveAllRegions = (id: string) => {
-  const player = players.get(id);
+  const player = playerConns.get(id);
   if (player) {
     player.socket.rooms.forEach(region => player.socket.leave(region));
   }
@@ -155,7 +154,7 @@ const leaveAllRegions = (id: string) => {
  * @param {string} region - The name of the region to leave.
  */
 const leaveRegion = (id: string, region: string) => {
-  const player = players.get(id);
+  const player = playerConns.get(id);
   if (player) {
     player.socket.leave(region);
   }
@@ -168,7 +167,7 @@ const leaveRegion = (id: string, region: string) => {
  * @param {string[]} regions - An array of region names to leave.
  */
 const leaveRegions = (id: string, regions: string[]) => {
-  const player = players.get(id);
+  const player = playerConns.get(id);
   if (player) {
     regions.forEach(region => player.socket.leave(region));
   }
@@ -177,7 +176,7 @@ const leaveRegions = (id: string, regions: string[]) => {
 export const PlayerService = {
   // Player
   add,
-  getPlayerId,
+  getPlayer,
   remove,
 
   // Regions

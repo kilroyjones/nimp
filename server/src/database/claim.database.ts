@@ -1,13 +1,16 @@
-import logger from "src/service/server/logging.service";
-
+// Modules
 import { Conversion } from "$shared/conversion";
+import { Data } from "$shared/data";
 import { db } from "./client/db";
 import { Location } from "$shared/types";
 import { Region } from "./models/region.model";
-import { Data } from "$shared/data";
 import { RegionDatabase } from "./region.database";
 import { UpdateDigResponse } from "$shared/messages";
-import { Post } from "src/types";
+
+import logger from "src/service/server/logging.service";
+
+// Types and constants
+import type { Post } from "$shared/types";
 
 /**
  *

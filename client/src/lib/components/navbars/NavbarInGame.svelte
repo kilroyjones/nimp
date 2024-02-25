@@ -11,12 +11,13 @@
 	 */
 
 	// Components
-	import Debug from './Debug.svelte';
+	import Debug from '../Debug.svelte';
 
 	// Stores
+	import Toggle from '../Toggle.svelte';
 	import { isDebugMode, isClaimMode } from '$lib/state/settings.state';
+	import { PlayerState } from '$lib/state/player.state';
 	import { x, y } from '$lib/state/world.state';
-	import Toggle from './Toggle.svelte';
 
 	// Variables passed in
 	export let worldX: number | string; // Since bound to an input field
@@ -80,17 +81,29 @@
 	role="button"
 	aria-label=""
 >
-	<div class="location no-drag">
-		<input class={xIsInt ? '' : 'has-error'} bind:value={worldX} on:keyup={handleKeyup} />
-		<input class={yIsInt ? '' : 'has-error'} bind:value={worldY} on:keyup={handleKeyup} />
-		<button type="submit" on:click={teleport}>Teleport</button>
+	<div class="center-group">
+		<div class="location no-drag">
+			<input class={xIsInt ? '' : 'has-error'} bind:value={worldX} on:keyup={handleKeyup} />
+			<input class={yIsInt ? '' : 'has-error'} bind:value={worldY} on:keyup={handleKeyup} />
+			<button type="submit" on:click={teleport}>Teleport</button>
+		</div>
+		<Toggle isChecked={$isClaimMode} />
 	</div>
-	<Toggle isChecked={$isClaimMode} />
+	<div class="account">
+		{#if PlayerState.isDefined()}
+			<a href="/account">{PlayerState.getName()}</a>
+		{/if}
+	</div>
 </div>
 
 {#if { $isDebugMode }}<Debug />{/if}
 
 <style>
+	.account {
+		padding: 0px 10px 0px 10px;
+		margin-left: auto;
+	}
+
 	button {
 		border-radius: 6px;
 		min-height: 26px;
@@ -134,17 +147,17 @@
 	}
 
 	.navbar {
+		display: flex;
 		position: absolute;
 		height: 48px;
 		width: 100vw;
 		z-index: 1;
 
 		align-items: center;
+		justify-content: space-between;
 		background-color: rgba(0, 0, 0, 0.2);
 		color: #121317;
-		display: flex;
 		overflow: hidden;
-		justify-content: center;
 		opacity: 0.8;
 	}
 
@@ -159,5 +172,12 @@
 		user-drag: none;
 		-ms-user-drag: none;
 		user-drag: none;
+	}
+
+	.center-group {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex: 1; /* This makes sure it takes up the maximum width */
 	}
 </style>

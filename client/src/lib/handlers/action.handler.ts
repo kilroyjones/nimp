@@ -1,7 +1,7 @@
 // Modules
 import { Conversion } from '$shared/conversion';
 import { DigStatus } from '$shared/constants';
-import { socketClient } from '$lib/socket/client';
+import { PlaySocket } from '$lib/sockets/play.socket';
 import { RegionState } from '$lib/state/region.state';
 
 // Types and constants
@@ -16,7 +16,7 @@ import { DrawState } from '$lib/state/draw.state';
  */
 const sendClaim = (claimRequest: ClaimRequest) => {
 	if (claimRequest.isClaimable) {
-		socketClient.send('claim', JSON.stringify(claimRequest));
+		PlaySocket.send('claim', JSON.stringify(claimRequest));
 	}
 };
 
@@ -30,7 +30,7 @@ const sendDig = (loc: Location) => {
 	const key = Conversion.toRegionKey(loc);
 	const site = RegionState.getDigSite(key, loc);
 	if (site && site.status == DigStatus.UNDUG) {
-		socketClient.send('dig', { key: key, idx: site.idx });
+		PlaySocket.send('dig', { key: key, idx: site.idx });
 	}
 };
 
@@ -42,7 +42,7 @@ const sendDig = (loc: Location) => {
  * @param {string} content - The content to be posted.
  */
 const sendPost = (regionKey: string, postKey: string, content: string) => {
-	socketClient.send(
+	PlaySocket.send(
 		'post',
 		JSON.stringify({ regionKey: regionKey, postKey: postKey, content: content })
 	);

@@ -3,11 +3,13 @@ generator kysely {
   output       = "../src/database/types"
   fileName     = "types.d.ts"
   enumFileName = "enums.ts"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  extensions = [pgcrypto]
 }
 
 model Regions {
@@ -20,4 +22,14 @@ model Regions {
   digs        String
   /// @kyselyType(JSON)
   posts       Json
+}
+
+model Players { 
+  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String
+  password    String 
+}
+
+model PlayerInventory { 
+  id          String                @id @unique 
 }

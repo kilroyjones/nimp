@@ -4,7 +4,7 @@
 	import { showTextEditor } from '$lib/state/settings.state';
 
 	// Types and constants
-	import type { Post } from '$lib/types';
+	import type { Post } from '$shared/types';
 
 	export let post: Post;
 
@@ -14,7 +14,7 @@
 	 * Submits a post using the ActionHandler's sendPost method.
 	 */
 	function submit() {
-		ActionHandler.sendPost(post.regionKey, post.postKey, inputValue);
+		ActionHandler.sendPost(post.regionKey, post.key, inputValue);
 	}
 
 	/**
@@ -40,7 +40,7 @@
 		>
 			<form class="modal-form" on:submit={submit}>
 				<textarea
-					style="width:{post.width - 16}px; height: {post.height - 16}px"
+					style="width:{post.w - 16}px; height: {post.h - 16}px"
 					bind:value={inputValue}
 					placeholder="Enter text here"
 				/>

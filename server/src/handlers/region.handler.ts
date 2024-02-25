@@ -27,11 +27,11 @@ const create = async (io: Server, playerId: string, createRegionRequest: CreateR
       createRegionRequest.key,
       createRegionRequest.loc
     );
+  }
 
-    if (region) {
-      // Since update regions expects a list we need to wrap it as an array
-      io.to(region.key).emit("update-regions", { regions: [region] });
-    }
+  if (region) {
+    // Since update regions expects a list we need to wrap it as an array
+    io.to(region.key).emit("update-regions", { regions: [region] });
   }
 };
 
@@ -64,6 +64,7 @@ const update = async (
   if (updateRegionRequest.regionsJoin.length > 0) {
     const regions = await RegionDatabase.getMany(updateRegionRequest.regionsJoin.slice(0, 4));
     if (regions) {
+      console.log(regions[0].posts);
       logger.info("RegionHandler.update", regions.length);
       socket.emit("update-regions", { regions: regions });
     }

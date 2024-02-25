@@ -19,6 +19,7 @@ export const regionKeysJoined: Writable<Array<string>> = writable(new Array());
 export const regions: Writable<Map<string, Region>> = writable(new Map());
 export const digsToDraw: Writable<Array<Dig>> = writable(new Array());
 
+console.log(getStore(regionKeysJoined), getStore(regions), getStore(digsToDraw));
 /**
  * Adds a list of regions to the list.
  *
@@ -162,6 +163,9 @@ const update = (loc: Location) => {
 	const regionKeysLeave = Data.arrayDifference(getStore(regionKeysJoined), regionKeysView);
 	const regionKeysJoin = Data.arrayDifference(regionKeysView, getStore(regionKeysJoined));
 
+	console.log('JOINED', getStore(regionKeysJoined));
+	console.log('TOJOIN', regionKeysJoin, regionKeysLeave);
+
 	regionKeysJoined.set(regionKeysView);
 	if (regionKeysJoin.length > 0 || regionKeysLeave.length > 0) {
 		RegionState.remove(regionKeysLeave);
@@ -191,7 +195,7 @@ const updateDigs = (regionKey: string, digs: string) => {
 const updatePosts = (regionKey: string, post: Post) => {
 	const region = getStore(regions).get(regionKey);
 	if (region) {
-		(region.posts as any)[post.postKey] = post;
+		(region.posts as any)[post.key] = post;
 	}
 };
 

@@ -23,9 +23,18 @@ export type SelectedDig = {
 };
 
 export type Post = {
-  postKey: string;
-  loc: Location;
-  width: number;
-  height: number;
+  key: string;
+  regionKey: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
   content: string;
 };
+
+export type Player = {
+  id: string;
+  name: string;
+};
+
+export type Inventory = {};

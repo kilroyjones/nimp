@@ -1,6 +1,6 @@
 // MODULES
 import { Conversion } from '$shared/conversion';
-import { socketClient } from '$lib/socket/client';
+import { PlaySocket } from '$lib/sockets/play.socket';
 import { WorldState } from '$lib/state/world.state';
 
 // TYPES AND CONSTANTS
@@ -55,7 +55,7 @@ const receiveUpdateRegions = (updateRegionResponse: UpdateRegionResponse) => {
  */
 const sendCreateRegion = (loc: Location) => {
 	if (RegionState.exists(Conversion.toRegionKey(loc)) == false) {
-		socketClient.send('create-region', {
+		PlaySocket.send('create-region', {
 			key: Conversion.toRegionKey(loc),
 			loc: loc
 		});
@@ -69,7 +69,7 @@ const sendCreateRegion = (loc: Location) => {
  * @param {Array<string>} regionsLeave - An array of region keys that the player is leaving.
  */
 const sendUpdateRegions = (regionsJoin: Array<string>, regionsLeave: Array<string>) => {
-	socketClient.send('update-regions', {
+	PlaySocket.send('update-regions', {
 		regionsJoin: regionsJoin,
 		regionsLeave: regionsLeave
 	});

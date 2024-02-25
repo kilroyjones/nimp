@@ -1,12 +1,15 @@
-import logger from "src/service/server/logging.service";
-
+// Modules
 import { Conversion } from "$shared/conversion";
 import { db } from "./client/db";
 import { Location } from "$shared/types";
 import { Region } from "./models/region.model";
 import { REGION_WIDTH_DIGS, REGION_HEIGHT_DIGS } from "$shared/constants";
 import { UpdateResult, sql } from "kysely";
-import { Post } from "src/types";
+
+import logger from "src/service/server/logging.service";
+
+// Types and constants
+import type { Post } from "$shared/types";
 
 /**
  * Asynchronously creates a new region with specified details.
@@ -185,14 +188,12 @@ const updatePost = async (
 
 const addPost = async (regionKey: string, post: Post): Promise<UpdateResult[] | undefined> => {
   try {
-    const path = `{"${post.postKey}"}`;
+    const path = `{"${post.key}"}`;
     const newValueJson = JSON.stringify(post);
-    console.log(path, newValueJson);
     return await db
       .updateTable("Regions")
       .set({
         posts: sql`jsonb_set(posts, ${sql.lit(path)}, ${sql.lit(newValueJson)}::jsonb, true)`,
-        // posts: JSON.stringify({ asdf: "asdfa" }) as unknown as JSON,
       })
       .where("key", "=", regionKey)
       .execute();
