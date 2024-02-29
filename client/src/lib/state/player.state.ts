@@ -1,6 +1,6 @@
 import { browser } from '$app/environment';
-import type { Player } from '$shared/types';
 import { get, writable } from 'svelte/store';
+import type { Player } from '$shared/types';
 import type { Writable } from 'svelte/store';
 
 const player: Writable<Player | undefined> = writable(undefined);
@@ -37,6 +37,14 @@ const isDefined = (): boolean => {
 	return false;
 };
 
+const isAccountRegistered = (): boolean => {
+	const temp = get(player);
+	if (temp) {
+		return temp.registered;
+	}
+	return false;
+};
+
 const set = (playerData: Player) => {
 	player.set(playerData);
 };
@@ -45,9 +53,15 @@ const getName = (): string | undefined => {
 	return get(player)?.name;
 };
 
+const getToken = (): string | undefined => {
+	return get(player)?.token
+};
+
 export const PlayerState = {
+	isAccountRegistered,
 	isDefined,
 	getId,
 	getName,
+	getToken, 
 	set
 };

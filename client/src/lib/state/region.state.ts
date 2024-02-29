@@ -19,7 +19,6 @@ export const regionKeysJoined: Writable<Array<string>> = writable(new Array());
 export const regions: Writable<Map<string, Region>> = writable(new Map());
 export const digsToDraw: Writable<Array<Dig>> = writable(new Array());
 
-console.log(getStore(regionKeysJoined), getStore(regions), getStore(digsToDraw));
 /**
  * Adds a list of regions to the list.
  *

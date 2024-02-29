@@ -25,13 +25,11 @@ export const isOnline: Writable<boolean> = writable(false);
 const connect = (id: string) => {
 	console.log('Connecting to server...');
 	const SERVER_URL = 'http://localhost:3000/'; // Replace with your server's URL
-
 	socket = io(SERVER_URL, {
 		query: {
 			id: id
 		}
 	});
-
 	/**
 	 * CONNECTION
 	 */
@@ -45,7 +43,6 @@ const connect = (id: string) => {
 		isOnline.set(false);
 		console.log('Disconnected from server');
 	});
-
 	/**
 	 * ACTIONS
 	 */
@@ -55,14 +52,12 @@ const connect = (id: string) => {
 			RegionHandler.receiveUpdateDigs(msg);
 		}
 	});
-
 	socket.on('update-posts', async (msg: UpdatePostResponse) => {
 		console.log('IN - [update-posts]', msg);
 		if (msg) {
 			RegionHandler.receiveUpdatePosts(msg);
 		}
 	});
-
 	/**
 	 * REGIONS
 	 */

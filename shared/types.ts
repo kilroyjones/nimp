@@ -35,6 +35,8 @@ export type Post = {
 export type Player = {
   id: string;
   name: string;
+  registered: boolean;
+  token: string;
 };
 
 export type Inventory = {};

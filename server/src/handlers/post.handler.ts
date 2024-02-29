@@ -28,11 +28,8 @@ const post = async (io: Server, postRequest: PostRequest) => {
 
     if (updatedRegion) {
       const post = await RegionDatabase.getPost(postRequest.regionKey, postRequest.postKey);
-      console.log("REGION", region.key);
-      console.log("POST", post);
       if (post) {
         const ext = post[postRequest.postKey];
-        console.log("PARSED: ", ext);
         if (ext) {
           io.to(region.key).emit("update-posts", { regionKey: region.key, post: ext });
         }

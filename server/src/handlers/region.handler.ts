@@ -64,7 +64,6 @@ const update = async (
   if (updateRegionRequest.regionsJoin.length > 0) {
     const regions = await RegionDatabase.getMany(updateRegionRequest.regionsJoin.slice(0, 4));
     if (regions) {
-      console.log(regions[0].posts);
       logger.info("RegionHandler.update", regions.length);
       socket.emit("update-regions", { regions: regions });
     }

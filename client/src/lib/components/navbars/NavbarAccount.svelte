@@ -3,7 +3,9 @@
 </script>
 
 <div class="navbar">
-	<a href="/">Play</a>
+	<div class="play">
+		<a href="/">Play</a>
+	</div>
 	<div class="account">
 		{#if PlayerState.isDefined()}
 			<a href="/account">{PlayerState.getName()}</a>
@@ -29,5 +31,9 @@
 		display: flex;
 		overflow: hidden;
 		opacity: 0.8;
+	}
+
+	.play {
+		padding-left: 20px;
 	}
 </style>

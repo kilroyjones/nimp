@@ -11,6 +11,9 @@ export type Players = {
     id: Generated<string>;
     name: string;
     password: string;
+    token: Generated<string>;
+    registered: Generated<boolean>;
+    email: string | null;
 };
 export type Regions = {
     id: Generated<number>;

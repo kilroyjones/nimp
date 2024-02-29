@@ -28,6 +28,9 @@ model Players {
   id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name        String
   password    String 
+  token       String  @default(dbgenerated("gen_random_uuid()"))
+  registered  Boolean @default(false)
+  email       String?
 }
 
 model PlayerInventory { 

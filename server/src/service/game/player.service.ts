@@ -59,7 +59,7 @@ const getPlayer = async (socket: Socket): Promise<Player | undefined> => {
   const id = socket.handshake.query.id as string;
 
   if (id !== "") {
-    const player = await PlayerDatabase.get(id);
+    const player = await PlayerDatabase.getById(id);
     // Player exists
     if (player) {
       return player;

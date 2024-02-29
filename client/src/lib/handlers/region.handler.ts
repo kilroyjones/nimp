@@ -18,7 +18,6 @@ import { RegionState } from '$lib/state/region.state';
  * This will replace a regions existing digs string.
  */
 const receiveUpdateDigs = (updateDigs: UpdateDigResponse) => {
-	console.log(updateDigs.regionKey, updateDigs.digs.slice(0, 100));
 	RegionState.updateDigs(updateDigs.regionKey, updateDigs.digs);
 	WorldState.update();
 };

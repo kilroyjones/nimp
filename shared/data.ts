@@ -1,6 +1,10 @@
+// Types and constants
 import { DigStatus } from "./constants";
 import { Region } from "./models";
 import { Location } from "./types";
+
+const nameRegex = /^[A-Za-z0-9]+$/;
+const passwordRegex = /^[A-Za-z0-9!@#$%^&*]+$/;
 
 /**
  * Calculates the difference between two arrays.
@@ -85,6 +89,43 @@ const isUnclaimed = (idx: number, region: Region): boolean => {
   return false;
 };
 
+/**
+ * Checks if a name is valid
+ *
+ * @param {string} name
+ * @returns {Object} Object containss err and msg fields
+ */
+const checkName = (name: string): { err: boolean; msg: string } => {
+  if (name.length < 2) {
+    return { err: true, msg: "Name must be at least two letters" };
+  } else if (!nameRegex.test(name)) {
+    return { err: true, msg: "Name must include only letters and numbers" };
+  } else if (name.length == 27) {
+    return { err: true, msg: "Names cannot exceed 27 characters" };
+  }
+  return { err: false, msg: "" };
+};
+
+/**
+ * Checks if a password is valid
+ *
+ * @param {string} password
+ * @returns {Object} Object containss err and msg fields
+ */
+const checkPassword = (password: string): { err: boolean; msg: string } => {
+  if (password.length < 9) {
+    return { err: true, msg: "Password must be at least 9 characters" };
+  }
+
+  if (passwordRegex.test(password) == false) {
+    return {
+      err: true,
+      msg: "Password can only container letters, numbers and characters: !@#$%^&*",
+    };
+  }
+  return { err: false, msg: "" };
+};
+
 export const Data = {
   arrayDifference,
   arrayIntersection,
@@ -92,4 +133,6 @@ export const Data = {
   setCharAt,
   locationsEqual,
   isUnclaimed,
+  checkName,
+  checkPassword,
 };

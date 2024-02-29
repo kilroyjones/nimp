@@ -6,7 +6,6 @@
 	import { Conversion } from '$shared/conversion';
 	import { Formula } from '$lib/helpers/formula.helper';
 	import { isClaimMode, showTextEditor } from '$lib/state/settings.state';
-	import { onMount } from 'svelte';
 	import { RegionHandler } from '$lib/handlers/region.handler';
 	import { RegionState } from '$lib/state/region.state';
 	import { WorldState, x, y } from '$lib/state/world.state';
@@ -32,7 +31,6 @@
 	 * with the handleMove function
 	 */
 	function handleStartDrag(event: MouseEvent) {
-		// console.log('start drag');
 		dragStartX = event.clientX;
 		dragStartY = event.clientY;
 		previousX = event.clientX;
@@ -90,7 +88,6 @@
 		const region = RegionState.get(key);
 		if (region) {
 			if (RegionState.isDiggable(loc, region)) {
-				console.log(region);
 				ActionHandler.sendDig(loc);
 			}
 		} else {

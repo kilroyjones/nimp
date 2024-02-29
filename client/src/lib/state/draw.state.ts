@@ -113,6 +113,7 @@ const update = (loc: Location, windowWidth: number, windowHeight: number) => {
 	};
 
 	console.log('VIEW', viewBounds);
+
 	let digs: Array<Dig> = [];
 	let posts: Array<Post> = [];
 	const regions = RegionState.getAll();

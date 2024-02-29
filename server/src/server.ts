@@ -19,6 +19,7 @@ const PORT = 3000;
 const app = express();
 app.use(cors());
 app.use(cookieParser());
+app.use(express.json());
 
 export const httpServer = createServer(app);
 

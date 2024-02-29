@@ -1,5 +1,18 @@
 {
-	"/": [],
-	"/error": [],
-	"/play": []
+	"/": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.ts"
+	],
+	"/account": [
+		"src/routes/+layout.ts"
+	],
+	"/error": [
+		"src/routes/+layout.ts"
+	],
+	"/play": [
+		"src/routes/play/+layout.ts",
+		"src/routes/+layout.ts",
+		"src/routes/play/+layout.ts",
+		"src/routes/+layout.ts"
+	]
 }
