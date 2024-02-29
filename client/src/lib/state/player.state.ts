@@ -47,6 +47,7 @@ const isAccountRegistered = (): boolean => {
 
 const set = (playerData: Player) => {
 	player.set(playerData);
+	console.log('asdf', get(player));
 };
 
 const getName = (): string | undefined => {
@@ -54,7 +55,7 @@ const getName = (): string | undefined => {
 };
 
 const getToken = (): string | undefined => {
-	return get(player)?.token
+	return get(player)?.token;
 };
 
 export const PlayerState = {
@@ -62,6 +63,6 @@ export const PlayerState = {
 	isDefined,
 	getId,
 	getName,
-	getToken, 
+	getToken,
 	set
 };

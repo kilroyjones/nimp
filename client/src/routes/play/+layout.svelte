@@ -27,6 +27,7 @@
 		}
 
 		const playerId = PlayerState.getId();
+		console.log('PID', playerId);
 
 		if (playerId) {
 			PlaySocket.connect(playerId);

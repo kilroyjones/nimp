@@ -69,10 +69,10 @@ const validatePlayerDetails = (name: string, password: string): { err: boolean; 
  *
  */
 const register = async (req: Request, res: Response) => {
-  console.log(req.body);
   const data = req.body;
   console.log(data);
   const player = await PlayerDatabase.getByToken(data.token);
+  console.log("player: ", player);
   // TODO: CHECK IF PLAYER ALREADY REGISTER
   if (player) {
     const { err, msg } = validatePlayerDetails(data.name, data.password);

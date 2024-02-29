@@ -9,7 +9,6 @@
 <div class="container">
 	<div class="content">
 		<div class="title">Account settings</div>
-		{PlayerState.isAccountRegistered()}
 		{#if PlayerState.isAccountRegistered()}
 			<div class="directions">
 				Changing your username does not change the name on previous posts, though they are still
@@ -31,9 +30,8 @@
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: space-around;
-		align-items: center;
-		height: 100%;
 		padding: 20px;
+		padding-top: 15%;
 		font-family: monospace;
 		font-size: 16px;
 	}
@@ -49,6 +47,7 @@
 
 	.directions {
 		margin-bottom: 32px;
+		font-size: 16px;
 	}
 
 	.title {

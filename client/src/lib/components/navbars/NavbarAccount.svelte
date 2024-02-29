@@ -4,7 +4,7 @@
 
 <div class="navbar">
 	<div class="play">
-		<a href="/">Play</a>
+		<a href="/play">Play</a>
 	</div>
 	<div class="account">
 		{#if PlayerState.isDefined()}

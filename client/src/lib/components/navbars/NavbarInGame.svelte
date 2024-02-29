@@ -91,7 +91,8 @@
 	</div>
 	<div class="account">
 		{#if PlayerState.isDefined()}
-			<a href="/account">{PlayerState.getName()}</a>
+			<a href="/account">{PlayerState.getName()}</a> |
+			<a href="/account/logout">Logout</a>
 		{/if}
 	</div>
 </div>

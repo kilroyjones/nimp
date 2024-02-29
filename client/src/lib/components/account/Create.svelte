@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { PlayerState } from '$lib/state/player.state';
 	import { Data } from '$shared/data';
+	import type { Player } from '$shared/types';
 	// let name: string;
 	// let password: string;
 	// let email: string;
@@ -48,7 +49,13 @@
 				body: JSON.stringify(data)
 			});
 
-			console.log('account: ', response.body);
+			// TODO: Better way of converting this and verifying data?
+			if (response.status == 200) {
+				const updatedPlayer = await response.json();
+				if (updatedPlayer) {
+					PlayerState.set(updatedPlayer.msg as unknown as Player);
+				}
+			}
 		} catch (error: any) {
 			console.log('error creating account: ', error);
 		}
