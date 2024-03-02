@@ -7,8 +7,8 @@ export const registerSchema = Joi.object({
   email: Joi.string().optional(),
 });
 
-export const updateNameSchema = Joi.object({
-  name: Joi.string().required(),
-  password: Joi.string().required(),
+export const changePasswordSchema = Joi.object({
   token: Joi.string().required(),
+  currentPassword: Joi.string().required(),
+  newPassword: Joi.string().required(),
 });

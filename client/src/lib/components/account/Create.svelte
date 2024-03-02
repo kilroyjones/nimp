@@ -1,5 +1,7 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { PlayerState } from '$lib/state/player.state';
+	import { update } from '$lib/state/world.state';
 	import { Data } from '$shared/data';
 	import type { Player } from '$shared/types';
 	// let name: string;
@@ -32,14 +34,12 @@
 
 	const createAccount = async () => {
 		try {
-			console.log('token', PlayerState.getToken());
 			const data = {
 				name: name,
 				password: password,
 				token: PlayerState.getToken(),
 				email: email
 			};
-			console.log(data);
 
 			const response = await fetch('http://localhost:3000/account/register', {
 				method: 'POST',
@@ -54,7 +54,9 @@
 				const updatedPlayer = await response.json();
 				if (updatedPlayer) {
 					PlayerState.set(updatedPlayer.msg as unknown as Player);
+					goto('/account/success', { replaceState: true });
 				}
+				goto('/account/failure', { replaceState: true });
 			}
 		} catch (error: any) {
 			console.log('error creating account: ', error);

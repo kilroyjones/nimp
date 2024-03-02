@@ -1,0 +1,5 @@
+{
+  "delay": "2500",
+  "watch": ["src/"],
+  "exec": "node  --delay 2.5s --watch 'src/**/*.ts' --exec 'ts-node' -r tsconfig-paths/register src/server.ts | pino-pretty"
+}

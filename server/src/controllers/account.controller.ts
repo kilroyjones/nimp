@@ -3,7 +3,7 @@ import * as bcrypt from "bcrypt";
 
 import { PlayerDatabase } from "src/database/player.database";
 import { Request, Response } from "express";
-import { sendError, sendNotFound, sendOk } from "src/helpers/response.helper";
+import { sendError, sendNotFound, sendOk, sendUnauthorized } from "src/helpers/response.helper";
 
 const nameRegex = /^[A-Za-z0-9]+$/;
 /**
@@ -42,13 +42,6 @@ const get = async (req: Request, res: Response) => {
 };
 
 /**
- *
- */
-const updateName = async (req: Request, res: Response) => {
-  const data = req.body;
-};
-
-/**
  * TODO: centralize this?
  */
 const validatePlayerDetails = (name: string, password: string): { err: boolean; msg: string } => {
@@ -70,21 +63,17 @@ const validatePlayerDetails = (name: string, password: string): { err: boolean; 
  */
 const register = async (req: Request, res: Response) => {
   const data = req.body;
-  console.log(data);
   const player = await PlayerDatabase.getByToken(data.token);
-  console.log("player: ", player);
+
   // TODO: CHECK IF PLAYER ALREADY REGISTER
   if (player) {
     const { err, msg } = validatePlayerDetails(data.name, data.password);
-    console.log(err, msg);
     if (err) {
       return sendError(res, msg);
     }
 
     const passwordHash = await bcrypt.hash(data.password, 10);
-    console.log(passwordHash);
     const securedPlayer = await PlayerDatabase.register(data.name, passwordHash, data.token);
-    console.log(securedPlayer);
 
     if (securedPlayer) {
       return sendOk(res, securedPlayer);
@@ -93,9 +82,31 @@ const register = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ *
+ */
+const changePassword = async (req: Request, res: Response) => {
+  const data = req.body;
+  const player = await PlayerDatabase.getByToken(data.token);
+
+  console.log(player);
+  if (player) {
+    const passwordHash = await bcrypt.hash(data.currentPassword, 10);
+    console.log(data.currentPassword, passwordHash);
+    if (passwordHash != player.password) {
+      return sendError(res, "Passwords don't match");
+    }
+
+    const newPasswordHash = await bcrypt.hash(data.newPassword, 10);
+    await PlayerDatabase.changePassword(player.token, newPasswordHash);
+    return sendOk(res, {});
+  }
+  return sendError(res, "Player not found");
+};
+
 export const AccountController = {
   create,
   get,
   register,
-  updateName,
+  changePassword,
 };

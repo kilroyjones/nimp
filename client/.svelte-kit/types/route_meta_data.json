@@ -6,6 +6,12 @@
 	"/account": [
 		"src/routes/+layout.ts"
 	],
+	"/account/failure": [
+		"src/routes/+layout.ts"
+	],
+	"/account/success": [
+		"src/routes/+layout.ts"
+	],
 	"/error": [
 		"src/routes/+layout.ts"
 	],

@@ -1,8 +1,10 @@
 <script lang="ts">
+	import { PlayerState } from '$lib/state/player.state';
 	import { Data } from '$shared/data';
 
 	let passwordError: string = 'Password must be at least 9 characters';
 	let option: string = 'password';
+	let currentPassword: string = '';
 	let password1: string = '';
 	let password2: string = '';
 
@@ -20,6 +22,36 @@
 			passwordError = '';
 		}
 	};
+
+	const changePassword = async () => {
+		try {
+			const data = {
+				token: PlayerState.getToken(),
+				currentPassword: currentPassword,
+				newPassword: password1
+			};
+
+			const response = await fetch('http://localhost:3000/account/change-password', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(data)
+			});
+
+			// TODO: Better way of converting this and verifying data?
+			if (response.status == 200) {
+				currentPassword = '';
+				password1 = '';
+				password2 = '';
+				option = 'password-updated';
+				// const res = await response.json();
+				// TODO: Handle error for the update
+			}
+		} catch (error: any) {
+			console.log('error creating account: ', error);
+		}
+	};
 </script>
 
 <div class="input-group">
@@ -30,6 +62,16 @@
 </div>
 
 {#if option == 'password'}
+	<div class="block">
+		<div class="input-group">
+			<input
+				type="password"
+				placeholder="Current password"
+				bind:value={currentPassword}
+				maxlength="27"
+			/>
+		</div>
+	</div>
 	<div class="block">
 		<div class="input-group">
 			<input
@@ -52,8 +94,10 @@
 	</div>
 	<div class="error">{passwordError}</div>
 	<div class="input-group at-end">
-		<button>Submit</button>
+		<button on:click={changePassword}>Submit</button>
 	</div>
+{:else if option == 'password-updated'}
+	<div>Password changed!</div>
 {:else}
 	<div class="block">
 		<div class="directions">
