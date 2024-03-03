@@ -88,18 +88,17 @@ const register = async (req: Request, res: Response) => {
 const changePassword = async (req: Request, res: Response) => {
   const data = req.body;
   const player = await PlayerDatabase.getByToken(data.token);
-
   console.log(player);
   if (player) {
-    const passwordHash = await bcrypt.hash(data.currentPassword, 10);
-    console.log(data.currentPassword, passwordHash);
-    if (passwordHash != player.password) {
+    const match = await bcrypt.compare(data.currentPassword, player.password);
+    if (match == false) {
+      console.log("don't match");
       return sendError(res, "Passwords don't match");
     }
-
+    console.log("new pass");
     const newPasswordHash = await bcrypt.hash(data.newPassword, 10);
     await PlayerDatabase.changePassword(player.token, newPasswordHash);
-    return sendOk(res, {});
+    return sendOk(res, "Password changed");
   }
   return sendError(res, "Player not found");
 };

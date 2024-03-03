@@ -3,7 +3,7 @@
 	import { Data } from '$shared/data';
 
 	let passwordError: string = 'Password must be at least 9 characters';
-	let option: string = 'password';
+	let option: string = 'password-updated';
 	let currentPassword: string = '';
 	let password1: string = '';
 	let password2: string = '';
@@ -45,8 +45,6 @@
 				password1 = '';
 				password2 = '';
 				option = 'password-updated';
-				// const res = await response.json();
-				// TODO: Handle error for the update
 			}
 		} catch (error: any) {
 			console.log('error creating account: ', error);
@@ -97,7 +95,12 @@
 		<button on:click={changePassword}>Submit</button>
 	</div>
 {:else if option == 'password-updated'}
-	<div>Password changed!</div>
+	<div class="password-updated">
+		<div>Password changed!</div>
+	</div>
+	<div class="password-updated">
+		<a href="/play">Back to nimp</a>
+	</div>
 {:else}
 	<div class="block">
 		<div class="directions">
@@ -165,5 +168,11 @@
 		display: flex;
 		width: 100%;
 		justify-content: space-between;
+	}
+
+	.password-updated {
+		margin-top: 30px;
+		font-weight: 700;
+		text-align: center;
 	}
 </style>

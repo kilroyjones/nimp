@@ -9,6 +9,10 @@
 	"/account/failure": [
 		"src/routes/+layout.ts"
 	],
+	"/account/logout": [
+		"src/routes/account/logout/+page.ts",
+		"src/routes/+layout.ts"
+	],
 	"/account/success": [
 		"src/routes/+layout.ts"
 	],

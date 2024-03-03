@@ -92,7 +92,7 @@
 	<div class="account">
 		{#if PlayerState.isDefined()}
 			<a href="/account">{PlayerState.getName()}</a> |
-			<a href="/account/logout">Logout</a>
+			<a data-sveltekit-preload-data="false" href="/account/logout">Logout</a>
 		{/if}
 	</div>
 </div>

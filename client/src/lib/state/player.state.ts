@@ -26,10 +26,16 @@ if (browser) {
 	});
 }
 
+/**
+ *
+ */
 const getId = (): string | undefined => {
 	return get(player)?.id;
 };
 
+/**
+ *
+ */
 const isDefined = (): boolean => {
 	if (get(player)) {
 		return true;
@@ -37,6 +43,9 @@ const isDefined = (): boolean => {
 	return false;
 };
 
+/**
+ *
+ */
 const isAccountRegistered = (): boolean => {
 	const temp = get(player);
 	if (temp) {
@@ -45,17 +54,30 @@ const isAccountRegistered = (): boolean => {
 	return false;
 };
 
+/**
+ *
+ */
 const set = (playerData: Player) => {
 	player.set(playerData);
 	console.log('asdf', get(player));
 };
 
+/**
+ *
+ */
 const getName = (): string | undefined => {
 	return get(player)?.name;
 };
 
+/**
+ *
+ */
 const getToken = (): string | undefined => {
 	return get(player)?.token;
+};
+
+const removeState = () => {
+	player.set(undefined);
 };
 
 export const PlayerState = {
@@ -64,5 +86,6 @@ export const PlayerState = {
 	getId,
 	getName,
 	getToken,
+	removeState,
 	set
 };
