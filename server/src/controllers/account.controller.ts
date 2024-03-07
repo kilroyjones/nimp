@@ -10,6 +10,7 @@ const nameRegex = /^[A-Za-z0-9]+$/;
  *
  */
 const create = async (req: Request, res: Response) => {
+  console.log("CREATE");
   const player = await PlayerDatabase.create();
 
   if (player) {

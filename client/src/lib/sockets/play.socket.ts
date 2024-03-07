@@ -23,6 +23,11 @@ export const isOnline: Writable<boolean> = writable(false);
  *
  */
 const connect = (id: string) => {
+	if (socket && socket.connected) {
+		console.log('Socket already connected.');
+		return;
+	}
+
 	console.log('Connecting to server...');
 	const SERVER_URL = 'http://localhost:3000/'; // Replace with your server's URL
 	socket = io(SERVER_URL, {
@@ -52,6 +57,7 @@ const connect = (id: string) => {
 			RegionHandler.receiveUpdateDigs(msg);
 		}
 	});
+
 	socket.on('update-posts', async (msg: UpdatePostResponse) => {
 		console.log('IN - [update-posts]', msg);
 		if (msg) {

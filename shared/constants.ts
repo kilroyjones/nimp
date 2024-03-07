@@ -8,9 +8,9 @@ export const UPDATE_DISTANCE: number = 400;
 
 export enum DigStatus {
   UNDUG = "0",
-  UNCLAIMED = "1",
-  CLAIMED = "2",
-  UNKNOWN = "U",
+  DUG = "D",
+  UNCLAIMED = "U",
+  CLAIMED = "C",
 }
 
 export const DigStatusMap: Record<string, DigStatus> = {

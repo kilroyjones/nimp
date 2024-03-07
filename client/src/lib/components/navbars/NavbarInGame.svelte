@@ -14,10 +14,11 @@
 	import Debug from '../Debug.svelte';
 
 	// Stores
-	import Toggle from '../Toggle.svelte';
-	import { isDebugMode, isClaimMode } from '$lib/state/settings.state';
+	import { isDebugMode } from '$lib/state/settings.state';
 	import { PlayerState } from '$lib/state/player.state';
 	import { x, y } from '$lib/state/world.state';
+	import { PlaySocket } from '$lib/sockets/play.socket';
+	import { goto } from '$app/navigation';
 
 	// Variables passed in
 	export let worldX: number | string; // Since bound to an input field
@@ -69,6 +70,10 @@
 			if (event.key === 'Enter') teleport();
 		}
 	}
+
+	function openBackpack() {
+		goto('/play/inventory');
+	}
 </script>
 
 <div
@@ -87,11 +92,13 @@
 			<input class={yIsInt ? '' : 'has-error'} bind:value={worldY} on:keyup={handleKeyup} />
 			<button type="submit" on:click={teleport}>Teleport</button>
 		</div>
-		<Toggle isChecked={$isClaimMode} />
 	</div>
 	<div class="account">
 		{#if PlayerState.isDefined()}
+			{PlaySocket.isConnected()}
+			<button on:click={openBackpack}>OPEN</button>
 			<a href="/account">{PlayerState.getName()}</a> |
+			<a href="/play/inventory">Backpacks</a> |
 			<a data-sveltekit-preload-data="false" href="/account/logout">Logout</a>
 		{/if}
 	</div>

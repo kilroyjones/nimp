@@ -13,7 +13,7 @@ export type ClaimRequest = {
 };
 
 export type DigRequest = {
-  key: string;
+  regionKey: string;
   idx: number;
 };
 

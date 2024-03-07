@@ -35,6 +35,7 @@ const handlePlayerConnect = async (socket: Socket, player: Player) => {
   // SERVER
   ///////////////////////////////////////////////////////////
   socket.on("disconnect", () => {
+    console.log("Disconnect", player.id);
     if (player) {
       PlayerService.remove(player.id);
     }
@@ -46,7 +47,7 @@ const handlePlayerConnect = async (socket: Socket, player: Player) => {
   socket.on("dig", msg => {
     const request: DigRequest = msg;
     logger.info("IN - [dig]" + request);
-    DigHandler.dig(io, request);
+    DigHandler.dig(io, request, player.id);
   });
 
   socket.on("claim", msg => {
@@ -68,17 +69,17 @@ const handlePlayerConnect = async (socket: Socket, player: Player) => {
   ///////////////////////////////////////////////////////////
   // PLAYER MANAGEMENT
   ///////////////////////////////////////////////////////////
-  socket.on("create-region", msg => {
+  socket.on("create-region", async msg => {
     const request: CreateRegionRequest = msg;
     logger.info("IN - [create-region]", request);
-    RegionHandler.create(io, player.id, request);
+    await RegionHandler.create(io, player.id, request);
   });
 
-  socket.on("update-regions", msg => {
-    console.log("asdfasdf");
+  socket.on("update-regions", async msg => {
+    console.log("ASDF");
     const request: UpdateRegionRequest = msg;
     logger.info("IN - [update-regions]", request);
-    RegionHandler.update(socket, player.id, request);
+    await RegionHandler.update(socket, player.id, request);
   });
 };
 
@@ -89,10 +90,11 @@ const handlePlayerConnect = async (socket: Socket, player: Player) => {
  */
 io.on("connection", async (socket: Socket) => {
   let player: Player | undefined = await PlayerService.getPlayer(socket);
+  console.log("asdf", player);
 
   if (!player) {
     // TODO: Failed to find or add player
-    socket.emit("error", "Failed to establish websocket");
+    socket.emit("error", "Failed to establish websocket - No such account found");
     socket.disconnect();
     return;
   }

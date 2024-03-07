@@ -32,6 +32,7 @@ declare module '$env/static/private' {
 	export const LANGUAGE: string;
 	export const USER: string;
 	export const PAM_KWALLET5_LOGIN: string;
+	export const LC_TIME: string;
 	export const npm_config_user_agent: string;
 	export const QT_SCREEN_SCALE_FACTORS: string;
 	export const XDG_SEAT: string;
@@ -65,6 +66,7 @@ declare module '$env/static/private' {
 	export const COLOR: string;
 	export const NVM_DIR: string;
 	export const IM_CONFIG_PHASE: string;
+	export const GTK_IM_MODULE: string;
 	export const LOGNAME: string;
 	export const WINDOWID: string;
 	export const QT_AUTO_SCREEN_SCALE_FACTOR: string;
@@ -80,6 +82,7 @@ declare module '$env/static/private' {
 	export const npm_config_node_gyp: string;
 	export const PATH: string;
 	export const GDM_LANG: string;
+	export const PAPERSIZE: string;
 	export const GTK3_MODULES: string;
 	export const NODE: string;
 	export const npm_package_name: string;
@@ -91,6 +94,7 @@ declare module '$env/static/private' {
 	export const LANG: string;
 	export const XDG_CURRENT_DESKTOP: string;
 	export const LC_TELEPHONE: string;
+	export const XMODIFIERS: string;
 	export const XDG_SESSION_DESKTOP: string;
 	export const XAUTHORITY: string;
 	export const LS_COLORS: string;
@@ -107,12 +111,14 @@ declare module '$env/static/private' {
 	export const LC_MEASUREMENT: string;
 	export const GPG_AGENT_INFO: string;
 	export const LC_IDENTIFICATION: string;
+	export const QT_IM_MODULE: string;
 	export const XDG_VTNR: string;
 	export const npm_config_globalconfig: string;
 	export const npm_config_init_module: string;
 	export const PWD: string;
 	export const npm_execpath: string;
 	export const XDG_CONFIG_DIRS: string;
+	export const CLUTTER_IM_MODULE: string;
 	export const NVM_CD_FLAGS: string;
 	export const XDG_DATA_DIRS: string;
 	export const npm_config_global_prefix: string;
@@ -160,6 +166,7 @@ declare module '$env/dynamic/private' {
 		LANGUAGE: string;
 		USER: string;
 		PAM_KWALLET5_LOGIN: string;
+		LC_TIME: string;
 		npm_config_user_agent: string;
 		QT_SCREEN_SCALE_FACTORS: string;
 		XDG_SEAT: string;
@@ -193,6 +200,7 @@ declare module '$env/dynamic/private' {
 		COLOR: string;
 		NVM_DIR: string;
 		IM_CONFIG_PHASE: string;
+		GTK_IM_MODULE: string;
 		LOGNAME: string;
 		WINDOWID: string;
 		QT_AUTO_SCREEN_SCALE_FACTOR: string;
@@ -208,6 +216,7 @@ declare module '$env/dynamic/private' {
 		npm_config_node_gyp: string;
 		PATH: string;
 		GDM_LANG: string;
+		PAPERSIZE: string;
 		GTK3_MODULES: string;
 		NODE: string;
 		npm_package_name: string;
@@ -219,6 +228,7 @@ declare module '$env/dynamic/private' {
 		LANG: string;
 		XDG_CURRENT_DESKTOP: string;
 		LC_TELEPHONE: string;
+		XMODIFIERS: string;
 		XDG_SESSION_DESKTOP: string;
 		XAUTHORITY: string;
 		LS_COLORS: string;
@@ -235,12 +245,14 @@ declare module '$env/dynamic/private' {
 		LC_MEASUREMENT: string;
 		GPG_AGENT_INFO: string;
 		LC_IDENTIFICATION: string;
+		QT_IM_MODULE: string;
 		XDG_VTNR: string;
 		npm_config_globalconfig: string;
 		npm_config_init_module: string;
 		PWD: string;
 		npm_execpath: string;
 		XDG_CONFIG_DIRS: string;
+		CLUTTER_IM_MODULE: string;
 		NVM_CD_FLAGS: string;
 		XDG_DATA_DIRS: string;
 		npm_config_global_prefix: string;

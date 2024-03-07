@@ -99,7 +99,8 @@ const getSelectionLocations = (selects: Selection[]): SelectionLocations => {
  * @param {Region} region - The region associated with the location.
  */
 const handleSelectStatus = (loc: Location, region: Region) => {
-	if (!RegionState.isClaimable(loc, region)) {
+	if (RegionState.isClaimable(loc, region) == false) {
+		console.log('not claimable');
 		selecting = Selecting.NONE;
 		showActions.update(() => false);
 	} else {
@@ -108,6 +109,7 @@ const handleSelectStatus = (loc: Location, region: Region) => {
 			{ loc, region },
 			{ loc, region }
 		];
+		console.log(selecting);
 
 		switch (selecting) {
 			case Selecting.NONE:
@@ -182,6 +184,7 @@ const resetSelection = () => {
 const claim = (loc: Location) => {
 	const key = Conversion.toRegionKey(loc);
 	const region = RegionState.get(key);
+	console.log(region, key);
 	if (region) {
 		handleSelectStatus(loc, region);
 		handleDrawUpdate();

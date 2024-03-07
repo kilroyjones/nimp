@@ -57,6 +57,7 @@ const remove = (id: string) => {
  */
 const getPlayer = async (socket: Socket): Promise<Player | undefined> => {
   const id = socket.handshake.query.id as string;
+  console.log("gp", id);
 
   if (id !== "") {
     const player = await PlayerDatabase.getById(id);
@@ -65,8 +66,6 @@ const getPlayer = async (socket: Socket): Promise<Player | undefined> => {
       return player;
     }
   }
-
-  return await PlayerDatabase.create();
 };
 
 ///////////////////////////////////////////////////////////

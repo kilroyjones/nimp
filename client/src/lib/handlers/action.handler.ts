@@ -27,10 +27,10 @@ const sendClaim = (claimRequest: ClaimRequest) => {
  */
 
 const sendDig = (loc: Location) => {
-	const key = Conversion.toRegionKey(loc);
-	const site = RegionState.getDigSite(key, loc);
+	const regionKey = Conversion.toRegionKey(loc);
+	const site = RegionState.getDigSite(regionKey, loc);
 	if (site && site.status == DigStatus.UNDUG) {
-		PlaySocket.send('dig', { key: key, idx: site.idx });
+		PlaySocket.send('dig', { regionKey: regionKey, idx: site.idx });
 	}
 };
 

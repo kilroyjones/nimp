@@ -10,7 +10,7 @@ import type { Dig } from '$lib/types';
 import type { DigSite, Location } from '$shared/types';
 import type { Post } from '$shared/types';
 import type { Region } from '$shared/models';
-import { REGION_WIDTH, REGION_HEIGHT, UPDATE_DISTANCE } from '$shared/constants';
+import { REGION_WIDTH, REGION_HEIGHT, UPDATE_DISTANCE, DigStatus } from '$shared/constants';
 
 // Stores
 export const x = writable(0);
@@ -41,7 +41,7 @@ const add = function (regionsToAdd: Region[]) {
  * @returns {boolean} True if the location is diggable, false otherwise.
  */
 const isClaimable = function (loc: Location, region: Region): boolean {
-	if (Data.getCharAt(region.digs, Conversion.locationToDigIndex(loc, region)) == '1') {
+	if (Data.getCharAt(region.digs, Conversion.locationToDigIndex(loc, region)) == DigStatus.DUG) {
 		return true;
 	}
 	return false;

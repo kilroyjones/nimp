@@ -22,5 +22,8 @@
 	"/play": [
 		"src/routes/+layout.ts",
 		"src/routes/+layout.ts"
+	],
+	"/play/inventory": [
+		"src/routes/+layout.ts"
 	]
 }

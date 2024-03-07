@@ -78,8 +78,7 @@ const toDigLocationLocal = (loc: Location, region: Region): Location => {
  * @returns {DigStatus} The corresponding DigStatus enum for the given string value.
  */
 const toDigStatus = (value: string): DigStatus => {
-  console.log(value, DigStatusMap);
-  return DigStatusMap[value] || DigStatus.UNKNOWN;
+  return DigStatusMap[value] || DigStatus.UNDUG;
 };
 
 /**

@@ -8,12 +8,28 @@
 	 * - Uncomment => works
 	 */
 	import { onMount } from 'svelte';
+	// Stores
+	import { x, y, windowWidth, windowHeight, WorldState } from '$lib/state/world.state';
 
+	// Componenets
+	import Navbar from '$lib/components/navbars/NavbarInGame.svelte';
+	import World from '$lib/components/World.svelte';
+	import Actions from '$lib/components/Actions.svelte';
+
+	// Types and constants
+	import { isOnline } from '$lib/sockets/play.socket';
+
+	$: {
+		if ($windowWidth && $windowHeight) {
+			// WorldState.update();
+		}
+	}
 	// Types and constants
 	import { PlayerState } from '$lib/state/player.state';
 	import { PlaySocket } from '$lib/sockets/play.socket';
 
 	onMount(async () => {
+		console.log('adsf', PlayerState.isDefined(), PlaySocket.isConnected());
 		if (PlayerState.isDefined() == false) {
 			try {
 				const response = await fetch(`http://localhost:3000/account/create`, {
@@ -26,13 +42,18 @@
 			}
 		}
 
-		const playerId = PlayerState.getId();
-		console.log('PID', playerId);
+		if (PlaySocket.isConnected() == false) {
+			const playerId = PlayerState.getId();
+			console.log('PID', playerId);
 
-		if (playerId) {
-			PlaySocket.connect(playerId);
+			if (playerId) {
+				PlaySocket.connect(playerId);
+			}
 		}
 	});
 </script>
 
+{#if $isOnline}
+	<Navbar worldX={$x} worldY={$y} />
+{/if}
 <slot />

@@ -5,7 +5,7 @@
 	import { ClaimState } from '$lib/state/claim.state';
 	import { Conversion } from '$shared/conversion';
 	import { Formula } from '$lib/helpers/formula.helper';
-	import { isClaimMode, showTextEditor } from '$lib/state/settings.state';
+	import { showTextEditor } from '$lib/state/settings.state';
 	import { RegionHandler } from '$lib/handlers/region.handler';
 	import { RegionState } from '$lib/state/region.state';
 	import { WorldState, x, y } from '$lib/state/world.state';
@@ -73,10 +73,9 @@
 	 *
 	 */
 	function handleClick(event: MouseEvent) {
-		if ($isClaimMode) {
-			const loc = { x: event.x + $x, y: event.y + $y };
-			ClaimState.claim(loc);
-		}
+		const loc = { x: event.x + $x, y: event.y + $y };
+		console.log('asdfa');
+		ClaimState.claim(loc);
 	}
 
 	/**
@@ -118,7 +117,7 @@
 
 <div>
 	{#each $digsToDraw as dig}
-		{#if dig.value == '1'}
+		{#if dig.value == 'D'}
 			<button
 				class="dig"
 				style="top:{-$y + dig.y}px; left:{-$x + dig.x}px; background-color: rgba(255, 0, 0, 0.2);"

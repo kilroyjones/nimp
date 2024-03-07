@@ -76,14 +76,14 @@ const locationsEqual = (loc1: Location, loc2: Location) => {
 };
 
 /**
- * Determines if dig is unclaimed (1, which is dug, but not claimed)
- *
+ * Determines if space has been dug (1, which is dug, but not claimed)
+ 
  * @param {Location} loc1 - Location 1
  * @param {Location} loc2 - Location 2
  * @returns {boolean} true or false if the locations are equal
  */
-const isUnclaimed = (idx: number, region: Region): boolean => {
-  if (getCharAt(region.digs, idx) == DigStatus.UNCLAIMED) {
+const isDug = (idx: number, region: Region): boolean => {
+  if (getCharAt(region.digs, idx) == DigStatus.DUG) {
     return true;
   }
   return false;
@@ -132,7 +132,7 @@ export const Data = {
   getCharAt,
   setCharAt,
   locationsEqual,
-  isUnclaimed,
+  isDug,
   checkName,
   checkPassword,
 };

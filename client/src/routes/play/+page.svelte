@@ -20,7 +20,6 @@
 <svelte:window bind:innerWidth={$windowWidth} bind:innerHeight={$windowHeight} />
 
 {#if $isOnline}
-	<Navbar worldX={$x} worldY={$y} />
 	<World />
 	<Actions />
 {/if}

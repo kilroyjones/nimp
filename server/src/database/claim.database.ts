@@ -1,4 +1,6 @@
 // Modules
+import logger from "src/service/server/logging.service";
+
 import { Conversion } from "$shared/conversion";
 import { Data } from "$shared/data";
 import { db } from "./client/db";
@@ -7,10 +9,9 @@ import { Region } from "./models/region.model";
 import { RegionDatabase } from "./region.database";
 import { UpdateDigResponse } from "$shared/messages";
 
-import logger from "src/service/server/logging.service";
-
 // Types and constants
 import type { Post } from "$shared/types";
+import { DigStatus } from "$shared/constants";
 
 /**
  *
@@ -18,10 +19,13 @@ import type { Post } from "$shared/types";
 const claimDigs = (locations: Location[], region: Region): Region | undefined => {
   for (const loc of locations) {
     const idx = Conversion.locationToDigIndex(loc, region);
-    if (!Data.isUnclaimed(idx, region)) {
+    console.log(idx);
+    console.log(Data.isDug(idx, region));
+    if (Data.isDug(idx, region) == false) {
+      console.log("");
       return undefined;
     }
-    region.digs = Data.setCharAt(region.digs, idx, "2");
+    region.digs = Data.setCharAt(region.digs, idx, DigStatus.CLAIMED);
   }
   return region;
 };
