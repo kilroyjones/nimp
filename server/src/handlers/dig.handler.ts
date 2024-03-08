@@ -8,9 +8,11 @@ import { RegionDatabase } from "../database/region.database";
 import type { DigRequest } from "$shared/messages";
 import type { Server } from "socket.io";
 import { DigStatus } from "$shared/constants";
-import { PlayerDatabase } from "src/database/player.database";
-import { RegionHandler } from "./region.handler";
-import { InventoryDatabase } from "src/database/inventory.database";
+// import { PlayerDatabase } from "src/database/player.database";
+// import { RegionHandler } from "./region.handler";
+import { ResourceDatabase } from "src/database/resource.database";
+import { Player } from "$shared/types";
+import { PlayerService } from "src/service/game/player.service";
 
 /**
  * Performs a dig action if able
@@ -31,16 +33,17 @@ const dig = async (io: Server, digRequest: DigRequest, playerId: string) => {
     // Update digs and only update if that region has been successfully saved
     digs = await RegionDatabase.updateDigs(digRequest.regionKey, digs);
     if (digs) {
-      // TODO: Update player inventory in a more dynamic way based on regionstats
-      // const RegionDatabase.getStats()
-      console.log("PLAYERID", playerId);
-      const updatePlayerInventory = await InventoryDatabase.addDirt(playerId, 1);
-      console.log("Here", updatePlayerInventory);
-
       io.to(digRequest.regionKey).emit("update-digs", {
         regionKey: digRequest.regionKey,
         digs: digs,
       });
+    }
+
+    // TODO: Update player resources in a more dynamic way based on region stats
+    const updatedResources = await ResourceDatabase.add(playerId, { dirt: 1 });
+    if (updatedResources) {
+      console.log(updatedResources);
+      PlayerService.updateResources(playerId, updatedResources);
     }
 
     // If not saved we'll need to retry, so in the future put this back on the queue:

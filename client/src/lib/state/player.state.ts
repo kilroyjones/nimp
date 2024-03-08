@@ -1,6 +1,6 @@
 import { browser } from '$app/environment';
 import { get, writable } from 'svelte/store';
-import type { Player } from '$shared/types';
+import type { Player, Resources } from '$shared/types';
 import type { Writable } from 'svelte/store';
 
 const player: Writable<Player | undefined> = writable(undefined);
@@ -81,6 +81,7 @@ const removeState = () => {
 };
 
 export const PlayerState = {
+	// Player
 	isAccountRegistered,
 	isDefined,
 	getId,

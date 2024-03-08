@@ -76,7 +76,6 @@ const handlePlayerConnect = async (socket: Socket, player: Player) => {
   });
 
   socket.on("update-regions", async msg => {
-    console.log("ASDF");
     const request: UpdateRegionRequest = msg;
     logger.info("IN - [update-regions]", request);
     await RegionHandler.update(socket, player.id, request);

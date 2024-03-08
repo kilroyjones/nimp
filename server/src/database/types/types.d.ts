@@ -6,7 +6,10 @@ export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
 export type Inventories = {
     id: string;
-    dirt: Generated<number>;
+    /**
+     * @kyselyType(JSON)
+     */
+    items: JSON;
 };
 export type Players = {
     id: Generated<string>;
@@ -29,6 +32,10 @@ export type Regions = {
      */
     posts: JSON;
 };
+export type Resources = {
+    id: string;
+    dirt: number;
+};
 export type Spellbooks = {
     id: string;
 };
@@ -36,5 +43,6 @@ export type DB = {
     Inventories: Inventories;
     Players: Players;
     Regions: Regions;
+    Resources: Resources;
     Spellbooks: Spellbooks;
 };

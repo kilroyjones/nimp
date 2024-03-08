@@ -41,7 +41,6 @@ const getDigsToDraw = (region: Region, bounds: Bounds): Array<Dig> => {
 	const result = new Array((endRow - startRow) * (endCol - startCol));
 	let idx = 0;
 
-	console.log(startCol, startRow, endCol, endRow);
 	for (let row = startRow; row < endRow; row++) {
 		let index = row * REGION_WIDTH_DIGS;
 		for (let col = startCol; col < endCol; col++) {
@@ -112,17 +111,13 @@ const update = (loc: Location, windowWidth: number, windowHeight: number) => {
 		y2: loc.y + windowHeight + UPDATE_DISTANCE
 	};
 
-	console.log('VIEW', viewBounds);
-
 	let digs: Array<Dig> = [];
 	let posts: Array<Post> = [];
 	const regions = RegionState.getAll();
 	if (regions) {
 		regions.forEach((region) => {
-			// console.log('CALC:', viewBounds);
 			digs = digs.concat(getDigsToDraw(region, viewBounds));
 			posts = posts.concat(getPostsToDraw(region, viewBounds));
-			console.log(digs);
 		});
 
 		digsToDraw.update((_) => {

@@ -13,6 +13,7 @@ import { Socket } from "socket.io";
 import logger from "../server/logging.service";
 import { PlayerDatabase } from "src/database/player.database";
 import { Player } from "src/database/models/player.model";
+import { Resource } from "$shared/models";
 
 // Types
 type PlayerConnection = {
@@ -57,7 +58,6 @@ const remove = (id: string) => {
  */
 const getPlayer = async (socket: Socket): Promise<Player | undefined> => {
   const id = socket.handshake.query.id as string;
-  console.log("gp", id);
 
   if (id !== "") {
     const player = await PlayerDatabase.getById(id);
@@ -165,10 +165,20 @@ const leaveRegion = (id: string, region: string) => {
  * @param {string} id - The unique identifier of the player.
  * @param {string[]} regions - An array of region names to leave.
  */
-const leaveRegions = (id: string, regions: string[]) => {
+const leaveRegions = async (id: string, regions: string[]) => {
   const player = playerConns.get(id);
   if (player) {
     regions.forEach(region => player.socket.leave(region));
+  }
+};
+
+/**
+ *
+ */
+const updateResources = async (id: string, resources: Resource) => {
+  const player = playerConns.get(id);
+  if (player) {
+    player.socket.emit("update-resources", resources);
   }
 };
 
@@ -186,4 +196,7 @@ export const PlayerService = {
   leaveAllRegions,
   leaveRegion,
   leaveRegions,
+
+  // Inventory
+  updateResources,
 };

@@ -1,6 +1,6 @@
 // import type { isClaimMode } from "$lib/state/settings.state";
 import type { Regions } from "../server/src/database/types/types";
-import type { Location, Player, Post, SelectedDig } from "./types";
+import type { Inventory, Location, Player, Post, SelectedDig } from "./types";
 
 /**
  * REQUESTS (From client to server)
@@ -52,4 +52,12 @@ export type UpdateDigResponse = {
 export type UpdatePostResponse = {
   regionKey: string;
   post: Post;
+};
+
+export type UpdateInventoryResponse = {
+  inventory: Inventory;
+};
+
+export type UpdateResourcesResponse = {
+  dirt: number;
 };

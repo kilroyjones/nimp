@@ -33,13 +33,16 @@ model Players {
   email       String?
 }
 
+model Resources { 
+  id          String                @id @unique  
+  dirt        Int                   
+  // ADD OTHER BASICS
+}
+
 model Inventories { 
   id          String                @id @unique  
-  dirt        Int                   @default(0)
-  // /// @kyselyType(JSON)
-  // rares       Json
-  // /// @kyselyType(JSON)
-  // items       Json
+  /// @kyselyType(JSON)
+  items       Json
 }
 
 model Spellbooks { 

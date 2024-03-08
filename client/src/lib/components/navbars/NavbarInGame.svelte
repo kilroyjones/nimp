@@ -15,10 +15,9 @@
 
 	// Stores
 	import { isDebugMode } from '$lib/state/settings.state';
+	import { goto } from '$app/navigation';
 	import { PlayerState } from '$lib/state/player.state';
 	import { x, y } from '$lib/state/world.state';
-	import { PlaySocket } from '$lib/sockets/play.socket';
-	import { goto } from '$app/navigation';
 
 	// Variables passed in
 	export let worldX: number | string; // Since bound to an input field
@@ -26,6 +25,7 @@
 
 	let xIsInt = true;
 	let yIsInt = true;
+	let viewing = 'play';
 
 	/**
 	 * Checks if the coordinates are valid integers.
@@ -71,8 +71,14 @@
 		}
 	}
 
-	function openBackpack() {
+	function inventory() {
+		viewing = 'inventory';
 		goto('/play/inventory');
+	}
+
+	function play() {
+		viewing = 'play';
+		goto('/play');
 	}
 </script>
 
@@ -86,19 +92,20 @@
 	role="button"
 	aria-label=""
 >
-	<div class="center-group">
-		<div class="location no-drag">
-			<input class={xIsInt ? '' : 'has-error'} bind:value={worldX} on:keyup={handleKeyup} />
-			<input class={yIsInt ? '' : 'has-error'} bind:value={worldY} on:keyup={handleKeyup} />
-			<button type="submit" on:click={teleport}>Teleport</button>
+	{#if viewing == 'play'}
+		<div class="teleport">
+			<div class="location no-drag">
+				<input class={xIsInt ? '' : 'has-error'} bind:value={worldX} on:keyup={handleKeyup} />
+				<input class={yIsInt ? '' : 'has-error'} bind:value={worldY} on:keyup={handleKeyup} />
+				<button type="submit" on:click={teleport}>Teleport</button>
+			</div>
 		</div>
-	</div>
+	{/if}
 	<div class="account">
 		{#if PlayerState.isDefined()}
-			{PlaySocket.isConnected()}
-			<button on:click={openBackpack}>OPEN</button>
+			<button on:click={play}>Play</button> |
+			<button on:click={inventory}>Inventory</button> |
 			<a href="/account">{PlayerState.getName()}</a> |
-			<a href="/play/inventory">Backpacks</a> |
 			<a data-sveltekit-preload-data="false" href="/account/logout">Logout</a>
 		{/if}
 	</div>
@@ -182,10 +189,7 @@
 		user-drag: none;
 	}
 
-	.center-group {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		flex: 1; /* This makes sure it takes up the maximum width */
+	.teleport {
+		margin-left: 16px;
 	}
 </style>

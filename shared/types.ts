@@ -39,4 +39,13 @@ export type Player = {
   token: string;
 };
 
-export type Inventory = {};
+export type Resources = {
+  dirt: number;
+};
+
+export type Spellbook = {};
+
+export type Inventory = {
+  resources: Resources;
+  spellbook: Spellbook;
+};

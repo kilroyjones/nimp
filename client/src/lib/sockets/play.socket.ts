@@ -12,9 +12,16 @@ import { Socket, io } from 'socket.io-client';
 import { RegionHandler } from '$lib/handlers/region.handler';
 
 // Types and constants
-import type { UpdateDigResponse, UpdatePostResponse, UpdateRegionResponse } from '$shared/messages';
+import type {
+	UpdateDigResponse,
+	UpdateInventoryResponse,
+	UpdatePostResponse,
+	UpdateRegionResponse,
+	UpdateResourcesResponse
+} from '$shared/messages';
 import { WorldState } from '$lib/state/world.state';
 import { writable, type Writable } from 'svelte/store';
+import { PlayerHandler } from '$lib/handlers/player.handler';
 
 let socket: Socket | undefined;
 
@@ -64,11 +71,18 @@ const connect = (id: string) => {
 			RegionHandler.receiveUpdatePosts(msg);
 		}
 	});
+
+	socket.on('update-resources', async (msg: UpdateResourcesResponse) => {
+		console.log('IN - [update-resources]', msg);
+		if (msg) {
+			PlayerHandler.receiveUpdateResources(msg);
+		}
+	});
 	/**
 	 * REGIONS
 	 */
 	socket.on('update-regions', async (msg: UpdateRegionResponse) => {
-		console.log('IN - [update-regions]', msg);
+		console.log('IN - [update-resources]', msg);
 		if (msg) {
 			RegionHandler.receiveUpdateRegions(msg);
 		}

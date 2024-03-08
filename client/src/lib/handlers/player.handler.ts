@@ -1,6 +1,9 @@
 import { browser } from '$app/environment';
+import { InventoryState } from '$lib/state/inventory.state';
+import { PlayerState } from '$lib/state/player.state';
+import type { UpdateResourcesResponse } from '$shared/messages';
 // import { player } from '$lib/state/player.state';
-import type { Player } from '$shared/types';
+import type { Inventory, Player, Resources } from '$shared/types';
 import { get } from 'svelte/store';
 
 /**
@@ -14,6 +17,12 @@ const receiveHandshake = (player: Player) => {
 	// console.log(get(playerName));
 };
 
+const receiveUpdateResources = (updatedResources: UpdateResourcesResponse) => {
+	console.log(updatedResources);
+	InventoryState.setResources(updatedResources);
+};
+
 export const PlayerHandler = {
-	receiveHandshake
+	receiveHandshake,
+	receiveUpdateResources
 };
