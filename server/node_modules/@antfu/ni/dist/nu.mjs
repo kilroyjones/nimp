@@ -1,0 +1,22 @@
+import { r as runCli, c as parseNu } from './shared/ni.82314ed6.mjs';
+import 'node:fs';
+import 'node:path';
+import 'node:process';
+import 'node:url';
+import 'node:buffer';
+import 'node:child_process';
+import 'child_process';
+import 'path';
+import 'fs';
+import 'node:os';
+import 'assert';
+import 'events';
+import 'buffer';
+import 'stream';
+import 'util';
+import 'node:util';
+import 'os';
+import 'tty';
+import 'readline';
+
+runCli(parseNu);

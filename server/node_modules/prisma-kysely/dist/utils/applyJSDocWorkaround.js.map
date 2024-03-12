@@ -1,0 +1,1 @@
+{"version":3,"file":"applyJSDocWorkaround.js","sourceRoot":"","sources":["../../src/utils/applyJSDocWorkaround.ts"],"names":[],"mappings":";;;AAAO,MAAM,oBAAoB,GAAG,CAAC,OAAe,EAAE,EAAE;IACtD,OAAO,SAAS,OAAO,CAAC,KAAK,CAAC,IAAI,CAAC,CAAC,IAAI,CAAC,OAAO,CAAC,KAAK,CAAC;AACzD,CAAC,CAAC;AAFW,QAAA,oBAAoB,wBAE/B"}

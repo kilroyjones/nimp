@@ -18,8 +18,6 @@ import { DIG_HEIGHT, DIG_WIDTH } from "$shared/constants";
 import { Location, SelectedDig } from "$shared/types";
 import { ClaimDatabase } from "src/database/claim.database";
 import { Conversion } from "$shared/conversion";
-import { Region } from "$shared/models";
-import { RegionDatabase } from "src/database/region.database";
 import { Post } from "$shared/types";
 
 /**
@@ -107,6 +105,9 @@ const createKeyLocMap = (request: ClaimRequest): Map<string, Location[]> => {
   return keyIndexMap;
 };
 
+/**
+ *
+ */
 const createPost = (
   postRegionKey: string,
   topLeftLoc: Location,
@@ -123,6 +124,7 @@ const createPost = (
     y: topLeftLoc.y,
     w: width,
     h: height,
+    i: true ? width == height : false,
     content: "",
   };
 };

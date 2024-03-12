@@ -1,0 +1,29 @@
+type FormatSchemaParams = {
+    schema: string;
+    schemaPath?: never;
+} | {
+    schema?: never;
+    schemaPath: string;
+};
+/**
+ * Can be used by passing either the `schema` as a string, or a path `schemaPath` to the schema file.
+ * Currently, we only use `schemaPath` in the cli. Do we need to keep supporting `schema` as well?
+ */
+export declare function formatSchema({ schemaPath, schema }: FormatSchemaParams, inputFormattingOptions?: Partial<DocumentFormattingParams['options']>): Promise<string>;
+type DocumentUri = string;
+type TextDocument = {
+    /**
+     * The associated URI for this document. Most documents have the __file__-scheme, indicating that they
+     * represent files on disk. However, some documents may have other schemes indicating that they are not
+     * available on disk.
+     */
+    readonly uri: DocumentUri;
+};
+type DocumentFormattingParams = {
+    textDocument: TextDocument;
+    options: {
+        tabSize: number;
+        insertSpaces: boolean;
+    };
+};
+export {};

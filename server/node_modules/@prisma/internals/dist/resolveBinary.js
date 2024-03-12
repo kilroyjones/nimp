@@ -1,0 +1,115 @@
+"use strict";
+var __create = Object.create;
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  // If the importer is in node compatibility mode or this is not an ESM
+  // file that has been converted to a CommonJS file using a Babel-
+  // compatible transform (i.e. "__esModule" has not been set), then set
+  // "default" to the CommonJS "module.exports" for node compatibility.
+  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+  mod
+));
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+var resolveBinary_exports = {};
+__export(resolveBinary_exports, {
+  BinaryType: () => import_fetch_engine.BinaryType,
+  engineEnvVarMap: () => import_fetch_engine.engineEnvVarMap,
+  maybeCopyToTmp: () => maybeCopyToTmp,
+  resolveBinary: () => resolveBinary,
+  safeResolveBinary: () => safeResolveBinary
+});
+module.exports = __toCommonJS(resolveBinary_exports);
+var import_engines = require("@prisma/engines");
+var import_fetch_engine = require("@prisma/fetch-engine");
+var import_get_platform = require("@prisma/get-platform");
+var TE = __toESM(require("fp-ts/TaskEither"));
+var import_fs = __toESM(require("fs"));
+var import_fs_extra = require("fs-extra");
+var import_path = __toESM(require("path"));
+var import_temp_dir = __toESM(require("temp-dir"));
+var import_chmodPlusX = require("./utils/chmodPlusX");
+var import_vercelPkgPathRegex = require("./utils/vercelPkgPathRegex");
+async function getBinaryName(name) {
+  const platform = await (0, import_get_platform.getPlatform)();
+  const extension = platform === "windows" ? ".exe" : "";
+  if (name === import_fetch_engine.BinaryType.QueryEngineLibrary) {
+    return (0, import_get_platform.getNodeAPIName)(platform, "fs");
+  }
+  return `${name}-${platform}${extension}`;
+}
+async function resolveBinary(name, proposedPath) {
+  if (proposedPath && !proposedPath.match(import_vercelPkgPathRegex.vercelPkgPathRegex) && import_fs.default.existsSync(proposedPath)) {
+    return proposedPath;
+  }
+  const pathFromEnvVar = (0, import_fetch_engine.getBinaryEnvVarPath)(name);
+  if (pathFromEnvVar !== null) {
+    return pathFromEnvVar.path;
+  }
+  const binaryName = await getBinaryName(name);
+  const prismaPath = import_path.default.join((0, import_engines.getEnginesPath)(), binaryName);
+  if (import_fs.default.existsSync(prismaPath)) {
+    return maybeCopyToTmp(prismaPath);
+  }
+  const prismaPath2 = import_path.default.join(__dirname, "..", binaryName);
+  if (import_fs.default.existsSync(prismaPath2)) {
+    return maybeCopyToTmp(prismaPath2);
+  }
+  const prismaPath3 = import_path.default.join(__dirname, "../..", binaryName);
+  if (import_fs.default.existsSync(prismaPath3)) {
+    return maybeCopyToTmp(prismaPath3);
+  }
+  const prismaPath4 = import_path.default.join(__dirname, "../runtime", binaryName);
+  if (import_fs.default.existsSync(prismaPath4)) {
+    return maybeCopyToTmp(prismaPath4);
+  }
+  throw new Error(
+    `Could not find ${name} binary. Searched in:
+- ${prismaPath}
+- ${prismaPath2}
+- ${prismaPath3}
+- ${prismaPath4}`
+  );
+}
+function safeResolveBinary(name, proposedPath) {
+  return TE.tryCatch(
+    () => resolveBinary(name, proposedPath),
+    (error) => error
+  );
+}
+async function maybeCopyToTmp(file) {
+  const dir = eval("__dirname");
+  if (dir.match(import_vercelPkgPathRegex.vercelPkgPathRegex)) {
+    const targetDir = import_path.default.join(import_temp_dir.default, "prisma-binaries");
+    await (0, import_fs_extra.ensureDir)(targetDir);
+    const target = import_path.default.join(targetDir, import_path.default.basename(file));
+    const data = await import_fs.default.promises.readFile(file);
+    await import_fs.default.promises.writeFile(target, data);
+    (0, import_chmodPlusX.chmodPlusX)(target);
+    return target;
+  }
+  return file;
+}
+// Annotate the CommonJS export names for ESM import in node:
+0 && (module.exports = {
+  BinaryType,
+  engineEnvVarMap,
+  maybeCopyToTmp,
+  resolveBinary,
+  safeResolveBinary
+});

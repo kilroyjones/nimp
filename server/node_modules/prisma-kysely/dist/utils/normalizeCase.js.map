@@ -1,0 +1,1 @@
+{"version":3,"file":"normalizeCase.js","sourceRoot":"","sources":["../../src/utils/normalizeCase.ts"],"names":[],"mappings":";;;AAAA,2CAA0D;AAG1D,MAAM,YAAY,GAAG,IAAA,iCAAqB,GAAE,CAAC;AAEtC,MAAM,aAAa,GAAG,CAAC,IAAY,EAAE,MAAc,EAAE,EAAE;IAC5D,IAAI,CAAC,MAAM,CAAC,SAAS;QAAE,OAAO,IAAI,CAAC;IACnC,OAAO,YAAY,CAAC,IAAI,CAAC,CAAC;AAC5B,CAAC,CAAC;AAHW,QAAA,aAAa,iBAGxB"}

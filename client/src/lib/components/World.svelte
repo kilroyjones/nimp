@@ -5,7 +5,7 @@
 	import { ClaimState } from '$lib/state/claim.state';
 	import { Conversion } from '$shared/conversion';
 	import { Formula } from '$lib/helpers/formula.helper';
-	import { showTextEditor } from '$lib/state/settings.state';
+	import { showPainter, showTextEditor } from '$lib/state/settings.state';
 	import { RegionHandler } from '$lib/handlers/region.handler';
 	import { RegionState } from '$lib/state/region.state';
 	import { WorldState, x, y } from '$lib/state/world.state';
@@ -17,6 +17,8 @@
 	import type { Location } from '$shared/types';
 	import type { Post } from '$shared/types';
 	import { UPDATE_DISTANCE } from '$shared/constants';
+	import Painter from './painter/Painter.svelte';
+	import Builder from './painter/Builder.svelte';
 
 	// Variables
 	let dragging = false;
@@ -98,8 +100,14 @@
 	 *
 	 */
 	function handleDoubleClickPost(post: Post) {
+		// TODO: Make this cleaner with state
+		console.log('VALUE', post.i);
+		if (post.i && $showTextEditor == false && $showPainter == false) {
+			$showPainter = true;
+		} else {
+			$showTextEditor = true;
+		}
 		selectedPost = post;
-		$showTextEditor = true;
 	}
 </script>
 
@@ -113,6 +121,10 @@
 />
 {#if $showTextEditor}
 	<TextEditor post={selectedPost} />
+{/if}
+
+{#if $showPainter}
+	<Builder post={selectedPost} />
 {/if}
 
 <div>

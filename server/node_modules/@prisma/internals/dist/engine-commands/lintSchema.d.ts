@@ -1,0 +1,25 @@
+type LintSchemaParams = {
+    schema: string;
+};
+type LintDiagnosticBase = {
+    start: number;
+    end: number;
+    text: string;
+};
+export type LintWarning = {
+    is_warning: true;
+} & LintDiagnosticBase;
+export type LintError = {
+    is_warning: false;
+} & LintDiagnosticBase;
+export type LintDiagnostic = LintWarning | LintError;
+/**
+ * Diagnose the given schema, returning a list either errors or warnings.
+ * This function may panic, but it won't throw any standard error.
+ */
+export declare function lintSchema({ schema }: LintSchemaParams): LintDiagnostic[];
+export declare function handleLintPanic<T>(tryCb: () => T, { schema }: LintSchemaParams): T;
+export declare function getLintWarnings(lintDiagnostics: LintDiagnostic[]): LintWarning[];
+export declare function getLintWarningsAsText(lintDiagnostics: LintDiagnostic[]): string;
+export declare function warningToString(warning: LintDiagnostic): string;
+export {};

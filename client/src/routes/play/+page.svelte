@@ -1,9 +1,8 @@
 <script lang="ts">
 	// Stores
-	import { x, y, windowWidth, windowHeight, WorldState } from '$lib/state/world.state';
+	import { x, y, windowWidth, windowHeight } from '$lib/state/world.state';
 
 	// Componenets
-	import Navbar from '$lib/components/navbars/NavbarInGame.svelte';
 	import World from '$lib/components/World.svelte';
 	import Actions from '$lib/components/Actions.svelte';
 

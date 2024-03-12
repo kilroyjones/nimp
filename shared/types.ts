@@ -29,6 +29,7 @@ export type Post = {
   y: number;
   w: number;
   h: number;
+  i: boolean;
   content: string;
 };
 

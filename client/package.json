@@ -1,6 +1,7 @@
 {
 	"name": "nimp",
 	"version": "0.0.1",
+	"types": "module",
 	"private": true,
 	"scripts": {
 		"dev": "vite dev",
@@ -39,7 +40,9 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"dino-color-picker": "^0.2.3",
 		"module-alias": "^2.2.3",
-		"socket.io-client": "^4.7.2"
+		"socket.io-client": "^4.7.2",
+		"svelte-icons-pack": "^2.1.0"
 	}
 }
