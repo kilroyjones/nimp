@@ -1,0 +1,175 @@
+
+<div class="container">
+	<div class="row">
+		<div class="column">
+			<button
+				class="picker-button"
+				style="background-color: {$brushColor}"
+				on:click={handleSelectPicker}
+			>
+				{#if !$showPicker}
+					<Icon src={VscPaintcan} color="#fff" size="32" />
+				{:else}
+					<Icon src={VscDiffAdded} color="#fff" size="32" />
+				{/if}
+			</button>
+			{#if $showPicker}
+				<div class="picker-container">
+					<dino-color-picker value={$brushColor} on:change={handleColorChange} />
+				</div>
+			{/if}
+		</div>
+		<div id="palette" class="column">
+			{#each colors as color, index}
+				<button style="background-color: {color}" on:click={() => handleSelectColor(index)} />
+			{/each}
+		</div>
+	</div>
+</div>
+
+<style>
+	.container {
+		position: relative;
+		width: 358px;
+		background-color: #fafafa;
+	}
+
+	.picker-container {
+		position: absolute;
+		top: 60px;
+		left: 2px;
+		z-index: 1;
+	}
+
+	button {
+		width: 25.8px;
+		height: 28px;
+		border: solid 0px #888;
+		vertical-align: top;
+		border-radius: 0px;
+		margin-bottom: 4px;
+	}
+
+	button:hover {
+		border: solid 1px red;
+	}
+
+	.picker-button {
+		border: solid 5px #fafafa inset;
+		border-radius: 1px;
+		width: 48px;
+		height: 60px;
+	}
+
+	.column {
+		float: left;
+		height: 60px;
+	}
+
+	.row:after {
+		content: '';
+		display: table;
+		clear: both;
+	}
+
+	#palette {
+		width: 270px;
+	}
+</style>
+
+<!-- <script lang="ts">
+	/**
+	 * The BrushSize component is part of the LowerToolbar component.
+	 * It is a slider with fixed sizes that line up with the overal size
+	 * of the canvas.
+	 */
+	import { brushSize } from '$lib/state/painter.state';
+	import { onMount } from 'svelte';
+
+	let slider: HTMLInputElement;
+	let sliderValue = 0; // To store and display the slider's value
+
+	// Function to update the position of the value display based on the slider's value
+	function updateValuePosition() {
+		const valueDisplay: any = document.querySelector('.slider-value-display');
+		if (slider && valueDisplay) {
+			const percentage =
+				(($brushSize - parseFloat(slider.min)) /
+					(parseFloat(slider.max) - parseFloat(slider.min))) *
+				100;
+			valueDisplay.style.left = `calc(${percentage}% + (${8 - percentage * 0.15}px))`; // Adjust this formula as needed
+			valueDisplay.textContent = $brushSize;
+		}
+	}
+
+	$: sliderValue = $brushSize;
+	$: $brushSize, updateValuePosition();
+
+	onMount(() => {
+		updateValuePosition(); // Initial position update
+	});
+</script>
+
+<div class="slider-container">
+	<input
+		class="brush-size-slider"
+		on:mousedown|stopPropagation
+		on:click|stopPropagation
+		on:dblclick|stopPropagation
+		on:mousemove|stopPropagation
+		type="range"
+		min="8"
+		max="64"
+		step="8"
+		bind:this={slider}
+		bind:value={$brushSize}
+	/>
+	<div class="slider-value-display"></div>
+</div>
+
+<style>
+	.slider-container {
+		position: relative;
+		width: 100%;
+	}
+
+	.brush-size-slider {
+		-webkit-appearance: none;
+		background-color: transparent;
+	}
+
+	.slider-value-display {
+		position: absolute;
+		top: -30px; /* Adjust as needed */
+		left: 0;
+		background-color: #d1d646;
+		color: #121317;
+		padding: 2px 5px;
+		border-radius: 3px;
+		user-select: none;
+		transform: translateX(-50%);
+	}
+	input[type='range'] {
+		-webkit-appearance: none;
+		background-color: #121317;
+	}
+
+	/* input[type='range']::-webkit-slider-runnable-track {
+		height: 20px;
+		background: #ddd;
+		border: none;
+	} */
+
+	input[type='range']::-webkit-slider-thumb {
+		-webkit-appearance: none;
+		border: none;
+		height: 40px;
+		width: 14px;
+		background: #d1d646;
+		margin-top: -6px;
+	}
+
+	input[type='range']:focus {
+		outline: none;
+	}
+</style> -->

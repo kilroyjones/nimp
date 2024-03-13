@@ -54,18 +54,17 @@
 
 <button id="publish-button" on:click={publish}>Publish</button>
 <button id="reset-button" on:click={reset}>Reset</button>
-<button id="back-button">Back</button>
 
 <style>
 	button {
-		width: 32.7%;
 		border: none;
 		color: white;
-		padding: 15px 20px;
+		padding: 16px 0px 16px 0px;
 		text-align: center;
 		text-decoration: none;
 		display: inline-block;
 		font-size: 20px;
+		cursor: pointer;
 	}
 
 	button:hover {
@@ -73,17 +72,13 @@
 	}
 
 	#publish-button {
-		width: 49%;
 		background-color: #008cba;
+		flex-basis: 70%;
+		margin-right: 2px;
 	}
 
 	#reset-button {
-		width: 24%;
 		background-color: #f97068;
-	}
-
-	#back-button {
-		width: 24%;
-		background-color: #4caf50;
+		flex-basis: 30%;
 	}
 </style>

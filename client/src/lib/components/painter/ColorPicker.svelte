@@ -20,24 +20,14 @@
 	const dispatch = createEventDispatcher();
 
 	let colors = [
-		'#121317',
-		'#555555',
-		'#e7e7e7',
-		'#ffffff',
+		'#fff',
+		'#000',
+		'#00ff00',
+		'#ff0000',
+		'#0000ff',
 		'#4CAF50',
 		'#009B72',
 		'#CEF9F2',
-		'#008CBA',
-		'#D1D646',
-		'#A68BA5',
-		'#F97068',
-		'#f44336',
-		'#ddd',
-		'#ddd',
-		'#ddd',
-		'#ddd',
-		'#ddd',
-		'#ddd',
 		'#ddd',
 		'#ddd',
 		'#ddd',
@@ -91,79 +81,87 @@
 </script>
 
 <div class="container">
-	<div class="row">
-		<div class="column">
-			<button
-				class="picker-button"
-				style="background-color: {$brushColor}"
-				on:click={handleSelectPicker}
-			>
-				{#if !$showPicker}
-					<Icon src={VscPaintcan} color="#fff" size="32" />
-				{:else}
-					<Icon src={VscDiffAdded} color="#fff" size="32" />
-				{/if}
-			</button>
-			{#if $showPicker}
-				<div class="picker-container">
-					<dino-color-picker value={$brushColor} on:change={handleColorChange} />
-				</div>
+	<div class="picker-button-container">
+		<button
+			class="picker-button"
+			style="background-color: {$brushColor}"
+			on:click={handleSelectPicker}
+		>
+			{#if !$showPicker}
+				<Icon src={VscPaintcan} color="#fff" size="32" />
+			{:else}
+				<Icon src={VscDiffAdded} color="#fff" size="32" />
 			{/if}
-		</div>
-		<div id="pallete" class="column">
-			{#each colors as color, index}
-				<button style="background-color: {color}" on:click={() => handleSelectColor(index)} />
-			{/each}
-		</div>
+		</button>
+		{#if $showPicker}
+			<div class="picker-container">
+				<dino-color-picker value={$brushColor} on:change={handleColorChange} />
+			</div>
+		{/if}
+	</div>
+	<div class="palette">
+		{#each colors as color, index}
+			<button
+				class="color-button"
+				style="background-color: {color}"
+				on:click={() => handleSelectColor(index)}
+			/>
+		{/each}
 	</div>
 </div>
 
 <style>
 	.container {
-		position: relative;
-		width: 358px;
+		display: grid;
+		grid-template-columns: 60px auto;
+		grid-template-rows: repeat(2, 30px);
+		width: 256px;
 		background-color: #fafafa;
+	}
+
+	.picker-button-container {
+		position: relative; /* Add this line */
+		grid-row: 1 / span 2; /* Span 2 rows */
+		display: flex;
+		padding-right: 1px;
+		justify-content: center;
+		align-items: center;
 	}
 
 	.picker-container {
 		position: absolute;
-		top: 60px;
-		left: 2px;
+		top: 100%;
+		left: 1px;
 		z-index: 1;
 	}
 
-	button {
-		width: 25.8px;
-		height: 28px;
-		border: solid 0px #888;
-		vertical-align: top;
-		border-radius: 0px;
-		margin-bottom: 4px;
+	.picker-button,
+	.color-button {
+		width: 100%;
+		height: 100%;
+		border: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.picker-button {
+		grid-column: 1;
+		grid-row: 1 / span 2; /* Span 2 rows */
+	}
+
+	.palette {
+		display: grid;
+		grid-auto-flow: column;
+		grid-template-rows: repeat(2, 30px); /* Define two rows */
+		grid-column: 2;
+		gap: 1px;
+	}
+
+	.color-button {
+		border-radius: 0;
 	}
 
 	button:hover {
 		border: solid 1px red;
-	}
-
-	.picker-button {
-		border: solid 5px #fafafa inset;
-		border-radius: 1px;
-		width: 48px;
-		height: 60px;
-	}
-
-	.column {
-		float: left;
-		height: 60px;
-	}
-
-	.row:after {
-		content: '';
-		display: table;
-		clear: both;
-	}
-
-	#pallete {
-		width: 310px;
 	}
 </style>

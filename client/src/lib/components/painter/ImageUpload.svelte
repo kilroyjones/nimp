@@ -69,6 +69,10 @@
 		// 	}
 		// }
 	}
+	// Function to programmatically open the file dialog
+	function triggerFileDialog() {
+		loadImage.click(); // This should open the file dialog
+	}
 
 	const onFileSelected = (e: any) => {
 		/**
@@ -80,7 +84,23 @@
 	};
 </script>
 
-<button
+<button id="from-clipboard" title="Upload image" on:click={triggerFileDialog}>
+	<div>
+		<!-- Assuming the Icon component is correctly imported -->
+		<Icon src={VscFileMedia} color="#fff" size="20" />
+	</div>
+</button>
+
+<input
+	bind:this={loadImage}
+	class="upload"
+	type="file"
+	accept=".jpg, .jpeg, .png"
+	on:change={onFileSelected}
+	style="display: none;"
+/>
+
+<!-- <button
 	id="from-clipboard"
 	title="Upload image"
 	on:click={() => {
@@ -88,35 +108,37 @@
 	}}
 >
 	<div>
-		<Icon src={VscFileMedia} color="#fff" size="22" />
+		<Icon src={VscFileMedia} color="#fff" size="20" />
 	</div>
 	<input
-		style="display:none; border: 0px; background-color: none;"
+		class="upload"
 		type="file"
 		accept=".jpg, .jpeg, .png"
 		on:change={(e) => onFileSelected(e)}
 		bind:this={loadImage}
 	/>
-</button>
+</button> -->
 
 <style>
-	button {
-		width: 32.7%;
-		border: none;
-		color: white;
-		padding: 15px 20px;
-		text-align: center;
-		text-decoration: none;
-		display: inline-block;
-		font-size: 20px;
+	.upload {
+		display: none;
+		border: 0px;
+		background-color: none;
 	}
 
+	button {
+		border: none;
+		height: 50px;
+		padding: 0px;
+		color: white;
+		width: 100%;
+		font-size: 20px;
+	}
 	button:hover {
 		box-shadow: inset 0 0 100px 100px rgba(255, 255, 255, 0.1);
 	}
 
 	#from-clipboard {
-		width: 40%;
 		background-color: #a68ba5;
 	}
 </style>
