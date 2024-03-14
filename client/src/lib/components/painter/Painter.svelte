@@ -11,7 +11,13 @@
 	import ColorPicker from './ColorPicker.svelte';
 	import LowerToolbar from './LowerToolbar.svelte';
 	import { onMount } from 'svelte';
-	import { brushSize, brushColor, canvasSize, showPicker } from '$lib/state/painter.state';
+	import {
+		brushSize,
+		brushColor,
+		canvasSize,
+		showPicker,
+		uploadedImage
+	} from '$lib/state/painter.state';
 	import type { Post } from '$shared/types';
 	import { showPainter } from '$lib/state/settings.state';
 
@@ -102,6 +108,24 @@
 			$showPainter = false;
 		}
 	}
+
+	const handleImageUpload = (imgData: string) => {
+		const imgElement: HTMLImageElement = new Image();
+		imgElement.onload = () => {
+			const ctx = canvas.getContext('2d');
+			// Clear the canvas in case it was previously used
+			if (ctx) {
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+				// Draw the image
+				ctx.drawImage(imgElement, 0, 0, canvas.width, canvas.height);
+			}
+		};
+		imgElement.src = imgData;
+	};
+
+	$: if ($uploadedImage) {
+		handleImageUpload($uploadedImage);
+	}
 </script>
 
 <div role="button" tabindex="0" class="modal-overlay" on:mousedown={close} on:keypress={() => {}}>
@@ -110,9 +134,9 @@
 			<div>
 				<ColorPicker />
 			</div>
+
 			<div
 				class="drawing-container"
-				style="height:{$canvasSize + 40}px"
 				on:mousedown|stopPropagation={handleClosePicker}
 				role="button"
 				tabindex="0"
@@ -128,13 +152,16 @@
 					height={$canvasSize}
 				/>
 			</div>
-			<LowerToolbar />
+			<LowerToolbar {post} />
 		</div>
 	</div>
 </div>
 
 <style>
 	.drawing-container {
+		margin-top: 10px;
+		margin-bottom: 0px;
+		padding-bottom: 0px;
 		position: relative;
 		background-color: #fff;
 		align-items: center;
@@ -146,30 +173,11 @@
 		border: 1px solid #aaa;
 	}
 
-	.close-btn {
-		width: 24px;
-		height: 24px;
-		margin: 0 auto;
-		cursor: pointer;
-		border: 1px solid #ccc;
-		border-radius: 12px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-size: 16px;
-		background-color: #fff;
-	}
-
 	.modal-content {
 		padding: 8px 8px 8px 8px;
+		border-radius: 8px;
 		background-color: white;
 		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);
-	}
-
-	.modal-form {
-		display: flex;
-		flex-direction: column;
-		gap: 10px;
 	}
 
 	.modal-overlay {
@@ -188,13 +196,5 @@
 	.modal-wrapper {
 		display: inline-flex;
 		align-items: stretch;
-	}
-
-	.sidebar {
-		width: 40px;
-		background-color: #fff;
-		display: flex;
-		flex-direction: column;
-		padding-top: 16px;
 	}
 </style>

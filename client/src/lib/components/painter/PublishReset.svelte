@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { ActionHandler } from '$lib/handlers/action.handler';
 	/**
 	 * This component combines three functions:
 	 *    - Publish - submit the current image.
@@ -6,6 +7,9 @@
 	 *    - Back - returns to the exploration window.
 	 */
 	import { selectedClaimId, publishedContent } from '$lib/state/painter.state';
+	import type { Post } from '$shared/types';
+
+	export let post: Post;
 
 	function reset() {
 		/**
@@ -17,7 +21,7 @@
 			if (elem) {
 				const ctx = elem.getContext('2d');
 				if (ctx) {
-					ctx.fillStyle = '#121317';
+					ctx.fillStyle = '#fff';
 					ctx.fillRect(0, 0, elem.width, elem.height);
 				}
 			}
@@ -34,21 +38,12 @@
 		 *  - The $publishContent gets toggled in order to force an update, but
 		 *    this is somewhat hacky, and needs to be fixed.
 		 */
-		// var c = document.getElementById('canvas');
-		// var imgData = c.toDataURL('image/png');
-		// const response = await fetch('http://127.0.0.1:5000/publish_claim', {
-		// 	method: 'POST',
-		// 	body: JSON.stringify({
-		// 		id: $selectedClaimId,
-		// 		content: imgData
-		// 	})
-		// });
-		// if (response.status === 200) {
-		// 	var temp = await response.json();
-		// } else {
-		// 	throw new Error(response.statusText);
-		// }
-		// $publishedContent = -$publishedContent; // Needed to force update.
+		// TODO: Add the canvas element to the store or have a route to publish in "Painter"
+		let ctx: any = document.getElementById('canvas');
+		if (ctx) {
+			var imgData = ctx.toDataURL('image/png');
+			ActionHandler.sendPost(post.regionKey, post.key, imgData);
+		}
 	}
 </script>
 

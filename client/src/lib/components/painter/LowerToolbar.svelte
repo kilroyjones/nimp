@@ -1,7 +1,10 @@
-<script>
+<script lang="ts">
+	import type { Post } from '$shared/types';
 	import BrushSize from './BrushSize.svelte';
 	import ImageUpload from './ImageUpload.svelte';
 	import PublishReset from './PublishReset.svelte';
+
+	export let post: Post;
 </script>
 
 <div class="brush-upload-container">
@@ -14,7 +17,7 @@
 </div>
 
 <div class="publish-reset-container">
-	<PublishReset />
+	<PublishReset {post} />
 </div>
 
 <style>

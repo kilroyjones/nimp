@@ -1,6 +1,6 @@
 <script lang="ts">
 	// Stores
-	import { x, y, windowWidth, windowHeight } from '$lib/state/world.state';
+	import { windowWidth, windowHeight } from '$lib/state/world.state';
 
 	// Componenets
 	import World from '$lib/components/World.svelte';
@@ -17,7 +17,6 @@
 </script>
 
 <svelte:window bind:innerWidth={$windowWidth} bind:innerHeight={$windowHeight} />
-
 {#if $isOnline}
 	<World />
 	<Actions />

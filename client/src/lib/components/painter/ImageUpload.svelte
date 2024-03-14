@@ -10,12 +10,11 @@
 	// TODO: Fix this Icon error
 	// @ts-ignore
 	import Icon from 'svelte-icons-pack/Icon.svelte';
-	// import { selectedClaimSize } from '$lib/state/painter.state';
 	import VscFileMedia from 'svelte-icons-pack/vsc/VscFileMedia';
-	import type { Post } from '$shared/types';
+	import { uploadedImage } from '$lib/state/painter.state';
 
 	// export let post: Post;
-	let loadImage;
+	let loadImage: any;
 
 	function getColor(imgArray: Array<any>, w: number, h: number) {
 		/**
@@ -47,19 +46,16 @@
 		 * by first calculating the size and then filling in 10x10 boxes based
 		 * on the rgb values from imgArray.
 		 */
-		let canvas = document.createElement('canvas');
+		// let canvas = document.createElement('canvas');
 		// canvas.width = this.width;
 		// canvas.height = this.height;
 		// let ctx = canvas.getContext('2d');
 		// ctx.drawImage(this, 0, 0);
-
 		// let w = Math.floor(canvas.width / ($selectedClaimSize / 10));
 		// let h = Math.floor(canvas.height / ($selectedClaimSize / 10));
-
 		// let c = document.getElementById('canvas');
 		// let ctx2 = c.getContext('2d');
 		// console.log(c);
-
 		// for (let x = 0; x < $selectedClaimSize / 10; x++) {
 		// 	for (let y = 0; y < $selectedClaimSize / 10; y += 1) {
 		// 		let color = getColor(ctx.getImageData(x * w, y * h, w, h).data, w, h);
@@ -69,18 +65,58 @@
 		// 	}
 		// }
 	}
+
+	function pixelateAndDraw(imageSrc: string) {
+		const img = new Image();
+		img.onload = () => {
+			const canvas = document.createElement('canvas');
+			const ctx: CanvasRenderingContext2D | null = canvas.getContext('2d');
+			canvas.width = img.width;
+			canvas.height = img.height;
+
+			if (ctx == null) {
+				return;
+			}
+
+			// Draw the original image on the canvas
+			ctx.drawImage(img, 0, 0);
+
+			// Pixelate logic (simplified for brevity - you might adjust pixel size and logic)
+			const pixelSize = 10; // Size of the 'pixel' squares
+			for (let y = 0; y < canvas.height; y += pixelSize) {
+				for (let x = 0; x < canvas.width; x += pixelSize) {
+					const pixelData: any = ctx.getImageData(x, y, pixelSize, pixelSize);
+					const avgColor = getColor(pixelData.data, pixelSize, pixelSize);
+					ctx.fillStyle = `rgb(${avgColor.join(',')})`;
+					ctx.fillRect(x, y, pixelSize, pixelSize);
+				}
+			}
+
+			// Store the pixelated image as a data URL
+			uploadedImage.set(canvas.toDataURL());
+		};
+		console.log('UP', $uploadedImage);
+		img.src = imageSrc;
+	}
+
 	// Function to programmatically open the file dialog
 	function triggerFileDialog() {
 		loadImage.click(); // This should open the file dialog
 	}
 
-	const onFileSelected = (e: any) => {
+	const onFileSelected = (event: any) => {
 		/**
 		 * Used to bring up the file dialog to upload an image.
 		 */
-		var img = new Image();
-		img.onload = draw;
-		img.src = URL.createObjectURL(e.target.files[0]);
+		const file = event.target.files[0];
+		if (file) {
+			const imageSrc = URL.createObjectURL(file);
+			pixelateAndDraw(imageSrc);
+		}
+		// var img = new Image();
+		// img.onload = draw;
+		// img.src = URL.createObjectURL(e.target.files[0]);
+		// console.log(img.src);
 	};
 </script>
 
@@ -99,25 +135,6 @@
 	on:change={onFileSelected}
 	style="display: none;"
 />
-
-<!-- <button
-	id="from-clipboard"
-	title="Upload image"
-	on:click={() => {
-		// loadImage.click();
-	}}
->
-	<div>
-		<Icon src={VscFileMedia} color="#fff" size="20" />
-	</div>
-	<input
-		class="upload"
-		type="file"
-		accept=".jpg, .jpeg, .png"
-		on:change={(e) => onFileSelected(e)}
-		bind:this={loadImage}
-	/>
-</button> -->
 
 <style>
 	.upload {

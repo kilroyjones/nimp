@@ -8,3 +8,4 @@ export const brushSize: Writable<number> = writable(8);
 export const brushColor = writable('#ff0022');
 export const selectedClaimId = writable(-1);
 export const canvasSize = writable(256);
+export const uploadedImage = writable('');

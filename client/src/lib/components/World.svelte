@@ -138,22 +138,42 @@
 	{/each}
 
 	{#each $postsToDraw as post}
-		<div
-			role="button"
-			tabindex="0"
-			class="post"
-			style="
+		{#if post.i}
+			<div
+				role="button"
+				tabindex="0"
+				class="post"
+				style="
+			 	top:{-$y + post.y - 2}px; 
+				left:{-$x + post.x - 2}px;
+				width: {post.w}px;
+				height: {post.h}px;
+				background-color: rgba(100, 100, 255, 0.3);
+				background-image: url({post.content});
+				background-size: cover; 
+				background-position: center;"
+				on:dblclick={() => handleDoubleClickPost(post)}
+				on:focus={() => {}}
+				on:mouseover={() => {}}
+			></div>
+		{:else}
+			<div
+				role="button"
+				tabindex="0"
+				class="post"
+				style="
 			 	top:{-$y + post.y - 2}px; 
 				left:{-$x + post.x - 2}px;
 				width: {post.w}px;
 				height: {post.h}px;
 				background-color: rgba(100, 100, 255, 0.3);"
-			on:dblclick={() => handleDoubleClickPost(post)}
-			on:focus={() => {}}
-			on:mouseover={() => {}}
-		>
-			{post.content}
-		</div>
+				on:dblclick={() => handleDoubleClickPost(post)}
+				on:focus={() => {}}
+				on:mouseover={() => {}}
+			>
+				{post.content}
+			</div>
+		{/if}
 	{/each}
 
 	{#if $claimToDraw}
